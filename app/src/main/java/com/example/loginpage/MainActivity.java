@@ -1,8 +1,10 @@
 package com.example.loginpage;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import io.getstream.chat.android.client.ChatClient;
-import io.getstream.chat.android.client.api.ChatClientConfig;
+import io.getstream.chat.android.client.models.User;
+import io.getstream.chat.android.client.token.TokenProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,10 +30,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        String api_key = "r9ckvmqw8u97";
-        ChatClient client = new ChatClient.Builder(api_key,getApplicationContext()).build();
+        init();
 
     }
+
+
+
+
+
     private void init(){
         Name = (EditText) findViewById(R.id.ETUsername);
         Password = (EditText) findViewById(R.id.ETPassword);
@@ -41,16 +49,31 @@ public class MainActivity extends AppCompatActivity {
         Login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                validate(Name.getText().toString(),Password.getText().toString());
+                String username = Name.getText().toString();
+                String password = Password.getText().toString();
+                if(validated(username,password)){
+                    String api_key = "52pc3gw25eq5";
+                    String user_chat_token = "wg8ebbdfv74pkrfaqstha627gs3s96s7smr7ehwseaep5v5sn2z56gn5e9auuwhn";
+                    Bundle b = new Bundle();
+                    b.putString("user_chat_token",user_chat_token);
+                    b.putString("api_key",api_key);
+                    b.putString("username",username);
+                    Intent intent = new Intent(MainActivity.this,SecondActivity.class);
+                    intent.putExtras(b);
+                    startActivity(intent);
+                };
             }
         });
     }
 
-    private void validate(String userUsername, String userPassword) {
-        if ((userUsername == "Admin") && (userPassword == "1234")) {
-            Intent intent = new Intent(MainActivity.this, SecondActivity.class);
-            startActivity(intent);
-        } else {
+    private boolean validated(String userUsername, String userPassword) {
+        System.out.println(userUsername);
+        System.out.println(userPassword);
+        if ((Objects.equals(userUsername, "Admin")) && (Objects.equals(userPassword, "1234"))) {
+            System.out.println("Validated!");
+            return true;
+        }
+        else {
             counter--;
 
             Info.setText("Number of attempts remaining: " + String.valueOf(counter));
@@ -59,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 Login.setEnabled(false);
             }
         }
+        return false;
 
     }
     public EditText getName() {
