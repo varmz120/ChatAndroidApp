@@ -1,10 +1,9 @@
 package com.example.loginpage;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import io.getstream.chat.android.client.ChatClient;
-import io.getstream.chat.android.client.models.User;
-import io.getstream.chat.android.client.token.TokenProvider;
+import io.getstream.chat.android.offline.plugin.configuration.Config;
+import io.getstream.chat.android.offline.plugin.factory.StreamOfflinePluginFactory;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -52,18 +51,26 @@ public class MainActivity extends AppCompatActivity {
                 String username = Name.getText().toString();
                 String password = Password.getText().toString();
                 if(validated(username,password)){
-                    String api_key = "52pc3gw25eq5";
+                    start_client();
                     String user_chat_token = "wg8ebbdfv74pkrfaqstha627gs3s96s7smr7ehwseaep5v5sn2z56gn5e9auuwhn";
+
                     Bundle b = new Bundle();
                     b.putString("user_chat_token",user_chat_token);
-                    b.putString("api_key",api_key);
                     b.putString("username",username);
-                    Intent intent = new Intent(MainActivity.this,SecondActivity.class);
+                    Intent intent = new Intent(MainActivity.this, SecondActivity.class);
                     intent.putExtras(b);
                     startActivity(intent);
                 };
             }
         });
+    }
+    private void start_client(){
+        String api_key = "52pc3gw25eq5";
+        boolean backGroundSyncEnable = true;
+        boolean userPresence = true;
+        Config config = new Config(backGroundSyncEnable,userPresence);
+        StreamOfflinePluginFactory offlinePlugin = new StreamOfflinePluginFactory(config,getApplicationContext());
+        new ChatClient.Builder(api_key,getApplicationContext()).withPlugin(offlinePlugin).build();
     }
 
     private boolean validated(String userUsername, String userPassword) {
