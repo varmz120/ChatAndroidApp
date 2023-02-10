@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                     Bundle b = new Bundle();
                     b.putString("user_chat_token",user_chat_token);
                     b.putString("username",username);
-                    Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+                    Intent intent = new Intent(MainActivity.this, HomePage.class);
                     intent.putExtras(b);
                     startActivity(intent);
                 };

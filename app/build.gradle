@@ -44,7 +44,9 @@ dependencies {
     implementation "io.getstream:stream-chat-android-ui-components:5.8.2"
     //implementation "io.getstream:stream-chat-android-compose:5.11.4"
     implementation "io.getstream:stream-chat-android-offline:5.11.10"
+    implementation "io.getstream:stream-chat-android-state:5.11.8"
     implementation "com.google.android.material:material:1.8.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
     implementation "androidx.activity:activity-ktx:1.6.1"
     implementation "io.coil-kt:coil:2.1.0"
 }

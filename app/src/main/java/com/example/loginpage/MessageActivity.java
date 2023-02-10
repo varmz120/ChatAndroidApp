@@ -4,15 +4,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.models.User;
-import io.getstream.chat.android.ui.channel.ChannelListActivity;
-import io.getstream.chat.android.ui.channel.ChannelListFragment;
 import io.getstream.chat.android.ui.message.MessageListActivity;
 
 import android.os.Bundle;
 
-public final class SecondActivity extends AppCompatActivity
+public final class MessageActivity extends AppCompatActivity
 {
-    public SecondActivity(){
+    public MessageActivity(){
         super(R.layout.activity_second);
     }
     @Override
@@ -22,7 +20,6 @@ public final class SecondActivity extends AppCompatActivity
 //        setContentView(binding.getRoot());
 
         Bundle data = this.getIntent().getExtras();
-        String secret_key = data.getString("user_chat_token");
         String username = data.getString("username");
         System.out.println(username);
         ChatClient client = ChatClient.instance();
@@ -43,22 +40,24 @@ public final class SecondActivity extends AppCompatActivity
             }
         });
         this.startActivity(MessageListActivity.createIntent(this, "messaging:123"));
-
-//        FilterObject filter = Filters.and(
-//                Filters.eq("type","messaging"),
-//                Filters.in("members", Collections.singletonList(u.getId()))
-//        );
-//
-//        ViewModelProvider.Factory factory = new ChannelListViewModelFactory.Builder()
-//                .filter(filter)
-//                .sort(ChannelListViewModel.DEFAULT_SORT)
+        // Init ViewModel
+//        ViewModelProvider.Factory factory = new MessageListViewModelFactory.Builder()
+//                .cid("messaging:123")
 //                .build();
-//        ChannelListViewModel channelsViewModel = new ViewModelProvider(this, factory).get(ChannelListViewModel.class);
-//        ChannelListView channelListView = binding.getRoot().findViewById(R.id.channelListView);
-//        ChannelListViewModelBinding.bind(channelsViewModel, channelListView, this);
-//        channelListView.setChannelItemClickListener(channel -> {
-//            // TODO - start channel activity
-//        });
+//        ViewModelProvider provider = new ViewModelProvider(this, factory);
+//        MessageListViewModel viewModel = provider.get(MessageListViewModel.class);
+
+// Bind View and ViewModel
+//        MessageListView messageListView = new MessageListView(getApplicationContext());
+//        LifecycleOwner lifecycleOwner = new LifecycleOwner() {
+//            @NonNull
+//            @Override
+//            public Lifecycle getLifecycle() {
+//                return null;
+//            }
+//        };
+//        MessageListViewModelBinding.bind(viewModel, messageListView, lifecycleOwner,false);
+
 
     }
 
