@@ -9,6 +9,10 @@ import android.widget.TextView;
 import com.google.android.material.button.MaterialButton;
 
 import androidx.appcompat.app.AppCompatActivity;
+import io.getstream.chat.android.client.ChatClient;
+import io.getstream.chat.android.client.models.Channel;
+import io.getstream.chat.android.offline.plugin.configuration.Config;
+import io.getstream.chat.android.offline.plugin.factory.StreamOfflinePluginFactory;
 
 /**
  * @author saran
@@ -31,13 +35,22 @@ public class HomePage extends AppCompatActivity {
          @Override
          public void onClick(View view) {
             Bundle bundle = new Bundle();
-            bundle.putString("username",username);
-            Intent int1 = new Intent(HomePage.this,MessageActivity.class);
-            int1.putExtras(bundle);
+            //bundle.putString("username",username);
+            //start_client();
+            Intent int1 = new Intent(HomePage.this,ChannelPage.class);
+            //int1.putExtras(bundle);
             startActivity(int1);
          }
       });
 
+   }
+   private void start_client(){
+      String api_key = "52pc3gw25eq5";
+      boolean backGroundSyncEnable = true;
+      boolean userPresence = true;
+      Config config = new Config(backGroundSyncEnable,userPresence);
+      StreamOfflinePluginFactory offlinePlugin = new StreamOfflinePluginFactory(config,getApplicationContext());
+      new ChatClient.Builder(api_key,getApplicationContext()).withPlugin(offlinePlugin).build();
    }
 
 }
