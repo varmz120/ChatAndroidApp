@@ -50,26 +50,29 @@ public final class ChannelPage extends AppCompatActivity {
       setContentView(binding.getRoot());
 
       // Step 1 - Set up the OfflinePlugin for offline storage
-      StreamOfflinePluginFactory streamOfflinePluginFactory = new StreamOfflinePluginFactory(
-              new Config(
-                      true,
-                      true,
-                      true,
-                      UploadAttachmentsNetworkType.NOT_ROAMING
-              ),
-              getApplicationContext()
-      );
-
-      // Step 2 - Set up the client for API calls with the plugin for offline storage
-      ChatClient client = new ChatClient.Builder("52pc3gw25eq5", getApplicationContext())
-              .withPlugin(streamOfflinePluginFactory)
-              .logLevel(ChatLogLevel.ALL) // Set to NOTHING in prod
-              .build();
+//      StreamOfflinePluginFactory streamOfflinePluginFactory = new StreamOfflinePluginFactory(
+//              new Config(
+//                      true,
+//                      true,
+//                      true,
+//                      UploadAttachmentsNetworkType.NOT_ROAMING
+//              ),
+//              getApplicationContext()
+//      );
+//
+//      // Step 2 - Set up the client for API calls with the plugin for offline storage
+//      ChatClient client = new ChatClient.Builder("52pc3gw25eq5", getApplicationContext())
+//              .withPlugin(streamOfflinePluginFactory)
+//              .logLevel(ChatLogLevel.ALL) // Set to NOTHING in prod
+//              .build();
+      ChatClient client = ChatClient.instance();
+      String username = getIntent().getExtras().getString("username");
 //      ChatClient client = ChatClient.instance();
       // Step 3 - Authenticate and connect the user
       User user = new User();
       user.setId("01");
-      user.setName("Admin");
+      user.setName(username);
+      // TODO make algorithm to generate JWT Token
       String tkn = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDEifQ.v2OJoe1Q1t5WWRsZ-ycN1FGDbcrAY8Vnr6e4ArWGkvk";
       client.connectUser(
               user,tkn
@@ -77,6 +80,7 @@ public final class ChannelPage extends AppCompatActivity {
          if(connectionResult.isError()) System.out.println("Error connecting to client!" + connectionResult.error());
          ChannelClient channelClient = client.channel("messaging", "message_room");
          Map<String, Object> extraData = new HashMap<>();
+         extraData.put("name","");
          List<String> memberIds = new LinkedList<>();
          channelClient.watch().enqueue(result -> {
                     if (result.isSuccess()) {

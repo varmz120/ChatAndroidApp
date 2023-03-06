@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.loginpage.databinding.ActivityMessageBinding;
+import com.getstream.sdk.chat.adapter.MessageListItem;
 import com.getstream.sdk.chat.viewmodel.MessageInputViewModel;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.Mode.Normal;
@@ -27,11 +28,13 @@ import java.util.List;
 
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.api.models.QueryChannelRequest;
+import io.getstream.chat.android.client.api.models.querysort.QuerySortByField;
 import io.getstream.chat.android.client.models.Channel;
 import io.getstream.chat.android.client.models.Message;
 import io.getstream.chat.android.ui.message.composer.viewmodel.MessageComposerViewModel;
 import io.getstream.chat.android.ui.message.input.MessageInputView;
 import io.getstream.chat.android.ui.message.input.viewmodel.MessageInputViewModelBinding;
+import io.getstream.chat.android.ui.message.list.MessageListView;
 import io.getstream.chat.android.ui.message.list.header.MessageListHeaderView;
 import io.getstream.chat.android.ui.message.list.header.viewmodel.MessageListHeaderViewModel;
 import io.getstream.chat.android.ui.message.list.header.viewmodel.MessageListHeaderViewModelBinding;
@@ -94,14 +97,24 @@ public class ChannelActivity extends AppCompatActivity {
                 messageInputViewModel.resetThread();
             }
         });
+        // Customised View Model for Messages
+        binding.messageListView.setMessageViewHolderFactory(new CustomMessageViewHolderFactory());
+
 
         // Step 4 - Let the message input know when we are editing a message
+        // TODO: Add message filtering
+
+        binding.messageListView.setRepliesEnabled(false);
         binding.messageListView.setMessageEditHandler(messageInputViewModel::postMessageToEdit);
         binding.messageListView.setMessageReplyHandler((parent,message)-> {
             System.out.println(message);
             System.out.println(parent);
             System.out.println("Breakd point");
             // TODO Logic handling for replies
+        });
+        binding.messageListView.setThreadStartHandler((result)->{
+            System.out.println("THREAD STARTED!");
+            System.out.println(result);
         });
         binding.messageInputView.setOnSendButtonClickListener(()->{
             // TODO Logic handling for when a message is sent
@@ -116,7 +129,6 @@ public class ChannelActivity extends AppCompatActivity {
                 finish();
             }
         });
-
 
         // Step 6 - Handle back button behaviour correctly when you're in a thread
         MessageListHeaderView.OnClickListener backHandler = () -> {

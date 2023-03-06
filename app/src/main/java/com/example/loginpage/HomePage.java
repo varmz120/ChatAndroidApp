@@ -1,13 +1,21 @@
 package com.example.loginpage;
 
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.models.Channel;
@@ -20,26 +28,29 @@ import io.getstream.chat.android.offline.plugin.factory.StreamOfflinePluginFacto
  */
 
 public class HomePage extends AppCompatActivity {
+   private AlertDialog.Builder createRoomPage;
+   private AlertDialog createRoomDialog;
+
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.homepage);
       //TODO: Add functionality to handle join room
-      Button btn = (Button) findViewById(R.id.createRoom);
+      //TODO: Add functionality to let the room creator create a 4 digit code when creating room
+      Button btn = findViewById(R.id.createRoom);
       Bundle b = this.getIntent().getExtras();
       String username = b.getString("username");
-      TextView txtView = (TextView) findViewById(R.id.usernameField);
+      TextView txtView = findViewById(R.id.usernameField);
       String welcomeMsg = "Welcome!" + username;
       txtView.setText(welcomeMsg);
       btn.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
-            Bundle bundle = new Bundle();
-            //bundle.putString("username",username);
-            //start_client();
+            start_client();
             Intent int1 = new Intent(HomePage.this,ChannelPage.class);
-            //int1.putExtras(bundle);
+            int1.putExtra("username",username);
             startActivity(int1);
+
          }
       });
 
