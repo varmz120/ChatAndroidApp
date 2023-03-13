@@ -30,6 +30,7 @@ import io.getstream.chat.android.client.channel.ChannelClient;
 import io.getstream.chat.android.client.logger.ChatLogLevel;
 import io.getstream.chat.android.client.models.Channel;
 import io.getstream.chat.android.client.models.Filters;
+import io.getstream.chat.android.client.models.Message;
 import io.getstream.chat.android.client.models.User;
 import io.getstream.chat.android.offline.model.message.attachments.UploadAttachmentsNetworkType;
 import io.getstream.chat.android.offline.plugin.configuration.Config;
@@ -65,57 +66,10 @@ public final class ChannelPage extends AppCompatActivity {
 //              .withPlugin(streamOfflinePluginFactory)
 //              .logLevel(ChatLogLevel.ALL) // Set to NOTHING in prod
 //              .build();
-      ChatClient client = ChatClient.instance();
-      String username = getIntent().getExtras().getString("username");
 //      ChatClient client = ChatClient.instance();
       // Step 3 - Authenticate and connect the user
-      User user = new User();
-      user.setId("01");
-      user.setName(username);
-      // TODO make algorithm to generate JWT Token
-      String tkn = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDEifQ.v2OJoe1Q1t5WWRsZ-ycN1FGDbcrAY8Vnr6e4ArWGkvk";
-      client.connectUser(
-              user,tkn
-      ).enqueue(connectionResult->{
-         if(connectionResult.isError()) System.out.println("Error connecting to client!" + connectionResult.error());
-         ChannelClient channelClient = client.channel("messaging", "message_room");
-         Map<String, Object> extraData = new HashMap<>();
-         extraData.put("name","");
-         List<String> memberIds = new LinkedList<>();
-         channelClient.watch().enqueue(result -> {
-                    if (result.isSuccess()) {
-                       System.out.println("----------CHANNEL CONNECTION RESULT: " + result.data());
-                       Channel newChannel = result.data();
-                       startActivity(ChannelActivity.newIntent(this,newChannel));
-                       // Step 4 - Set the channel list filter and order
-                       // This can be read as requiring only channels whose "type" is "messaging" AND
-                       // whose "members" include our "user.id"
-//                       FilterObject filter = Filters.and(
-//                               Filters.eq("type", "messaging"),
-//                               Filters.in("members", singletonList(user.getId()))
-//                       );
-//
-//                       ViewModelProvider.Factory factory = new ChannelListViewModelFactory.Builder()
-//                               .filter(filter)
-//                               .sort(ChannelListViewModel.DEFAULT_SORT)
-//                               .build();
-//
-//                       ChannelListViewModel channelsViewModel =
-//                               new ViewModelProvider(this, factory).get(ChannelListViewModel.class);
-//
-//                       // Step 5 - Connect the ChannelListViewModel to the ChannelListView, loose
-//                       //          coupling makes it easy to customize
-//                       ChannelListViewModelBinding.bind(channelsViewModel, binding.channelListView, this);
-//                       binding.channelListView.setChannelItemClickListener(channel -> {
-//                          startActivity(ChannelActivity.newIntent(this,channel));
-//                       });
-                    } else {
-                       System.out.println("Unable to connect to channel!" + result.error());
-                    }
-                 });
 
-      }
-      );
+
 
 
 
