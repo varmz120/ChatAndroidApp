@@ -1,16 +1,18 @@
-package com.example.loginpage;
+package com.example.loginpage.utility;
 
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Button;
 
+import com.example.loginpage.R;
 import com.example.loginpage.databinding.AttachedButtonBinding;
 import com.getstream.sdk.chat.adapter.MessageListItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
@@ -42,16 +44,16 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
    public void bindData(@NonNull MessageListItem.MessageItem messageItem, @Nullable MessageListItemPayloadDiff messageListItemPayloadDiff) {
       Message msg = messageItem.getMessage();
       binding.message.setText(msg.getText());
-      System.out.println(msg.getExtraData() + " printing extra data for message: " + msg.getText());
+      //System.out.println(msg.getExtraData() + " printing extra data for message: " + msg.getText());
       binding.upVoteButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
             int current_votes = Integer.parseInt(upVoteButton.getText().toString());
-            current_votes++;
-            HashMap<String,Object> extraData = new HashMap<>();
-            extraData.put("current_votes",current_votes);
+            int added_votes = current_votes + 1;
+            Map<String,Object> extraData = messageItem.getMessage().getExtraData();
+            extraData.put("vote_count",added_votes);
             messageItem.getMessage().setExtraData(extraData);
-            String new_votes = Integer.toString(current_votes);
+            String new_votes = Integer.toString(added_votes);
 //            channelClient.get().enqueue((result -> {
 //               Channel channel = result.data();
 //               List<Message> msg_list = channel.getMessages();

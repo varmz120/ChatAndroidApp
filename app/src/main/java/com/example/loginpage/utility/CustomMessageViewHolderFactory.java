@@ -1,8 +1,9 @@
-package com.example.loginpage;
+package com.example.loginpage.utility;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Button;
+
 
 import com.example.loginpage.databinding.AttachedButtonBinding;
 import com.getstream.sdk.chat.adapter.MessageListItem;
@@ -19,7 +20,7 @@ import io.getstream.chat.android.ui.message.list.adapter.MessageListItemViewHold
  * @date 25/2/2023
  */
 
-class CustomMessageViewHolderFactory extends MessageListItemViewHolderFactory {
+public class CustomMessageViewHolderFactory extends MessageListItemViewHolderFactory {
    private int BUTTON_VIEW_HOLDER_TYPE = 1;
    private List<Message>msgList;
    public int getItemViewType(@NonNull MessageListItem item){
@@ -34,9 +35,9 @@ class CustomMessageViewHolderFactory extends MessageListItemViewHolderFactory {
       }
       return super.createViewHolder(parentView, viewType);
    }
-   CustomMessageViewHolderFactory(List<Message> msgList){
-      this.msgList = msgList;
-   }
+//   CustomMessageViewHolderFactory(List<Message> msgList){
+//      this.msgList = msgList;
+//   }
 
 
 }
