@@ -35,8 +35,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
     private void init(){
         Name = (EditText) findViewById(R.id.ETUsername);
         Password = (EditText) findViewById(R.id.ETPassword);

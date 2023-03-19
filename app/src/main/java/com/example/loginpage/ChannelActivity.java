@@ -16,25 +16,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.loginpage.databinding.ActivityMessageBinding;
-import com.getstream.sdk.chat.adapter.MessageListItem;
+import com.example.loginpage.utility.CustomMessageSend;
+import com.example.loginpage.utility.CustomMessageViewHolderFactory;
+import com.example.loginpage.utility.Database;
 import com.getstream.sdk.chat.viewmodel.MessageInputViewModel;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.Mode.Normal;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.Mode.Thread;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.State.NavigateUp;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 import io.getstream.chat.android.client.ChatClient;
-import io.getstream.chat.android.client.api.models.QueryChannelRequest;
-import io.getstream.chat.android.client.api.models.querysort.QuerySortByField;
-import io.getstream.chat.android.client.models.Channel;
+import io.getstream.chat.android.client.channel.ChannelClient;
 import io.getstream.chat.android.client.models.Message;
-import io.getstream.chat.android.ui.message.composer.viewmodel.MessageComposerViewModel;
-import io.getstream.chat.android.ui.message.input.MessageInputView;
 import io.getstream.chat.android.ui.message.input.viewmodel.MessageInputViewModelBinding;
-import io.getstream.chat.android.ui.message.list.MessageListView;
 import io.getstream.chat.android.ui.message.list.header.MessageListHeaderView;
 import io.getstream.chat.android.ui.message.list.header.viewmodel.MessageListHeaderViewModel;
 import io.getstream.chat.android.ui.message.list.header.viewmodel.MessageListHeaderViewModelBinding;
@@ -43,13 +39,16 @@ import io.getstream.chat.android.ui.message.list.viewmodel.factory.MessageListVi
 
 public class ChannelActivity extends AppCompatActivity {
 
-    private final static String CID_KEY = "wg8ebbdfv74pkrfaqstha627gs3s96s7smr7ehwseaep5v5sn2z56gn5e9auuwhn";
-    private static Channel classChannel;
+    private final static String CID_KEY = "shk4bq5vqttmrfush2e98d9d83n7bz5cwj8ws4dtxe9xby3nw8hgsr5vjmr4qcms";
+    private static ChannelClient classChannel;
+    private static Database mDatabase;
+
     public ChannelActivity(){
         super(R.layout.activity_message);
     }
-    public static Intent newIntent(Context context, Channel channel) {
+    public static Intent newIntent(Context context, ChannelClient channel, Database database) {
         classChannel = channel;
+        mDatabase = database;
         final Intent intent = new Intent(context, ChannelActivity.class);
         intent.putExtra(CID_KEY, channel.getCid());
         return intent;
@@ -103,25 +102,29 @@ public class ChannelActivity extends AppCompatActivity {
 
         // Step 4 - Let the message input know when we are editing a message
         // TODO: Add message filtering
+        //binding.messageInputView.setSendMessageHandler(new CustomMessageSend(classChannel,mDatabase));
 
         binding.messageListView.setRepliesEnabled(false);
         binding.messageListView.setMessageEditHandler(messageInputViewModel::postMessageToEdit);
+
         binding.messageListView.setMessageReplyHandler((parent,message)-> {
             System.out.println(message);
             System.out.println(parent);
-            System.out.println("Breakd point");
+            System.out.println("Break point");
             // TODO Logic handling for replies
         });
         binding.messageListView.setThreadStartHandler((result)->{
             System.out.println("THREAD STARTED!");
             System.out.println(result);
         });
+
+
+
         binding.messageInputView.setOnSendButtonClickListener(()->{
-            // TODO Logic handling for when a message is sent
-            ArrayList<Message> channelMessages = (ArrayList<Message>) classChannel.getMessages();
-            for(Message m: channelMessages){
-                System.out.println(m);
-            }
+//            List<Message> messages = classChannel.watch().execute().data().getMessages();
+//            for(Message m: messages){
+//                System.out.println("message on send listener " + m.getText());
+//            }
         });
         // Step 5 - Handle navigate up state
         messageListViewModel.getState().observe(this, state -> {
@@ -147,6 +150,27 @@ public class ChannelActivity extends AppCompatActivity {
 
             }
         });
+    }
+    private static Message messageConstructor(String s, int id){
+        Message newMessage = new Message();
+        newMessage.setText(s);
+        newMessage.setId(Integer.toString(id));
+        newMessage.setCid(classChannel.getCid());
+        HashMap<String,Object> extraData = new HashMap<>();
+        extraData.put("current_votes",(double)0.0);
+        newMessage.setExtraData(extraData);
+        return newMessage;
+    }
+//    private static void printMessageList(){
+//        List<Message> messages = getLatestChannel().watch().execute().data().getMessages();
+//        System.out.println(messages.toArray().length + " messages in the channel, total_message_count " + total_message_count);
+//        for (Message m: messages){
+//            System.out.println(m.getId() + " message id in channel ");
+//            System.out.println(m.getExtraData() + " in channel " + classChannel.getId());
+//        }
+//    }
+    private static ChannelClient getLatestChannel(){
+        return ChatClient.instance().channel(classChannel.getCid());
     }
 }
 
