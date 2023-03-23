@@ -1,11 +1,13 @@
 package com.example.loginpage;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.loginpage.utility.Database;
+import com.example.loginpage.utility.jwtgenerate;
 
 import androidx.appcompat.app.AppCompatActivity;
 import io.getstream.chat.android.client.ChatClient;
@@ -65,8 +67,11 @@ public class HomePage extends AppCompatActivity {
       User user = new User();
       user.setId("01");
       user.setName(username);
+      jwtgenerate generator = new jwtgenerate();
+      String tkn = generator.tokenGenerator(findViewById(R.id.ETUsername).toString(),findViewById(R.id.ETPassword).toString());
+      System.out.println(tkn);
+      Log.d("JWT TOKEN",tkn);
       // TODO make algorithm to generate JWT Token
-      String tkn = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDEifQ.T8dm9FWij7dW4i0baXWFa7mb9Aixm2erfZNkij-WpWk";
       client.connectUser(
               user,tkn
       ).enqueue(connectionResult->{

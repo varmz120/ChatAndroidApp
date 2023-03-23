@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.loginpage.databinding.ActivityMessageBinding;
-import com.example.loginpage.utility.CustomMessageSend;
+//import com.example.loginpage.utility.CustomMessageSend;
 import com.example.loginpage.utility.CustomMessageViewHolderFactory;
 import com.example.loginpage.utility.Database;
 import com.getstream.sdk.chat.viewmodel.MessageInputViewModel;

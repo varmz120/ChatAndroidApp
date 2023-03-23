@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private Button Login;
     private ImageView Profile;
     private int counter = 5;
-
+    private Button Register;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,8 +33,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
     private void init(){
         Name = (EditText) findViewById(R.id.ETUsername);
         Password = (EditText) findViewById(R.id.ETPassword);
@@ -42,6 +40,15 @@ public class MainActivity extends AppCompatActivity {
         Login = (Button) findViewById(R.id.LoginButton);
         Profile = (ImageView) findViewById(R.id.imageView);
         Info.setText("Number of attempts remaining: 5");
+        Register = (Button) findViewById(R.id.register);
+
+        Register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, RegisterPage.class);
+                startActivity(intent);
+            }
+        });
 
         Login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
                 String password = Password.getText().toString();
                 if(validated(username,password)){
                     //String user_chat_token = "wg8ebbdfv74pkrfaqstha627gs3s96s7smr7ehwseaep5v5sn2z56gn5e9auuwhn";
-
                     Bundle b = new Bundle();
                     b.putString("username",username);
                     Intent intent = new Intent(MainActivity.this, HomePage.class);
