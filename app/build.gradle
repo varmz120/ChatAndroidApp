@@ -1,14 +1,13 @@
 plugins {
     id 'com.android.application'
-    id 'com.google.gms.google-services'
 }
 
 android {
-    namespace 'com.example.loginpage'
+    namespace 'com.example.myapplication'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.loginpage"
+        applicationId "com.example.myapplication"
         minSdk 21
         targetSdk 33
         versionCode 1
@@ -27,31 +26,13 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    // Enable ViewBinding
-    buildFeatures {
-        viewBinding true
-    }
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.0'
-    implementation 'com.google.android.material:material:1.8.0'
-    implementation platform('com.google.firebase:firebase-bom:31.2.3')
-    implementation 'com.google.firebase:firebase-storage'
-    implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-database'
 
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.8.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation "io.getstream:stream-chat-android-client:5.12.0"
-    implementation "io.getstream:stream-chat-android-ui-components:5.8.2"
-    //implementation "io.getstream:stream-chat-android-compose:5.11.4"
-    implementation "io.getstream:stream-chat-android-offline:5.11.10"
-    implementation "io.getstream:stream-chat-android-state:5.11.8"
-    implementation "com.google.android.material:material:1.8.0"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
-    implementation "androidx.activity:activity-ktx:1.6.1"
-    implementation "io.coil-kt:coil:2.1.0"
 }
