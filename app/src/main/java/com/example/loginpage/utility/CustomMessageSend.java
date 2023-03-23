@@ -1,4 +1,4 @@
-package com.example.loginpage;
+package com.example.loginpage.utility;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,6 +33,16 @@ class CustomMessageSend implements MessageInputView.MessageSendHandler {
       mMessageArrayList.add(newMessage);
       mClient().sendMessage(classChannel.getChannelType(),classChannel.getChannelId(),newMessage).execute();
    }
+
+
+   public void sendReply (@NonNull String s, @Nullable Message parentMessage){
+      Message newReply = new Message();
+      newReply.setText(s);
+      newReply.setParentId(parentMessage.getId());
+
+      mMessageArrayList.add(newReply);
+      mClient().sendMessage(classChannel.getChannelType(),classChannel.getChannelId(),newReply).execute();
+   }
    @Override
    public void dismissReply() {
 
@@ -40,7 +50,7 @@ class CustomMessageSend implements MessageInputView.MessageSendHandler {
 
    @Override
    public void editMessage(@NonNull Message message, @NonNull String s) {
-
+      message.setText(s);
    }
 
 
