@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.loginpage.databinding.ActivityMessageBinding;
-//import com.example.loginpage.utility.CustomMessageSend;
+import com.example.loginpage.utility.CustomMessageSend;
 import com.example.loginpage.utility.CustomMessageViewHolderFactory;
 import com.example.loginpage.utility.Database;
 import com.getstream.sdk.chat.viewmodel.MessageInputViewModel;
@@ -102,7 +102,7 @@ public class ChannelActivity extends AppCompatActivity {
 
         // Step 4 - Let the message input know when we are editing a message
         // TODO: Add message filtering
-        //binding.messageInputView.setSendMessageHandler(new CustomMessageSend(classChannel,mDatabase));
+        //binding.messageInputView.setSendMessageHandler(new CustomMessageSend(mDatabase,classChannel));
 
         binding.messageListView.setRepliesEnabled(false);
         binding.messageListView.setMessageEditHandler(messageInputViewModel::postMessageToEdit);
