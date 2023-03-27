@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean validated(String userUsername, String userPassword) {
         System.out.println(userUsername);
         System.out.println(userPassword);
-        if ((Objects.equals(userUsername, "Admin")) && (Objects.equals(userPassword, "1234"))) {
+        if ((Objects.equals(userUsername, "")) && (Objects.equals(userPassword, ""))) {
             System.out.println("Validated!");
             return true;
         }
