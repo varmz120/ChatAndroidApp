@@ -22,20 +22,23 @@ import io.getstream.chat.android.ui.message.list.adapter.MessageListListenerCont
  * @date 25/2/2023
  */
 public class CustomMessageViewHolderFactory extends MessageListItemViewHolderFactory{
-   private int BUTTON_VIEW_HOLDER_TYPE = 0;
+   private int BUTTON_VIEW_HOLDER_TYPE = 1;
    private List<Message>msgList;
+   private final Database database;
+   public CustomMessageViewHolderFactory(Database database){
+      this.database = database;
+   }
    @Override
    public int getItemViewType(@NonNull MessageListItem item){
       if(item instanceof MessageListItem.MessageItem){
          return BUTTON_VIEW_HOLDER_TYPE;
-
       }
       return super.getItemViewType(item);
    }
    @Override
    public BaseMessageItemViewHolder<? extends MessageListItem> createViewHolder(@NonNull ViewGroup parentView, int viewType){
       if (viewType == BUTTON_VIEW_HOLDER_TYPE) {
-         return new ButtonViewHolder(parentView, AttachedButtonBinding.inflate(LayoutInflater.from(parentView.getContext()), parentView, false));
+         return new ButtonViewHolder(parentView, AttachedButtonBinding.inflate(LayoutInflater.from(parentView.getContext()), parentView, false), database );
       }
       return super.createViewHolder(parentView, viewType);
    }
