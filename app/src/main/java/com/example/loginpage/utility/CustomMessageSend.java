@@ -6,10 +6,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.channel.ChannelClient;
 import io.getstream.chat.android.client.models.Attachment;
 import io.getstream.chat.android.client.models.Message;
@@ -30,8 +32,10 @@ public class CustomMessageSend implements MessageInputView.MessageSendHandler {
    }
    @Override
    public void sendMessage(@NonNull String s, @Nullable Message message) {
-      Message message1 = construct_message(s);
-      classChannel.sendMessage(message1).enqueue(result -> {
+      ChatClient client = ChatClient.instance();
+      Message message1 = construct_message(s,client);
+      mDatabase.sendMessage(classChannel.getChannelId(),message1);
+      client.sendMessage(classChannel.getChannelType(),classChannel.getChannelId(),message1,true).enqueue(result -> {
          if(result.isSuccess()){
             System.out.println("Message with text: " + message1.getText() + " was sent successfully");
          } else {
@@ -39,20 +43,30 @@ public class CustomMessageSend implements MessageInputView.MessageSendHandler {
          }
       });
    }
-   private Message construct_message(String s){
+   private Message construct_message(String s,ChatClient client){
       Message message = new Message();
       message.setId(random_id());
       message.setText(s);
       message.setCid(classChannel.getCid());
+      message.setUser(Objects.requireNonNull(client.getCurrentUser()));
       HashMap<String,Object> extraData = new HashMap<>();
-      extraData.put("up_votes",0);
+      extraData.put("vote_count",0);
       message.setExtraData(extraData);
       return message;
    }
    private String random_id(){
-      byte[] array = new byte[8]; // length is bounded by 8
-      new Random().nextBytes(array);
-      return new String(array, StandardCharsets.UTF_8);
+      String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+              + "0123456789"
+              + "abcdefghijklmnopqrstuvxyz";
+      StringBuilder sb = new StringBuilder(8);
+      for (int i = 0; i < 8; i++) {
+         int index
+                 = (int)(AlphaNumericString.length()
+                 * Math.random());
+         sb.append(AlphaNumericString
+                 .charAt(index));
+      }
+      return sb.toString();
    }
    @Override
    public void dismissReply() {

@@ -26,6 +26,7 @@ import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.Mode.Threa
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.State.NavigateUp;
 
 import java.util.HashMap;
+import java.util.List;
 
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.channel.ChannelClient;
@@ -78,8 +79,6 @@ public class ChannelActivity extends AppCompatActivity {
         MessageListViewModel messageListViewModel = provider.get(MessageListViewModel.class);
         MessageInputViewModel messageInputViewModel = provider.get(MessageInputViewModel.class);
 
-        // TODO set custom Imgur attachment factory
-
         // Step 2 - Bind the view and ViewModels, they are loosely coupled so it's easy to customize
         MessageListHeaderViewModelBinding.bind(messageListHeaderViewModel, binding.messageListHeaderView, this);
         MessageListViewModelBinding.bind(messageListViewModel, binding.messageListView, this, true);
@@ -97,14 +96,12 @@ public class ChannelActivity extends AppCompatActivity {
             }
         });
         // Customised View Model for Messages
-        binding.messageListView.setMessageViewHolderFactory(new CustomMessageViewHolderFactory());
-
+        binding.messageListView.setMessageViewHolderFactory(new CustomMessageViewHolderFactory(mDatabase));
 
         // Step 4 - Let the message input know when we are editing a message
         // TODO: Add message filtering
-        //binding.messageInputView.setSendMessageHandler(new CustomMessageSend(mDatabase,classChannel));
+        binding.messageInputView.setSendMessageHandler(new CustomMessageSend(mDatabase,classChannel));
 
-        binding.messageListView.setRepliesEnabled(false);
         binding.messageListView.setMessageEditHandler(messageInputViewModel::postMessageToEdit);
 
         binding.messageListView.setMessageReplyHandler((parent,message)-> {
@@ -118,14 +115,6 @@ public class ChannelActivity extends AppCompatActivity {
             System.out.println(result);
         });
 
-
-
-        binding.messageInputView.setOnSendButtonClickListener(()->{
-//            List<Message> messages = classChannel.watch().execute().data().getMessages();
-//            for(Message m: messages){
-//                System.out.println("message on send listener " + m.getText());
-//            }
-        });
         // Step 5 - Handle navigate up state
         messageListViewModel.getState().observe(this, state -> {
             if (state instanceof NavigateUp) {
@@ -151,27 +140,7 @@ public class ChannelActivity extends AppCompatActivity {
             }
         });
     }
-    private static Message messageConstructor(String s, int id){
-        Message newMessage = new Message();
-        newMessage.setText(s);
-        newMessage.setId(Integer.toString(id));
-        newMessage.setCid(classChannel.getCid());
-        HashMap<String,Object> extraData = new HashMap<>();
-        extraData.put("current_votes",(double)0.0);
-        newMessage.setExtraData(extraData);
-        return newMessage;
-    }
-//    private static void printMessageList(){
-//        List<Message> messages = getLatestChannel().watch().execute().data().getMessages();
-//        System.out.println(messages.toArray().length + " messages in the channel, total_message_count " + total_message_count);
-//        for (Message m: messages){
-//            System.out.println(m.getId() + " message id in channel ");
-//            System.out.println(m.getExtraData() + " in channel " + classChannel.getId());
-//        }
-//    }
-    private static ChannelClient getLatestChannel(){
-        return ChatClient.instance().channel(classChannel.getCid());
-    }
+
 }
 
 
