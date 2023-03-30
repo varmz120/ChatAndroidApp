@@ -44,7 +44,7 @@ public class ChannelActivity extends AppCompatActivity {
     private static ChannelClient classChannel;
     private static Database mDatabase;
     private ChatClient messageClient;
-
+    private String currentCID;
     public ChannelActivity(){
         super(R.layout.activity_message);
     }
@@ -55,7 +55,7 @@ public class ChannelActivity extends AppCompatActivity {
         intent.putExtra(CID_KEY, channel.getCid());
         return intent;
     }
-
+    public String getCurrentCID(){return currentCID;}
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +67,7 @@ public class ChannelActivity extends AppCompatActivity {
 
 
         String cid = getIntent().getStringExtra(CID_KEY);
+        System.out.println("printing cid"+cid);
         if (cid == null) {
             throw new IllegalStateException("Specifying a channel id is required when starting ChannelActivity");
         }
@@ -168,7 +169,7 @@ public class ChannelActivity extends AppCompatActivity {
         };
         binding.messageListHeaderView.setBackButtonClickListener(backHandler);
         // Customised View Model for Messages
-        binding.messageListView.setMessageViewHolderFactory(new CustomMessageViewHolderFactory());
+        binding.messageListView.setMessageViewHolderFactory(new CustomMessageViewHolderFactory(mDatabase));
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -211,6 +212,19 @@ public class ChannelActivity extends AppCompatActivity {
     private static ChannelClient getLatestChannel(){
         return ChatClient.instance().channel(classChannel.getCid());
     }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) { //saving instance
+        // Save the user's current game state.
+        savedInstanceState.putString(getIntent().getStringExtra(CID_KEY),currentCID);
+        // Always call the superclass so it can save the view hierarchy state.
+        System.out.println("saved");
+        super.onSaveInstanceState(savedInstanceState);
+    }
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        // Always call the superclass so it can restore the view hierarchy.
+        super.onRestoreInstanceState(savedInstanceState);
+        // Restore state members from saved instance.
+        System.out.println("restored");
+        currentCID = savedInstanceState.getString(getIntent().getStringExtra(CID_KEY));
+    }
 }
-
-

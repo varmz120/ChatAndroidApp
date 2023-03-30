@@ -16,29 +16,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.loginpage.databinding.ActivityMessageBinding;
-import com.getstream.sdk.chat.adapter.MessageListItem;
+import com.example.loginpage.utility.CustomReplyViewHolderFactory;
+
 import com.getstream.sdk.chat.viewmodel.MessageInputViewModel;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.Mode.Normal;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.Mode.Thread;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.State.NavigateUp;
-import com.example.loginpage.databinding.ActivityMessageBinding;
-import com.example.loginpage.utility.CustomMessageViewHolderFactory;
+
 import com.example.loginpage.utility.Database;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import io.getstream.chat.android.client.ChatClient;
-import io.getstream.chat.android.client.api.models.QueryChannelRequest;
-import io.getstream.chat.android.client.api.models.querysort.QuerySortByField;
 import io.getstream.chat.android.client.channel.ChannelClient;
-import io.getstream.chat.android.client.models.Channel;
 import io.getstream.chat.android.client.models.Message;
-import io.getstream.chat.android.ui.message.composer.viewmodel.MessageComposerViewModel;
-import io.getstream.chat.android.ui.message.input.MessageInputView;
 import io.getstream.chat.android.ui.message.input.viewmodel.MessageInputViewModelBinding;
-import io.getstream.chat.android.ui.message.list.MessageListView;
 import io.getstream.chat.android.ui.message.list.header.MessageListHeaderView;
 import io.getstream.chat.android.ui.message.list.header.viewmodel.MessageListHeaderViewModel;
 import io.getstream.chat.android.ui.message.list.header.viewmodel.MessageListHeaderViewModelBinding;
@@ -56,18 +46,8 @@ public class ThreadActivity extends AppCompatActivity {
         mDatabase = database;
         final Intent intent = new Intent(context, ThreadActivity.class);
         intent.putExtra(CID_KEY, channel.getCid());
-
-        //System.out.println("get extras here");
-        //System.out.println(intent.getExtras());
         return intent;
     }
-    /*public static Intent newIntent(Context context, ChannelClient channel, Database database) {
-        classChannel = channel;
-        mDatabase = database;
-        final Intent intent = new Intent(context, ChannelActivity.class);
-        intent.putExtra(CID_KEY, channel.getCid());
-        return intent;
-    }*/
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,7 +93,7 @@ public class ThreadActivity extends AppCompatActivity {
             }
         });
         // Customised View Model for Messages
-        binding.messageListView.setMessageViewHolderFactory(new CustomMessageViewHolderFactory());
+        binding.messageListView.setMessageViewHolderFactory(new CustomReplyViewHolderFactory(mDatabase));
 
 
         // Step 4 - Let the message input know when we are editing a message
@@ -132,11 +112,7 @@ public class ThreadActivity extends AppCompatActivity {
             System.out.println(result);
         });
         binding.messageInputView.setOnSendButtonClickListener(()->{
-            /*// TODO Logic handling for when a message is sent
-            ArrayList<Message> channelMessages = (ArrayList<Message>) classChannel.getMessages();
-            for(Message m: channelMessages){
-                System.out.println(m);
-            }*/
+
         });
         // Step 5 - Handle navigate up state
         messageListViewModel.getState().observe(this, state -> {
