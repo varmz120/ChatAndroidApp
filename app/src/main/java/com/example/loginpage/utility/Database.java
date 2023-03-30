@@ -23,6 +23,7 @@ public class Database {
    private final String databaseName = "d-project-8fd93-default-rtdb";
    private final String databaseRegion = "asia-southeast1";
    private FirebaseDatabase database;
+   private DatabaseReference baseReference;
    private final String MESSAGES = "messages";
    private final String UP_VOTES = "up_votes";
    private final String USERS_IN_UPVOTES = "users";
@@ -33,8 +34,7 @@ public class Database {
       // writing task
       try{
          if(database == null) throw new Exception("Database object is null! Unable to send message");
-         DatabaseReference databaseReference = database.getReference();
-         databaseReference.child(channelId).child(MESSAGES).child(message.getId()).setValue(message).onSuccessTask((dataSnapShot)->{
+         baseReference.child(channelId).child(MESSAGES).child(message.getId()).setValue(message).onSuccessTask((dataSnapShot)->{
             System.out.println("Send message: " + dataSnapShot);
             return null;
          });
@@ -44,27 +44,19 @@ public class Database {
    }
    public Task<DataSnapshot> getMessage(String channelId, String messageId){
       // reading task
-      DatabaseReference dr = database.getReference();
-      return dr.child(channelId).child(MESSAGES).child(messageId).get();
+      return baseReference.child(channelId).child(MESSAGES).child(messageId).get();
    }
-   public void upVoteMessage(String messageId, String userId){
-      // writing task
-      try{
-         if(database == null) throw new Exception("Database object is null! Unable to send message");
-         DatabaseReference databaseReference = database.getReference();
-         databaseReference.child(UP_VOTES).child(messageId).setValue(userId);
-      }catch (Exception e){
-         System.out.println("ERROR UPVOTING A MESSAGE WITH ID " + messageId + " --> " + e);
-      }
+   public Task<Void> upVoteMessage(String channelId, String messageId,int votes){
+      return baseReference.child(channelId).child(MESSAGES).child(messageId).child("extraData").child("vote_count").setValue(votes);
    }
-   public int getVoteCount(String messageId){
-      DatabaseReference databaseReference = database.getReference();
-      return ((String[]) Objects.requireNonNull(databaseReference.child(UP_VOTES).child(messageId).get().getResult().getValue())).length;
+   public Task<DataSnapshot> getVoteCount(String channelId, String messageId){
+      return baseReference.child(channelId).child(MESSAGES).child(messageId).child("extraData").child("vote_count").get();
    }
    public void connect(){
       try{
          String referenceId = "https://d-project-8fd93-default-rtdb.asia-southeast1.firebasedatabase.app/";
          database = FirebaseDatabase.getInstance(referenceId);
+         baseReference = database.getReference();
       } catch (Exception e){
          System.out.println("Error connecting to database: " + e);
       }
