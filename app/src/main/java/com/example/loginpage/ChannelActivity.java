@@ -62,7 +62,7 @@ public class ChannelActivity extends AppCompatActivity {
         // Step 0 - inflate binding
         ActivityMessageBinding binding = ActivityMessageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        binding.messageListHeaderView.setTitle(classChannel.getChannelId());
         String cid = getIntent().getStringExtra(CID_KEY);
         if (cid == null) {
             throw new IllegalStateException("Specifying a channel id is required when starting ChannelActivity");
@@ -84,6 +84,7 @@ public class ChannelActivity extends AppCompatActivity {
         MessageListViewModelBinding.bind(messageListViewModel, binding.messageListView, this, true);
         MessageInputViewModelBinding.bind(messageInputViewModel, binding.messageInputView, this);
 
+
         // Step 3 - Let both MessageListHeaderView and MessageInputView know when we open a thread
         messageListViewModel.getMode().observe(this, mode -> {
             if (mode instanceof Thread) {
@@ -99,7 +100,6 @@ public class ChannelActivity extends AppCompatActivity {
         binding.messageListView.setMessageViewHolderFactory(new CustomMessageViewHolderFactory(mDatabase));
 
         // Step 4 - Let the message input know when we are editing a message
-        // TODO: Add message filtering
         binding.messageInputView.setSendMessageHandler(new CustomMessageSend(mDatabase,classChannel));
 
         binding.messageListView.setMessageEditHandler(messageInputViewModel::postMessageToEdit);
