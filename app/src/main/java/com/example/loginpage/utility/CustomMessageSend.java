@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.channel.ChannelClient;
 import io.getstream.chat.android.client.models.Attachment;
+import io.getstream.chat.android.client.models.ChannelInfo;
 import io.getstream.chat.android.client.models.Message;
 import io.getstream.chat.android.ui.message.input.MessageInputView;
 import kotlin.Pair;
@@ -19,6 +20,7 @@ import kotlin.Pair;
 public class CustomMessageSend implements MessageInputView.MessageSendHandler {
    Database mDatabase;
    ChannelClient classChannel;
+   public CustomMessageSend(){}
    public CustomMessageSend(Database database, ChannelClient channelClient){
       mDatabase = database;
       classChannel = channelClient;
@@ -44,6 +46,8 @@ public class CustomMessageSend implements MessageInputView.MessageSendHandler {
       message.setUser(Objects.requireNonNull(client.getCurrentUser()));
       HashMap<String,Object> extraData = new HashMap<>();
       extraData.put("vote_count",0);
+      extraData.put("reply_count",0);
+      extraData.put("channel_id",classChannel.getChannelId());
       message.setExtraData(extraData);
       return message;
    }

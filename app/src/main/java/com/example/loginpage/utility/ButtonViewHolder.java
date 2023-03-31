@@ -44,8 +44,9 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
    public void bindData(@NonNull MessageListItem.MessageItem messageItem, @Nullable MessageListItemPayloadDiff messageListItemPayloadDiff) {
       Message msg = messageItem.getMessage();
       binding.message.setText(msg.getText());
+      String channelId = (String) msg.getExtraData().get("channel_id");
       
-      mDatabase.getVoteCount("message_room",msg.getId()).onSuccessTask(dataSnapshot -> {
+      mDatabase.getVoteCount(channelId,msg.getId()).onSuccessTask(dataSnapshot -> {
          if(dataSnapshot.exists()){
             Object up_vote_count = dataSnapshot.getValue();
             binding.upVoteButton.setText(up_vote_count.toString());
@@ -62,7 +63,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             int current_votes = Integer.parseInt(upVoteButton.getText().toString());
             //int current_votes = (int) double_type_votes;
             int added_votes = current_votes + 1;
-            mDatabase.upVoteMessage("message_room",msg.getId(),added_votes).onSuccessTask(new SuccessContinuation<Void, Object>() {
+            mDatabase.upVoteMessage(channelId,msg.getId(),added_votes).onSuccessTask(new SuccessContinuation<Void, Object>() {
 
                @NonNull
                @Override
@@ -80,15 +81,14 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       binding.message.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
-
-            System.out.println(messageItem.getMessage().getId());
-
             ChatClient client = ChatClient.instance(); //gets client instance
-            ChannelClient channelClient = client.channel("messaging", messageItem.getMessage().getId()); //uses client instance to make channel
+            String messageId = msg.getId();
+            String newChannelId = channelId + "_" + messageId; // important to keep track of parent page for database
+            ChannelClient channelClient = client.channel("messaging", newChannelId); //uses client instance to make channel
             Intent myintent = ThreadActivity.newIntent(getContext(),channelClient,mDatabase); //initialises intent
-            myintent.putExtra("messageid",messageItem.getMessage().getId()); //puts message id
+            myintent.putExtra("messageid",newChannelId); //puts message id
             view.getContext().startActivity(myintent); //starts activity
-            System.out.println(" Channel started successfully ");
+            System.out.println(" Reply channel with ID: " + newChannelId +" started successfully ");
          }
 
 
