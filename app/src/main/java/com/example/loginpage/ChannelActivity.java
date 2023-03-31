@@ -25,8 +25,6 @@ import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.Mode.Norma
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.Mode.Thread;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.State.NavigateUp;
 
-import java.util.HashMap;
-import java.util.List;
 
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.channel.ChannelClient;
@@ -126,7 +124,7 @@ public class ChannelActivity extends AppCompatActivity {
         MessageListHeaderView.OnClickListener backHandler = () -> {
             Intent int1 = new Intent(ChannelActivity.this,HomePage.class);
             Bundle b = new Bundle();
-            b.putString("username","Admin");
+            b.putString("username",ChatClient.instance().getCurrentUser().getName());
             int1.putExtras(b);
             startActivity(int1);
             messageListViewModel.onEvent(MessageListViewModel.Event.BackButtonPressed.INSTANCE);

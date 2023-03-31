@@ -24,9 +24,14 @@ public class Database {
    private final String databaseRegion = "asia-southeast1";
    private FirebaseDatabase database;
    private DatabaseReference baseReference;
+   private DatabaseReference channelReference;
+   private final String CHANNELS = "Channels";
    private final String MESSAGES = "messages";
-   private final String UP_VOTES = "up_votes";
+   private final String REPLIES = "Replies";
+   private final String EXTRA_DATA = "extraData";
    private final String USERS_IN_UPVOTES = "users";
+   private final String VOTE_COUNT = "vote_count";
+   private final String REPLY_COUNT = "reply_count";
    public Database(){
       connect();
    }
@@ -34,7 +39,7 @@ public class Database {
       // writing task
       try{
          if(database == null) throw new Exception("Database object is null! Unable to send message");
-         baseReference.child(channelId).child(MESSAGES).child(message.getId()).setValue(message).onSuccessTask((dataSnapShot)->{
+         channelReference.child(channelId).child(MESSAGES).child(message.getId()).setValue(message).onSuccessTask((dataSnapShot)->{
             System.out.println("Send message: " + dataSnapShot);
             return null;
          });
@@ -44,19 +49,41 @@ public class Database {
    }
    public Task<DataSnapshot> getMessage(String channelId, String messageId){
       // reading task
-      return baseReference.child(channelId).child(MESSAGES).child(messageId).get();
+      return channelReference.child(channelId).child(MESSAGES).child(messageId).get();
    }
    public Task<Void> upVoteMessage(String channelId, String messageId,int votes){
-      return baseReference.child(channelId).child(MESSAGES).child(messageId).child("extraData").child("vote_count").setValue(votes);
+      return getExtraDataForMessage(channelId,messageId).child(VOTE_COUNT).setValue(votes);
+   }
+   public Task<Void> upVoteReply(String channelId, String replyId, int votes){
+      return channelReference.child(channelId).child(REPLIES).child(replyId).child(EXTRA_DATA).child(VOTE_COUNT).setValue(votes);
    }
    public Task<DataSnapshot> getVoteCount(String channelId, String messageId){
-      return baseReference.child(channelId).child(MESSAGES).child(messageId).child("extraData").child("vote_count").get();
+      return getExtraDataForMessage(channelId,messageId).child(VOTE_COUNT).get();
+   }
+   public Task<DataSnapshot> getReplyCountForMessage(String channelId, String messageId){
+      return getExtraDataForMessage(channelId,messageId).child(REPLY_COUNT).get();
+   }
+   public Task<Void> updateReplyCountForMessage(String channelId, String messageId,int newCount){
+      return getExtraDataForMessage(channelId,messageId).child(REPLY_COUNT).setValue(newCount);
+   }
+   public DatabaseReference getExtraDataForMessage(String channelId, String messageId){
+      return channelReference.child(channelId).child(MESSAGES).child(messageId).child(EXTRA_DATA);
+   }
+   public Task<DataSnapshot> getReplyUpVoteCount(String channelId,String replyId){
+      return channelReference.child(channelId).child(REPLIES).child(replyId).child(EXTRA_DATA).child(VOTE_COUNT).get();
+   }
+   public Task<Void> setChannel(String channelId){
+      return channelReference.child(channelId).setValue("");
+   }
+   public Task<Void> sendReply(String channelId_messageId, Message reply){
+      return channelReference.child(channelId_messageId).child(REPLIES).child(reply.getId()).setValue(reply);
    }
    public void connect(){
       try{
          String referenceId = "https://d-project-8fd93-default-rtdb.asia-southeast1.firebasedatabase.app/";
          database = FirebaseDatabase.getInstance(referenceId);
          baseReference = database.getReference();
+         channelReference = baseReference.child(CHANNELS);
       } catch (Exception e){
          System.out.println("Error connecting to database: " + e);
       }

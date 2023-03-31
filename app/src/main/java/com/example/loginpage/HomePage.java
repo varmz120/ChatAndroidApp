@@ -7,7 +7,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.loginpage.utility.Database;
+import com.google.android.gms.tasks.SuccessContinuation;
+import com.google.android.gms.tasks.Task;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.lang.reflect.Member;
@@ -66,9 +69,6 @@ public class HomePage extends AppCompatActivity {
          public void onClick(View view) {
             start_client();
             registerUser(username);
-//            Intent int1 = new Intent(HomePage.this,ChannelPage.class);
-//            int1.putExtra("username",username);
-//            startActivity(int1);
          }
       });
 
@@ -126,16 +126,9 @@ public class HomePage extends AppCompatActivity {
 
    private void startChannel(){
       try{
-         ChannelClient channelClient = client.channel("livestream", "message_room");
-         // testing delete functionality
-//         channelClient.delete().enqueue(result -> {
-//            if(result.isError()) System.out.println("Error deleting channel: " + result);
-//            else{
-//               System.out.println("Successfully deleted channel: "+result);
-//            }
-//
-//         });
-         startActivity(ChannelActivity.newIntent(this,channelClient,mDatabase));
+         String channelId = "messageRoom";
+         ChannelClient channelClient = client.channel("livestream", channelId);
+         startActivity(ChannelActivity.newIntent(HomePage.this,channelClient,mDatabase));
          System.out.println(" Channel started successfully ");
 
       } catch (Exception e){
@@ -145,7 +138,6 @@ public class HomePage extends AppCompatActivity {
    }
 
    private void join_channel(){
-//      ChannelClient channelClient = client.channel("messaging", "message_room");
       try{
 
          User user = new User();
