@@ -12,8 +12,10 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import io.getstream.chat.android.client.models.Message;
+import io.getstream.chat.android.ui.message.list.MessageListView;
 import io.getstream.chat.android.ui.message.list.adapter.BaseMessageItemViewHolder;
 import io.getstream.chat.android.ui.message.list.adapter.MessageListItemViewHolderFactory;
+import io.getstream.chat.android.ui.message.list.adapter.MessageListListenerContainer;
 
 /**
  * @author saran
@@ -23,12 +25,14 @@ import io.getstream.chat.android.ui.message.list.adapter.MessageListItemViewHold
 public class CustomMessageViewHolderFactory extends MessageListItemViewHolderFactory {
    private final int BUTTON_VIEW_HOLDER_TYPE = 1;
    private final Database mDatabase;
+   
    public int getItemViewType(@NonNull MessageListItem item){
       if(item instanceof MessageListItem.MessageItem){
          return BUTTON_VIEW_HOLDER_TYPE;
       }
       return super.getItemViewType(item);
    }
+   @Override
    public BaseMessageItemViewHolder<? extends MessageListItem> createViewHolder(@NonNull ViewGroup parentView, int viewType){
       if (viewType == BUTTON_VIEW_HOLDER_TYPE) {
          return new ButtonViewHolder(parentView, AttachedButtonBinding.inflate(LayoutInflater.from(parentView.getContext()), parentView, false),mDatabase);
@@ -38,6 +42,5 @@ public class CustomMessageViewHolderFactory extends MessageListItemViewHolderFac
    public CustomMessageViewHolderFactory(Database database){
       this.mDatabase = database;
    }
-
 
 }
