@@ -26,6 +26,7 @@ import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.Mode.Threa
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.State.NavigateUp;
 
 import java.util.HashMap;
+import java.util.List;
 
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.channel.ChannelClient;
@@ -82,23 +83,6 @@ public class ChannelActivity extends AppCompatActivity {
         MessageListViewModel messageListViewModel = provider.get(MessageListViewModel.class);
         MessageInputViewModel messageInputViewModel = provider.get(MessageInputViewModel.class);
 
-        // TODO set custom Imgur attachment factory
-        //this one bro
-        /*binding.messageListView.setMessageReactionHandler((message,reactionType) ->{
-            Reaction reaction = new Reaction();
-            reaction.setMessageId("message-id");
-            reaction.setType("like");
-            reaction.setScore(5);
-            boolean enforceUnique = false;
-            classChannel.sendReaction(reaction, enforceUnique).enqueue(result -> {
-                if (result.isSuccess()) {
-                    Reaction sentReaction = result.data();
-                } else {
-                    System.out.println("failed reaction");
-                }
-            });
-        });*/
-
         // Step 2 - Bind the view and ViewModels, they are loosely coupled so it's easy to customize
         MessageListHeaderViewModelBinding.bind(messageListHeaderViewModel, binding.messageListHeaderView, this);
         MessageListViewModelBinding.bind(messageListViewModel, binding.messageListView, this, true);
@@ -119,15 +103,14 @@ public class ChannelActivity extends AppCompatActivity {
                 messageInputViewModel.resetThread();
             }
         });
+        
+        binding.messageListView.setMessageViewHolderFactory(new CustomMessageViewHolderFactory(mDatabase));
 
 
         // Step 4 - Let the message input know when we are editing a message
         // TODO: Add message filtering
-        //binding.messageInputView.setSendMessageHandler(new CustomMessageSend(classChannel,mDatabase));
+        binding.messageInputView.setSendMessageHandler(new CustomMessageSend(mDatabase,classChannel));
 
-        binding.messageListView.setRepliesEnabled(true);
-        binding.messageListView.setThreadsEnabled(true);
-        binding.messageListView.setEditMessageEnabled(true);
         binding.messageListView.setMessageEditHandler(messageInputViewModel::postMessageToEdit);
 
         binding.messageListView.setMessageReplyHandler((parent,message)-> {
@@ -141,16 +124,6 @@ public class ChannelActivity extends AppCompatActivity {
             System.out.println(result);
         });
 
-
-
-
-
-        binding.messageInputView.setOnSendButtonClickListener(()->{
-//            List<Message> messages = classChannel.watch().execute().data().getMessages();
-//            for(Message m: messages){
-//                System.out.println("message on send listener " + m.getText());
-//            }
-        });
         // Step 5 - Handle navigate up state
         messageListViewModel.getState().observe(this, state -> {
             if (state instanceof NavigateUp) {
@@ -178,37 +151,7 @@ public class ChannelActivity extends AppCompatActivity {
             }
         });
     }
-    /*private void startChannel(){
-        try{
-            ChannelClient channelClient = messageClient.channel("messaging", "message_room");
-//                 Map<String, Object> extraData = new HashMap<>();
-//                 extraData.put("name","");
-//                 List<String> memberIds = new LinkedList<>();
-            startActivity(ChannelActivity.newIntent(this,channelClient,mDatabase));
-            System.out.println(" Channel started successfully ");
-        } catch (Exception e){
-            System.out.println("Unable to start channel on HomePage: " + e);
-        }
 
-    }*/
-    private static Message messageConstructor(String s, int id){
-        Message newMessage = new Message();
-        newMessage.setText(s);
-        newMessage.setId(Integer.toString(id));
-        newMessage.setCid(classChannel.getCid());
-        HashMap<String,Object> extraData = new HashMap<>();
-        extraData.put("current_votes",(double)0.0);
-        newMessage.setExtraData(extraData);
-        return newMessage;
-    }
-//    private static void printMessageList(){
-//        List<Message> messages = getLatestChannel().watch().execute().data().getMessages();
-//        System.out.println(messages.toArray().length + " messages in the channel, total_message_count " + total_message_count);
-//        for (Message m: messages){
-//            System.out.println(m.getId() + " message id in channel ");
-//            System.out.println(m.getExtraData() + " in channel " + classChannel.getId());
-//        }
-//    }
     private static ChannelClient getLatestChannel(){
         return ChatClient.instance().channel(classChannel.getCid());
     }
@@ -227,4 +170,5 @@ public class ChannelActivity extends AppCompatActivity {
         System.out.println("restored");
         currentCID = savedInstanceState.getString(getIntent().getStringExtra(CID_KEY));
     }
+
 }
