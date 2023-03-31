@@ -1,13 +1,7 @@
 package com.example.loginpage.utility;
 
 import java.io.File;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,8 +14,6 @@ import kotlin.Pair;
 
 /**
  * @author saran
- * @date 27/3/2023
- */
 
 public class CustomMessageSend implements MessageInputView.MessageSendHandler {
    Database mDatabase;
@@ -75,7 +67,7 @@ public class CustomMessageSend implements MessageInputView.MessageSendHandler {
 
    @Override
    public void editMessage(@NonNull Message message, @NonNull String s) {
-
+      message.setText(s);
    }
 
 
@@ -104,4 +96,6 @@ public class CustomMessageSend implements MessageInputView.MessageSendHandler {
    public void sendToThreadWithCustomAttachments(@NonNull Message message, @NonNull String s, boolean b, @NonNull List<Attachment> list) {
 
    }
+
+
 }
