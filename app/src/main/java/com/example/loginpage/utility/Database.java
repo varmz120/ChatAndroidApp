@@ -78,6 +78,17 @@ public class Database {
    public Task<Void> sendReply(String channelId_messageId, Message reply){
       return channelReference.child(channelId_messageId).child(REPLIES).child(reply.getId()).setValue(reply);
    }
+   public Task<Void> deleteReply(String channelId_messageId, String replyId){
+      return channelReference.child(channelId_messageId).child(REPLIES).child(replyId).removeValue();
+   }
+   public Task<Void> deleteMessage(String channelId, String messageId){
+      // if a message is deleted, it's corresponding replies will be deleted as well
+      String correspondingReplyChannelId = channelId + "_" + messageId;
+      return channelReference.child(correspondingReplyChannelId).removeValue().onSuccessTask(data->{
+         channelReference.child(channelId).child(MESSAGES).child(messageId).removeValue();
+         return null;
+      });
+   }
    public void connect(){
       try{
          String referenceId = "https://d-project-8fd93-default-rtdb.asia-southeast1.firebasedatabase.app/";
