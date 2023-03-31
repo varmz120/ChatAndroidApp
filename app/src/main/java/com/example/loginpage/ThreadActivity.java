@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.loginpage.databinding.ActivityMessageBinding;
+import com.example.loginpage.utility.CustomReplySend;
 import com.example.loginpage.utility.CustomReplyViewHolderFactory;
 
 import com.getstream.sdk.chat.viewmodel.MessageInputViewModel;
@@ -57,14 +58,11 @@ public class ThreadActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         String cid = getIntent().getStringExtra(CID_KEY);
-        System.out.println(cid);
-        //String cid = getIntent().getStringExtra(CID_KEY);
         if (cid == null) {
-            throw new IllegalStateException("Specifying a channel id is required when starting ChannelActivity");
+            throw new IllegalStateException("Specifying a channel id is required when starting ThreadActivity");
         }
 
-        // Step 1 - Create three separate ViewModels for the views so it's easy
-        //          to customize them individually
+        // Create ViewModels for binding
         ViewModelProvider.Factory factory = new MessageListViewModelFactory.Builder()
                 .cid(cid)
                 .build();
@@ -74,14 +72,11 @@ public class ThreadActivity extends AppCompatActivity {
         MessageListViewModel messageListViewModel = provider.get(MessageListViewModel.class);
         MessageInputViewModel messageInputViewModel = provider.get(MessageInputViewModel.class);
 
-        // TODO set custom Imgur attachment factory
-
         // Step 2 - Bind the view and ViewModels, they are loosely coupled so it's easy to customize
         MessageListHeaderViewModelBinding.bind(messageListHeaderViewModel, binding.messageListHeaderView, this);
         MessageListViewModelBinding.bind(messageListViewModel, binding.messageListView, this, true);
         MessageInputViewModelBinding.bind(messageInputViewModel, binding.messageInputView, this);
 
-        // Step 3 - Let both MessageListHeaderView and MessageInputView know when we open a thread
         messageListViewModel.getMode().observe(this, mode -> {
             if (mode instanceof Thread) {
                 Message parentMessage = ((Thread) mode).getParentMessage();
@@ -94,27 +89,10 @@ public class ThreadActivity extends AppCompatActivity {
         });
         // Customised View Model for Messages
         binding.messageListView.setMessageViewHolderFactory(new CustomReplyViewHolderFactory(mDatabase));
-
-
-        // Step 4 - Let the message input know when we are editing a message
-        // TODO: Add message filtering
-
-        binding.messageListView.setRepliesEnabled(false);                                             //editing a message so stop replies
+        binding.messageInputView.setSendMessageHandler(new CustomReplySend(classChannel,mDatabase));
+        //editing a message so stop replies
         binding.messageListView.setMessageEditHandler(messageInputViewModel::postMessageToEdit);      //go into edit mode
-        binding.messageListView.setMessageReplyHandler((parent,message)-> {                           //specify parent and child in replyhandler
-            System.out.println(message);
-            System.out.println(parent);
-            System.out.println("Breakd point");
-            // TODO Logic handling for replies
-        });
-        binding.messageListView.setThreadStartHandler((result)->{
-            System.out.println("THREAD STARTED!");
-            System.out.println(result);
-        });
-        binding.messageInputView.setOnSendButtonClickListener(()->{
 
-        });
-        // Step 5 - Handle navigate up state
         messageListViewModel.getState().observe(this, state -> {
             if (state instanceof NavigateUp) {
                 finish();
