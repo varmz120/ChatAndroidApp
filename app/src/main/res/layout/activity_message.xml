@@ -11,7 +11,11 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:streamUiMessageListHeaderTitleTextColor="#FF0000"
+        app:streamUiMessageListHeaderDefaultLabelTextStyle="bold"
+        app:streamUiMessageListHeaderShowUserAvatar="false"
+        />
 
     <io.getstream.chat.android.ui.message.list.MessageListView
         android:id="@+id/messageListView"
@@ -20,7 +24,12 @@
         app:layout_constraintBottom_toTopOf="@+id/messageInputView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/messageListHeaderView" />
+        app:layout_constraintTop_toBottomOf="@+id/messageListHeaderView"
+        app:streamUiNewMessagesBehaviour="count_new_messages"
+        app:streamUiBackgroundColor="@color/stream_ui_accent_green"
+        app:streamUiMessageTextColorMine="@android:color/white"
+        app:streamUiMessageTextColorTheirs="@android:color/black"
+        />
 
     <io.getstream.chat.android.ui.message.input.MessageInputView
         android:id="@+id/messageInputView"

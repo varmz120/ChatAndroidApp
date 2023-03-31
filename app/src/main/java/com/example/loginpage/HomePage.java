@@ -118,7 +118,6 @@ public class HomePage extends AppCompatActivity {
          if(connectionResult.isError()) {
             System.out.println("Error connecting to client!" + connectionResult.error());
          } else {
-            User userRes = connectionResult.data().getUser();
             startChannel();
          }
               }
@@ -189,7 +188,6 @@ public class HomePage extends AppCompatActivity {
          if (result.isSuccess()) {
             Channel channel = result.data();
          } else {
-            // Handle result.error()
          }
       });
 
