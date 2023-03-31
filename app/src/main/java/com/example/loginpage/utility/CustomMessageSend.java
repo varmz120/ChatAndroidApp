@@ -1,10 +1,7 @@
 package com.example.loginpage.utility;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,31 +14,52 @@ import kotlin.Pair;
 
 /**
  * @author saran
- * @date 10/3/2023
+ * @date 31/3/2023
  */
-
-class CustomMessageSend implements MessageInputView.MessageSendHandler {
-   private ChannelClient classChannel;
-   private ArrayList<Message> mMessageArrayList;
-   CustomMessageSend(ChannelClient channelClient){
-      mMessageArrayList = new ArrayList<>();
+public class CustomMessageSend implements MessageInputView.MessageSendHandler {
+   Database mDatabase;
+   ChannelClient classChannel;
+   public CustomMessageSend(Database database, ChannelClient channelClient){
+      mDatabase = database;
+      classChannel = channelClient;
    }
-
    @Override
    public void sendMessage(@NonNull String s, @Nullable Message message) {
-      Message newMessage = constructMessage(s);
-      mMessageArrayList.add(newMessage);
-      mClient().sendMessage(classChannel.getChannelType(),classChannel.getChannelId(),newMessage).execute();
+      ChatClient client = ChatClient.instance();
+      Message message1 = construct_message(s,client);
+      mDatabase.sendMessage(classChannel.getChannelId(),message1);
+      client.sendMessage(classChannel.getChannelType(),classChannel.getChannelId(),message1,true).enqueue(result -> {
+         if(result.isSuccess()){
+            System.out.println("Message with text: " + message1.getText() + " was sent successfully");
+         } else {
+            System.out.println("Error sending message with text " + message1.getText());
+         }
+      });
    }
-
-
-   public void sendReply (@NonNull String s, @Nullable Message parentMessage){
-      Message newReply = new Message();
-      newReply.setText(s);
-      newReply.setParentId(parentMessage.getId());
-
-      mMessageArrayList.add(newReply);
-      mClient().sendMessage(classChannel.getChannelType(),classChannel.getChannelId(),newReply).execute();
+   private Message construct_message(String s,ChatClient client){
+      Message message = new Message();
+      message.setId(random_id());
+      message.setText(s);
+      message.setCid(classChannel.getCid());
+      message.setUser(Objects.requireNonNull(client.getCurrentUser()));
+      HashMap<String,Object> extraData = new HashMap<>();
+      extraData.put("vote_count",0);
+      message.setExtraData(extraData);
+      return message;
+   }
+   private String random_id(){
+      String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+              + "0123456789"
+              + "abcdefghijklmnopqrstuvxyz";
+      StringBuilder sb = new StringBuilder(8);
+      for (int i = 0; i < 8; i++) {
+         int index
+                 = (int)(AlphaNumericString.length()
+                 * Math.random());
+         sb.append(AlphaNumericString
+                 .charAt(index));
+      }
+      return sb.toString();
    }
    @Override
    public void dismissReply() {
@@ -79,17 +97,6 @@ class CustomMessageSend implements MessageInputView.MessageSendHandler {
    public void sendToThreadWithCustomAttachments(@NonNull Message message, @NonNull String s, boolean b, @NonNull List<Attachment> list) {
 
    }
-   private ChatClient mClient(){
-      return ChatClient.instance();
-   }
-   private Message constructMessage(String str){
-      Message m = new Message();
-      m.setText(str);
-      m.setCid(classChannel.getCid());
-      m.setId(Integer.toString(mMessageArrayList.size()));
-      HashMap<String,Object> extraData = new HashMap<>();
-      extraData.put("current_votes",(double)0.0);
-      m.setExtraData(extraData);
-      return m;
-   }
+
+
 }
