@@ -31,13 +31,13 @@ import io.getstream.chat.android.ui.message.list.adapter.MessageListItemPayloadD
 class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageItem> {
    AttachedButtonBinding binding;
    public Button upVoteButton;
-   private final Database database;
+   private final Database mDatabase;
    
    public ButtonViewHolder(@NonNull ViewGroup parentView, @NonNull AttachedButtonBinding binding, Database database){
       super(binding.getRoot());
       this.binding = binding;
       this.upVoteButton = binding.getRoot().findViewById(R.id.upVoteButton);
-      this.database = database;
+      this.mDatabase = database;
    }
 
    @Override
@@ -85,7 +85,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
 
             ChatClient client = ChatClient.instance(); //gets client instance
             ChannelClient channelClient = client.channel("messaging", messageItem.getMessage().getId()); //uses client instance to make channel
-            Intent myintent = ThreadActivity.newIntent(getContext(),channelClient,database); //initialises intent
+            Intent myintent = ThreadActivity.newIntent(getContext(),channelClient,mDatabase); //initialises intent
             myintent.putExtra("messageid",messageItem.getMessage().getId()); //puts message id
             view.getContext().startActivity(myintent); //starts activity
             System.out.println(" Channel started successfully ");
