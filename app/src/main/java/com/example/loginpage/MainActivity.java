@@ -24,6 +24,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.client.Client;
 import io.getstream.core.http.Token;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView Profile;
     private int counter = 5;
     private FirebaseAuth mAuth;
+    private String role;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private String userRole;
     private String api_key = "c6ys6m7794gr";
@@ -111,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                                         @Override
                                         public void onSuccess(DataSnapshot dataSnapshot) {
                                             if (dataSnapshot.exists()) {
-                                                streamUser.setRole(dataSnapshot.getValue(String.class));
+                                                role = (dataSnapshot.getValue(String.class));
                                             } else {
                                                 Log.i("firebase", "Role not found");
                                             }
@@ -126,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
                                             String connectionId = result.data().getConnectionId();
                                             Log.d("TAG","Sucessful login");
                                             Intent intent = new Intent(MainActivity.this,HomePage.class);
+                                            intent.putExtra("filler",connectionId);
                                             startActivity(intent);
                                         } else {
                                             // Handle result.error()
@@ -150,7 +153,8 @@ public class MainActivity extends AppCompatActivity {
         Register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, com.example.loginpage.Register.class);
+                Intent intent = new Intent(MainActivity.this, Register.class);
+
                 startActivity(intent);
             }
         });
