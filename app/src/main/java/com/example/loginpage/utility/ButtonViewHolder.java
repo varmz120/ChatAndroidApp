@@ -1,6 +1,8 @@
 package com.example.loginpage.utility;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -12,7 +14,11 @@ import com.getstream.sdk.chat.adapter.MessageListItem;
 import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +38,22 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
    AttachedButtonBinding binding;
    public Button upVoteButton;
    private final Database mDatabase;
+   private static final String PREF_NAME = "upvote_pref";
+   private static final String KEY_UPVOTED_IDS = "upvoted_ids";
+
+   // method to get the set of upvoted IDs from shared preference
+   private Set<String> getUpvotedIds() {
+      SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+      return preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
+   }
+
+   // method to add an ID to the set of upvoted IDs in shared preference
+   private void addUpvotedId(String id) {
+      SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+      Set<String> upvotedIds = preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
+      upvotedIds.add(id);
+      preferences.edit().putStringSet(KEY_UPVOTED_IDS, upvotedIds).apply();
+   }
    
    public ButtonViewHolder(@NonNull ViewGroup parentView, @NonNull AttachedButtonBinding binding, Database database){
       super(binding.getRoot());
@@ -45,7 +67,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       Message msg = messageItem.getMessage();
       binding.message.setText(msg.getText());
       String channelId = (String) msg.getExtraData().get("channel_id");
-      
+
       mDatabase.getVoteCount(channelId,msg.getId()).onSuccessTask(dataSnapshot -> {
          if(dataSnapshot.exists()){
             Object up_vote_count = dataSnapshot.getValue();
@@ -55,27 +77,31 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
          }
          return null;
       });
-      
+
+
       binding.upVoteButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
-            //int current_votes = Integer.parseInt(upVoteButton.getText().toString());
-            int current_votes = Integer.parseInt(upVoteButton.getText().toString());
-            //int current_votes = (int) double_type_votes;
-            int added_votes = current_votes + 1;
-            mDatabase.upVoteMessage(channelId,msg.getId(),added_votes).onSuccessTask(new SuccessContinuation<Void, Object>() {
-
-               @NonNull
-               @Override
-               public Task<Object> then(Void unused) throws Exception {
-                  System.out.println("UPVOTED SUCCESSFULLY!");
-                  return null;
-               }
-            });
-
-            //msg.getExtraData().put("up_votes",added_votes);
-            String new_votes = Integer.toString(added_votes);
-            upVoteButton.setText(new_votes);
+            String messageId = msg.getId();
+            Set<String> upvotedIds = getUpvotedIds();
+            if (!upvotedIds.contains(messageId)) {
+               int current_votes = Integer.parseInt(upVoteButton.getText().toString());
+               int added_votes = current_votes + 1;
+               mDatabase.upVoteMessage(channelId, messageId, added_votes).onSuccessTask(new SuccessContinuation<Void, Object>() {
+                  @NonNull
+                  @Override
+                  public Task<Object> then(Void unused) throws Exception {
+                     System.out.println("UPVOTED SUCCESSFULLY!");
+                     return null;
+                  }
+               });
+               String new_votes = Integer.toString(added_votes);
+               upVoteButton.setText(new_votes);
+               upVoteButton.setEnabled(false); // disable the button
+               addUpvotedId(messageId); // add the ID to the set of upvoted IDs
+            } else {
+               upVoteButton.setEnabled(false); // disable the button
+            }
          }
       });
       binding.message.setOnClickListener(new View.OnClickListener() {
