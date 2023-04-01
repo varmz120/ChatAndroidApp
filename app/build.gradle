@@ -6,7 +6,13 @@ plugins {
 android {
     namespace 'com.example.loginpage'
     compileSdk 33
-
+    sourceSets {
+        main {
+            // Set the source directories for the main source set
+            java.srcDirs = ['src/main/java']
+            res.srcDirs = ['src/main/res']
+        }
+    }
     defaultConfig {
         applicationId "com.example.loginpage"
         minSdk 21
@@ -34,6 +40,13 @@ android {
 }
 
 dependencies {
+//    implementation 'com.google.firebase:firebase-admin:8.0.1'
+    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
+    implementation 'io.getstream.client:stream-java:3.6.2'
+    implementation "io.getstream:stream-chat-android-client:5.12.0"
+    implementation "io.getstream:stream-chat-android-ui-components:5.8.2"
+    implementation "io.getstream:stream-chat-android-offline:5.11.10"
+    implementation "io.getstream:stream-chat-android-state:5.11.8"
     implementation 'com.auth0:java-jwt:3.18.1'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
@@ -44,19 +57,13 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage'
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-database'
-    implementation 'com.auth0:java-jwt:3.18.2'
+    implementation 'com.google.firebase:firebase-auth:21.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation "io.getstream:stream-chat-android-client:5.12.0"
-    implementation "io.getstream:stream-chat-android-ui-components:5.8.2"
-    //implementation "io.getstream:stream-chat-android-compose:5.11.4"
-    implementation "io.getstream:stream-chat-android-offline:5.11.10"
-    implementation "io.getstream:stream-chat-android-state:5.11.8"
     implementation "com.google.android.material:material:1.8.0"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
     implementation "androidx.activity:activity-ktx:1.6.1"
     implementation "io.coil-kt:coil:2.1.0"
-
 }

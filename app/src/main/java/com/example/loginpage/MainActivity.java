@@ -48,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private String userRole;
-    private String api_key = "akxdpvv55dsv";
-    private String secret_key = "shk4bq5vqttmrfush2e98d9d83n7bz5cwj8ws4dtxe9xby3nw8hgsr5vjmr4qcms";
+    private String api_key = "c6ys6m7794gr";
+    private String secret_key = "4mx3y6jmz23j3y347me4kpar2kwrttf9br3d86tu4sf4e84ya6j3vpqpqm7u5968";
     Client clientRef = Client.builder(api_key,secret_key).build();
 
     public MainActivity() throws MalformedURLException {
