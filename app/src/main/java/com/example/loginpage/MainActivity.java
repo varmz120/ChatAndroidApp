@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView Profile;
     private int counter = 5;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,14 +50,12 @@ public class MainActivity extends AppCompatActivity {
                 String username = Name.getText().toString();
                 String password = Password.getText().toString();
                 if(validated(username,password)){
-                    //String user_chat_token = "wg8ebbdfv74pkrfaqstha627gs3s96s7smr7ehwseaep5v5sn2z56gn5e9auuwhn";
-
                     Bundle b = new Bundle();
                     b.putString("username",username);
                     Intent intent = new Intent(MainActivity.this, HomePage.class);
                     intent.putExtras(b);
                     startActivity(intent);
-                };
+                }
             }
         });
     }
@@ -80,53 +79,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
 
-    }
-    public EditText getName() {
-        return Name;
-    }
-
-    public void setName(EditText name) {
-        Name = name;
-    }
-
-    public EditText getPassword() {
-        return Password;
-    }
-
-    public void setPassword(EditText password) {
-        Password = password;
-    }
-
-    public TextView getInfo() {
-        return Info;
-    }
-
-    public void setInfo(TextView info) {
-        Info = info;
-    }
-
-    public Button getLogin() {
-        return Login;
-    }
-
-    public void setLogin(Button login) {
-        Login = login;
-    }
-
-    public ImageView getProfile() {
-        return Profile;
-    }
-
-    public void setProfile(ImageView profile) {
-        Profile = profile;
-    }
-
-    public int getCounter() {
-        return counter;
-    }
-
-    public void setCounter(int counter) {
-        this.counter = counter;
     }
 
 }
