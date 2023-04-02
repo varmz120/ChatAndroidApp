@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">1D_Project</string>
+    <string-array name="role">
+        <item>Student</item>
+        <item>TA</item>
+        <item>Professor</item>
+    </string-array>
 </resources>
