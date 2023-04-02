@@ -40,6 +40,10 @@ public class Database {
    public Database(){
       connect();
    }
+   public void storeDetails(String userId, String username,String selectedRole) {
+      baseReference.child("users").child(userId).child("username").setValue(username);
+      baseReference.child("users").child(userId).child("role").setValue(selectedRole);
+   }
    public void sendMessage(String channelId, Message message){
       // writing task
       try{

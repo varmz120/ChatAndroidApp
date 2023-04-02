@@ -7,11 +7,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.loginpage.utility.Database;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -20,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class Register extends AppCompatActivity {
+    private Spinner Role;
     private Button Student;
     private Button TA;
     private Button Professor;
@@ -29,7 +34,10 @@ public class Register extends AppCompatActivity {
     private String Password;
     private String confirmPassword;
     private TextView roleView;
-    String selectedRole = "";
+    private String selectedRole = "";
+    private ArrayAdapter<CharSequence> adapter;
+    private Database mDatabase;
+
 
     private static Integer userid = 0;
 
@@ -37,36 +45,25 @@ public class Register extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        Student = (Button) findViewById(R.id.student);
-        TA = (Button) findViewById(R.id.ta);
-        Professor = (Button) findViewById(R.id.prof);
+        Role = (Spinner) findViewById(R.id.spinnerRole);
         Register = (Button) findViewById(R.id.register);
-        roleView = (TextView) findViewById(R.id.role);
+        //roleView = (TextView) findViewById(R.id.role);
         Back = (Button) findViewById(R.id.back);
+        mDatabase = new Database();
+
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
-
-        Student.setOnClickListener(new View.OnClickListener() {
+        adapter= ArrayAdapter.createFromResource(this, R.array.role, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+        Role.setAdapter(adapter);
+        Role.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View view) {
-                selectedRole = "Student";
-                roleView.setText(selectedRole);
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedRole = parent.getItemAtPosition(position).toString();
+                //Toast.makeText(getApplicationContext(), "Selected: " + selectedText, Toast.LENGTH_SHORT).show();
             }
-        });
-
-        TA.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                selectedRole = "TA";
-                roleView.setText(selectedRole);
-            }
-        });
-
-        Professor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectedRole = "Professor";
-                roleView.setText(selectedRole);
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
             }
         });
 
@@ -88,9 +85,10 @@ public class Register extends AppCompatActivity {
                                         String userId = mAuth.getCurrentUser().getUid();
 
                                         // Store additional user information in the Firebase Realtime Database
-                                        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-                                        mDatabase.child("users").child(userId).child("username").setValue(Username);
-                                        mDatabase.child("users").child(userId).child("role").setValue(roleView.getText().toString());
+//                                        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+//                                        mDatabase.child("users").child(userId).child("username").setValue(Username);
+//                                        mDatabase.child("users").child(userId).child("role").setValue(selectedRole);
+                                        mDatabase.storeDetails(userId,Username,selectedRole);
 
                                         // Show success message
                                         Toast.makeText(Register.this, "Successful Registration. Press back to return to home page", Toast.LENGTH_LONG).show();
