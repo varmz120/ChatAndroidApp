@@ -7,106 +7,42 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
     <EditText
         android:id="@+id/newusername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
         android:hint="Choose New Username"
         app:layout_constraintBottom_toTopOf="@+id/newpassword"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.486"
+        app:layout_constraintHorizontal_bias="0.476"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/student" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/newpassword"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginStart="103dp"
+        android:layout_marginEnd="108dp"
         android:hint="Choose New Password"
         app:layout_constraintBottom_toTopOf="@+id/confirmpassword"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/newusername"
-        app:layout_constraintVertical_bias="0.529" />
+        app:layout_constraintTop_toBottomOf="@+id/newusername" />
 
     <EditText
         android:id="@+id/confirmpassword"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="135dp"
+        android:layout_marginBottom="50dp"
         android:hint="Confirm Password"
         app:layout_constraintBottom_toTopOf="@+id/register"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.488"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/newpassword" />
-
-
-    <TextView
-        android:id="@+id/display"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="100dp"
-        android:layout_marginTop="215dp"
-        android:layout_marginEnd="3dp"
-        android:text="Selected role:"
-        app:layout_constraintBottom_toBottomOf="@id/role"
-        app:layout_constraintEnd_toStartOf="@+id/role"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/role"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="3dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="104dp"
-        android:layout_marginBottom="37dp"
-        android:text="Nothing Selected"
-        app:layout_constraintBottom_toTopOf="@+id/newusername"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toRightOf="@+id/display"
-        app:layout_constraintTop_toBottomOf="@+id/ta" />
-
-    <Button
-        android:id="@+id/student"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="151dp"
-        android:layout_marginBottom="72dp"
-        android:text="Student"
-        app:layout_constraintBottom_toTopOf="@+id/newusername"
-        app:layout_constraintEnd_toStartOf="@+id/ta"
-        app:layout_constraintHorizontal_bias="0.576"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/ta"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="151dp"
-        android:layout_marginBottom="72dp"
-        android:text="TA"
-        app:layout_constraintBottom_toTopOf="@+id/newusername"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/prof"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="151dp"
-        android:layout_marginBottom="72dp"
-        android:text="Professor"
-        app:layout_constraintBottom_toTopOf="@+id/newusername"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/ta"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/register"
@@ -116,7 +52,7 @@
         android:layout_marginEnd="153dp"
         android:layout_marginBottom="250dp"
         android:text="Register"
-        app:layout_constraintTop_toBottomOf="@id/confirmpassword"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
@@ -126,14 +62,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="323dp"
-        android:layout_marginBottom="103dp"
         android:text="back"
-        app:layout_constraintBottom_toTopOf="@+id/student"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
+    <Spinner
+        android:id="@+id/spinnerRole"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="98dp"
+        android:layout_marginTop="152dp"
+        android:layout_marginEnd="113dp"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="#000000"
+        android:spinnerMode="dropdown"
+        app:layout_constraintBottom_toTopOf="@+id/newusername"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
