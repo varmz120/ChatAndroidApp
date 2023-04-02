@@ -1,3 +1,5 @@
 /build
 /.idea
-/.google-services.json
+
+/google-services.json
+

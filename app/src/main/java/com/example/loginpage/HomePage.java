@@ -46,6 +46,7 @@ public class HomePage extends AppCompatActivity {
    private EditText RoomCode;
    private Bundle b;
 
+
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       b = getIntent().getExtras();
@@ -59,9 +60,11 @@ public class HomePage extends AppCompatActivity {
       Button viewMembers = findViewById(R.id.viewMembers);
       RoomCode = (EditText) findViewById(R.id.roomCode);
       String roomCode = RoomCode.getText().toString();
+      
       String userToken = b.getString("userToken");
       String uid = b.getString("uid");
       String role = b.getString("role");
+      
       TextView txtView = findViewById(R.id.usernameField);
       String welcomeMsg = "Welcome!" + role;
       txtView.setText(welcomeMsg);
@@ -105,10 +108,11 @@ public class HomePage extends AppCompatActivity {
          System.out.println("Error connecting to client object: " + e);
       }
    }
+
    private void registerUser(String uid, String role, String userToken){
       User streamUser = new User();
       streamUser.setId(uid);
-      streamUser.setRole(role);
+      //streamUser.setRole(role);
       client.connectUser(
               streamUser,userToken
       ).enqueue(connectionResult->{

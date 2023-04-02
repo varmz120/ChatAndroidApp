@@ -35,6 +35,7 @@ public class Database {
    private final String USERS_IN_UPVOTES = "users";
    private final String VOTE_COUNT = "vote_count";
    private final String REPLY_COUNT = "reply_count";
+   
    private String role;
 
    public Database(){

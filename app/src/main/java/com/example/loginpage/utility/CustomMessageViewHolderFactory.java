@@ -21,14 +21,11 @@ import io.getstream.chat.android.ui.message.list.adapter.MessageListListenerCont
  * @author saran
  * @date 25/2/2023
  */
-public class CustomMessageViewHolderFactory extends MessageListItemViewHolderFactory{
-   private int BUTTON_VIEW_HOLDER_TYPE = 1;
-   private List<Message>msgList;
-   private final Database database;
-   public CustomMessageViewHolderFactory(Database database){
-      this.database = database;
-   }
-   @Override
+
+public class CustomMessageViewHolderFactory extends MessageListItemViewHolderFactory {
+   private final int BUTTON_VIEW_HOLDER_TYPE = 1;
+   private final Database mDatabase;
+   
    public int getItemViewType(@NonNull MessageListItem item){
       if(item instanceof MessageListItem.MessageItem){
          return BUTTON_VIEW_HOLDER_TYPE;
@@ -38,9 +35,12 @@ public class CustomMessageViewHolderFactory extends MessageListItemViewHolderFac
    @Override
    public BaseMessageItemViewHolder<? extends MessageListItem> createViewHolder(@NonNull ViewGroup parentView, int viewType){
       if (viewType == BUTTON_VIEW_HOLDER_TYPE) {
-         return new ButtonViewHolder(parentView, AttachedButtonBinding.inflate(LayoutInflater.from(parentView.getContext()), parentView, false), database );
+         return new ButtonViewHolder(parentView, AttachedButtonBinding.inflate(LayoutInflater.from(parentView.getContext()), parentView, false),mDatabase);
       }
       return super.createViewHolder(parentView, viewType);
+   }
+   public CustomMessageViewHolderFactory(Database database){
+      this.mDatabase = database;
    }
 
 }
