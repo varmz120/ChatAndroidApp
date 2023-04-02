@@ -6,13 +6,7 @@ plugins {
 android {
     namespace 'com.example.loginpage'
     compileSdk 33
-    sourceSets {
-        main {
-            // Set the source directories for the main source set
-            java.srcDirs = ['src/main/java']
-            res.srcDirs = ['src/main/res']
-        }
-    }
+
     defaultConfig {
         applicationId "com.example.loginpage"
         minSdk 21
