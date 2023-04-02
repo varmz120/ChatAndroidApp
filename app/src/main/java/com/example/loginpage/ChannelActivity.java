@@ -107,17 +107,6 @@ public class ChannelActivity extends AppCompatActivity {
         binding.messageInputView.setSuggestionListViewHolderFactory(new CustomSuggestionListViewHolderFactory());
         binding.messageInputView.setSendMessageHandler(new CustomMessageSend(mDatabase,classChannel));
 
-        //binding.messageListView.setMessageEditHandler(messageInputViewModel::postMessageToEdit);
-//        binding.messageListView.setMessageReplyHandler((parent,message)-> {
-//            System.out.println(message);
-//            System.out.println(parent);
-//            System.out.println("Break point");
-//            // TODO Logic handling for replies
-//        });
-//        binding.messageListView.setThreadStartHandler((result)->{
-//            System.out.println("THREAD STARTED!");
-//            System.out.println(result);
-//        });
 
         // Step 5 - Handle navigate up state
         messageListViewModel.getState().observe(this, state -> {

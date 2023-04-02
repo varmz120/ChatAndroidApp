@@ -46,7 +46,7 @@ public class HomePage extends AppCompatActivity {
    private EditText RoomCode;
    private Bundle b;
 
-
+   private String api_key;
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       b = getIntent().getExtras();
@@ -62,6 +62,7 @@ public class HomePage extends AppCompatActivity {
       String userToken = b.getString("userToken");
       String uid = b.getString("uid");
       String role = b.getString("role");
+      api_key = b.getString("api_key");
       
       TextView txtView = findViewById(R.id.usernameField);
       String welcomeMsg = "Welcome!" + role;
@@ -92,7 +93,6 @@ public class HomePage extends AppCompatActivity {
    }
    private void start_client(){
       try {
-         String api_key = "akxdpvv55dsv";
          boolean backGroundSyncEnable = true;
          boolean userPresence = true;
          Config config = new Config(backGroundSyncEnable, userPresence);

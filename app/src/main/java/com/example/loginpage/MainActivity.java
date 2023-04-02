@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
                                     intent.putExtra("userToken", userToken.toString());
                                     intent.putExtra("uid",uid);
                                     intent.putExtra("role",role);
+                                    intent.putExtra("api_key",api_key);
                                     startActivity(intent);
 
                                 } else {
