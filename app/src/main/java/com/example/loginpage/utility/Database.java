@@ -27,6 +27,7 @@ public class Database {
    private final String databaseRegion = "asia-southeast1";
    private FirebaseDatabase database;
    private DatabaseReference baseReference;
+   private static Database sDatabase;
    private DatabaseReference channelReference;
    private final String CHANNELS = "Channels";
    private final String MESSAGES = "messages";
@@ -36,9 +37,14 @@ public class Database {
    private final String VOTE_COUNT = "vote_count";
    private final String REPLY_COUNT = "reply_count";
    
-   private String role;
+   public static Database getInstance(){
+      if(sDatabase == null){
+         sDatabase = new Database();
+      }
+      return sDatabase;
+   }
 
-   public Database(){
+   private Database(){
       connect();
    }
    public void storeDetails(String userId, String username,String selectedRole) {

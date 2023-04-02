@@ -20,10 +20,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
-public class Register extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
     private Spinner Role;
     private Button Student;
     private Button TA;
@@ -49,7 +47,7 @@ public class Register extends AppCompatActivity {
         Register = (Button) findViewById(R.id.register);
         //roleView = (TextView) findViewById(R.id.role);
         Back = (Button) findViewById(R.id.back);
-        mDatabase = new Database();
+        mDatabase = Database.getInstance();
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         adapter= ArrayAdapter.createFromResource(this, R.array.role, android.R.layout.simple_spinner_item);
@@ -74,7 +72,7 @@ public class Register extends AppCompatActivity {
                 Password = ((EditText) findViewById(R.id.newpassword)).getText().toString();
                 confirmPassword = ((EditText) findViewById(R.id.confirmpassword)).getText().toString();
                 if (selectedRole.equals("")){
-                    Toast.makeText(Register.this,"Registration failed, please select a role",Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterActivity.this,"Registration failed, please select a role",Toast.LENGTH_LONG).show();
                 } else if (Password.equalsIgnoreCase(confirmPassword) && !Password.equalsIgnoreCase("")) {
                     mAuth.createUserWithEmailAndPassword(Username, Password)
                             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -91,10 +89,10 @@ public class Register extends AppCompatActivity {
                                         mDatabase.storeDetails(userId,Username,selectedRole);
 
                                         // Show success message
-                                        Toast.makeText(Register.this, "Successful Registration. Press back to return to home page", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(RegisterActivity.this, "Successful Registration. Press back to return to home page", Toast.LENGTH_LONG).show();
                                     } else {
                                         // Show error message
-                                        Toast.makeText(Register.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                        Toast.makeText(RegisterActivity.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                                         Log.d("TAG",task.getException().getMessage());
                                     }
                                 }
@@ -102,7 +100,7 @@ public class Register extends AppCompatActivity {
 
                 } else
                 {
-                    Toast.makeText(Register.this,"Password fields are empty or do not match", Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterActivity.this,"Password fields are empty or do not match", Toast.LENGTH_LONG).show();
                 }
                 ((EditText) findViewById(R.id.newusername)).setText("");
                 ((EditText) findViewById(R.id.newpassword)).setText("");
@@ -112,7 +110,7 @@ public class Register extends AppCompatActivity {
         Back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Register.this,MainActivity.class);
+                Intent intent = new Intent(RegisterActivity.this,MainActivity.class);
                 startActivity(intent);
             }
         });

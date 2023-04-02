@@ -41,7 +41,7 @@ import io.getstream.chat.android.offline.plugin.factory.StreamOfflinePluginFacto
  */
 
 public class HomePage extends AppCompatActivity {
-   private final Database mDatabase = new Database();
+   private final Database mDatabase = Database.getInstance();
    private ChatClient client;
    private EditText RoomCode;
    private Bundle b;
@@ -52,8 +52,6 @@ public class HomePage extends AppCompatActivity {
       b = getIntent().getExtras();
       super.onCreate(savedInstanceState);
       setContentView(R.layout.homepage);
-      //TODO: Add functionality to handle join room
-      //TODO: Add functionality to let the room creator create a 4 digit code when creating room
 
       Button createRoomButton = findViewById(R.id.createRoom);
       Button submit = findViewById(R.id.roomSubmit);
@@ -72,7 +70,7 @@ public class HomePage extends AppCompatActivity {
          @Override
          public void onClick(View view) {
             start_client();
-            registerUser(uid,role,userToken);
+            registerUser(uid,userToken);
          }
       });
 
@@ -87,9 +85,7 @@ public class HomePage extends AppCompatActivity {
          @Override
          public void onClick(View view) {
             start_client();
-            registerUser(uid,role,userToken);
-            join_channel();
-
+            registerUser(uid,userToken);
          }
       });
 
@@ -109,10 +105,9 @@ public class HomePage extends AppCompatActivity {
       }
    }
 
-   private void registerUser(String uid, String role, String userToken){
+   private void registerUser(String uid, String userToken){
       User streamUser = new User();
       streamUser.setId(uid);
-      //streamUser.setRole(role);
       client.connectUser(
               streamUser,userToken
       ).enqueue(connectionResult->{

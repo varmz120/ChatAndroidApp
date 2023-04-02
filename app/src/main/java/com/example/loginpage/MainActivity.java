@@ -19,13 +19,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import io.getstream.client.Client;
 import io.getstream.core.http.Token;
-import io.getstream.chat.android.client.models.User;
 
 import java.net.MalformedURLException;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
-    private Database mDatabase;
+    private Database mDatabase = Database.getInstance();
     //new
     private EditText Name;
     private EditText Password;
@@ -58,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
         Login = (Button) findViewById(R.id.LoginButton);
         Profile = (ImageView) findViewById(R.id.imageView);
         Register = (Button) findViewById(R.id.Register);
-        mDatabase = new Database();
         Info.setText("Number of attempts remaining: 5");
 
         Login.setOnClickListener(new View.OnClickListener() {
@@ -78,9 +76,6 @@ public class MainActivity extends AppCompatActivity {
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     //storing uid for streamUser to use later on
                                     String uid = user.getUid();
-                                    // create new user
-                                    User streamUser = new User();
-                                    streamUser.setId(uid);
                                     //retrieve and set role from Database
                                     mDatabase.getRole(uid).addOnSuccessListener(dataSnapshot -> {
                                         if(dataSnapshot.exists()){
@@ -114,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         Register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, Register.class);
+                Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
 
                 startActivity(intent);
             }
@@ -122,69 +117,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private boolean validated(String userUsername, String userPassword) {
-        System.out.println(userUsername);
-        System.out.println(userPassword);
-        if ((Objects.equals(userUsername, "")) && (Objects.equals(userPassword, ""))) {
-            System.out.println("Validated!");
-            return true;
-        }
-        else {
-            counter--;
-            Info.setText("Number of attempts remaining: " + String.valueOf(counter));
-            if (counter == 0) {
-                Login.setEnabled(false);
-            }
-        }
-        return false;
-
-    }
-    public EditText getName() {
-        return Name;
-    }
-
-    public void setName(EditText name) {
-        Name = name;
-    }
-
-    public EditText getPassword() {
-        return Password;
-    }
-
-    public void setPassword(EditText password) {
-        Password = password;
-    }
-
-    public TextView getInfo() {
-        return Info;
-    }
-
-    public void setInfo(TextView info) {
-        Info = info;
-    }
-
-    public Button getLogin() {
-        return Login;
-    }
-
-    public void setLogin(Button login) {
-        Login = login;
-    }
-
-    public ImageView getProfile() {
-        return Profile;
-    }
-
-    public void setProfile(ImageView profile) {
-        Profile = profile;
-    }
-
-    public int getCounter() {
-        return counter;
-    }
-
-    public void setCounter(int counter) {
-        this.counter = counter;
-    }
+//    private boolean validated(String userUsername, String userPassword) {
+//        System.out.println(userUsername);
+//        System.out.println(userPassword);
+//        if ((Objects.equals(userUsername, "")) && (Objects.equals(userPassword, ""))) {
+//            System.out.println("Validated!");
+//            return true;
+//        }
+//        else {
+//            counter--;
+//            Info.setText("Number of attempts remaining: " + String.valueOf(counter));
+//            if (counter == 0) {
+//                Login.setEnabled(false);
+//            }
+//        }
+//        return false;
+//
+//    }
 
 }
