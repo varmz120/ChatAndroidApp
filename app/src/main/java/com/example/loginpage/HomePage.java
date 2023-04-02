@@ -43,12 +43,12 @@ import io.getstream.chat.android.offline.plugin.factory.StreamOfflinePluginFacto
 public class HomePage extends AppCompatActivity {
    private final Database mDatabase = new Database();
    private ChatClient client;
-
    private EditText RoomCode;
-
+   private Bundle b;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
+      b = getIntent().getExtras();
       super.onCreate(savedInstanceState);
       setContentView(R.layout.homepage);
       //TODO: Add functionality to handle join room
@@ -59,16 +59,17 @@ public class HomePage extends AppCompatActivity {
       Button viewMembers = findViewById(R.id.viewMembers);
       RoomCode = (EditText) findViewById(R.id.roomCode);
       String roomCode = RoomCode.getText().toString();
-      Bundle b = this.getIntent().getExtras();
-      String username = b.getString("username");
+      String userToken = b.getString("userToken");
+      String uid = b.getString("uid");
+      String role = b.getString("role");
       TextView txtView = findViewById(R.id.usernameField);
-      String welcomeMsg = "Welcome!" + username;
+      String welcomeMsg = "Welcome!" + role;
       txtView.setText(welcomeMsg);
       createRoomButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
             start_client();
-            registerUser(username);
+            registerUser(uid,role,userToken);
          }
       });
 
@@ -83,7 +84,7 @@ public class HomePage extends AppCompatActivity {
          @Override
          public void onClick(View view) {
             start_client();
-            registerUser(username);
+            registerUser(uid,role,userToken);
             join_channel();
 
          }
@@ -104,16 +105,12 @@ public class HomePage extends AppCompatActivity {
          System.out.println("Error connecting to client object: " + e);
       }
    }
-   private void registerUser(String username){
-      User user = new User();
-      //user.setId("01");
-      user.setName("sarangnirwan");
-      // TODO make algorithm to generate JWT Token
-      String tkn = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDEifQ.T8dm9FWij7dW4i0baXWFa7mb9Aixm2erfZNkij-WpWk";
-      user.setId("6969");
-      String adminToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjk2OSJ9.OZgYJ-SH7XiqRx77xrRw7uZKwWeOoqgtfHxgDSdScwk";
+   private void registerUser(String uid, String role, String userToken){
+      User streamUser = new User();
+      streamUser.setId(uid);
+      streamUser.setRole(role);
       client.connectUser(
-              user,adminToken
+              streamUser,userToken
       ).enqueue(connectionResult->{
          if(connectionResult.isError()) {
             System.out.println("Error connecting to client!" + connectionResult.error());

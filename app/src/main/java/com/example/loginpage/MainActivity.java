@@ -2,7 +2,6 @@ package com.example.loginpage;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,69 +11,54 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-//import com.example.loginpage.utility.JwtGenerator;
+import com.example.loginpage.utility.Database;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-
-import io.getstream.chat.android.client.ChatClient;
 import io.getstream.client.Client;
 import io.getstream.core.http.Token;
 import io.getstream.chat.android.client.models.User;
-import io.getstream.chat.android.offline.plugin.configuration.Config;
-import io.getstream.chat.android.offline.plugin.factory.StreamOfflinePluginFactory;
 
 import java.net.MalformedURLException;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
+    private Database mDatabase;
     //new
-    ChatClient chatClient;
     private EditText Name;
     private EditText Password;
     private TextView Info;
     private Button Login;
-    private Button Generate;
     private Button Register;
     private ImageView Profile;
     private int counter = 5;
     private FirebaseAuth mAuth;
     private String role;
-    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    private String userRole;
     private String api_key = "c6ys6m7794gr";
+
     private String secret_key = "4mx3y6jmz23j3y347me4kpar2kwrttf9br3d86tu4sf4e84ya6j3vpqpqm7u5968";
     Client clientRef = Client.builder(api_key,secret_key).build();
 
     public MainActivity() throws MalformedURLException {
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
-
     }
 
     private void init() {
-
-        Generate = (Button) findViewById(R.id.Generate);
         Name = (EditText) findViewById(R.id.ETUsername);
         Password = (EditText) findViewById(R.id.ETPassword);
         Info = (TextView) findViewById(R.id.TVAttemptsLeft);
         Login = (Button) findViewById(R.id.LoginButton);
         Profile = (ImageView) findViewById(R.id.imageView);
         Register = (Button) findViewById(R.id.Register);
+        mDatabase = new Database();
         Info.setText("Number of attempts remaining: 5");
 
         Login.setOnClickListener(new View.OnClickListener() {
@@ -88,54 +72,32 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    boolean backGroundSyncEnable = true;
-                                    boolean userPresence = true;
-                                    Config config = new Config(backGroundSyncEnable, userPresence);
-                                    StreamOfflinePluginFactory offlinePlugin = new StreamOfflinePluginFactory(config, getApplicationContext());
-                                    chatClient = new ChatClient.Builder(api_key, getApplicationContext()).withPlugin(offlinePlugin).build();
-
                                     // Sign in success, update UI with the signed-in user's information
                                     Log.d("TAG", "signInWithEmail:success");
                                     // Creating Firebase User
                                     FirebaseUser user = mAuth.getCurrentUser();
-                                    // Get the id of the user
-                                    String firebaseUserId = user.getUid();
-                                    // Send the Firebase user ID to your server to obtain a JWT token for GetStream Chat
-                                    //Token userToken = client.frontendToken(firebaseUserId);
-                                    //Log.d("TAG", userToken.toString());
                                     //storing uid for streamUser to use later on
-                                    String uid = firebaseUserId;
+                                    String uid = user.getUid();
                                     // create new user
                                     User streamUser = new User();
                                     streamUser.setId(uid);
                                     //retrieve and set role from Database
-                                    mDatabase.child("users").child(uid).child("role").get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-                                        @Override
-                                        public void onSuccess(DataSnapshot dataSnapshot) {
-                                            if (dataSnapshot.exists()) {
-                                                role = (dataSnapshot.getValue(String.class));
-                                            } else {
-                                                Log.i("firebase", "Role not found");
-                                            }
-                                        }
+                                    mDatabase.getRole(uid).addOnSuccessListener(dataSnapshot -> {
+                                        if(dataSnapshot.exists()){
+                                            role = dataSnapshot.getValue().toString();
+                                            Log.d("TAG",role);
+                                        }else{
+                                            role = "user";
+                                            Log.d("TAG",role);}
                                     });
+                                    //Generating JWT token
                                     Token userToken = clientRef.frontendToken(uid);
-//                                  Log.d("TAG", userToken.toString());
-                                    chatClient.connectUser(streamUser, userToken.toString()).enqueue(result -> {
-                                        if (result.isSuccess()) {
-                                            // Logged in
-                                            User userRes = result.data().getUser();
-                                            String connectionId = result.data().getConnectionId();
-                                            Log.d("TAG","Sucessful login");
-                                            Intent intent = new Intent(MainActivity.this,HomePage.class);
-                                            intent.putExtra("filler",connectionId);
-                                            startActivity(intent);
-                                        } else {
-                                            // Handle result.error()
-                                            Log.d("TAG",result.error().toString());
-                                            Log.d("TAG",userToken.toString());
-                                        }
-                                    });
+                                    // creating intent to pass information for creating user on to HomePage.java
+                                    Intent intent = new Intent(MainActivity.this,HomePage.class);
+                                    intent.putExtra("userToken", userToken.toString());
+                                    intent.putExtra("uid",uid);
+                                    intent.putExtra("role",role);
+                                    startActivity(intent);
 
                                 } else {
                                     // If sign in fails, display a message to the user.
@@ -144,12 +106,11 @@ public class MainActivity extends AppCompatActivity {
                                             Toast.LENGTH_SHORT).show();
                                 }
                             }
-
-                            ;
                         });
             }
         });
 
+        //Move to the register page
         Register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -170,9 +131,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             counter--;
-
             Info.setText("Number of attempts remaining: " + String.valueOf(counter));
-
             if (counter == 0) {
                 Login.setEnabled(false);
             }
