@@ -1,6 +1,9 @@
 package com.example.loginpage.utility;
 
 
+import android.provider.ContactsContract;
+import android.util.Log;
+
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
@@ -32,8 +35,15 @@ public class Database {
    private final String USERS_IN_UPVOTES = "users";
    private final String VOTE_COUNT = "vote_count";
    private final String REPLY_COUNT = "reply_count";
+   
+   private String role;
+
    public Database(){
       connect();
+   }
+   public void storeDetails(String userId, String username,String selectedRole) {
+      baseReference.child("users").child(userId).child("username").setValue(username);
+      baseReference.child("users").child(userId).child("role").setValue(selectedRole);
    }
    public void sendMessage(String channelId, Message message){
       // writing task
@@ -46,6 +56,9 @@ public class Database {
       } catch (Exception e){
          System.out.println("Error sending message with ID" + message.getId() + " to database: "+ e);
       }
+   }
+   public Task<DataSnapshot> getRole(String uid){
+      return baseReference.child("users").child(uid).child("role").get();
    }
    public Task<DataSnapshot> getMessage(String channelId, String messageId){
       // reading task
