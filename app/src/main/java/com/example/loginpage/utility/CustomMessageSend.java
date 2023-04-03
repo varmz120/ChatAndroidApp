@@ -79,12 +79,12 @@ public class CustomMessageSend implements MessageInputView.MessageSendHandler {
 
    @Override
    public void sendMessageWithAttachments(@NonNull String s, @NonNull List<? extends Pair<? extends File, String>> list, @Nullable Message message) {
-
+      System.out.println("SENDING ATTACHMENTS");
    }
 
    @Override
    public void sendMessageWithCustomAttachments(@NonNull String s, @NonNull List<Attachment> list, @Nullable Message message) {
-
+      System.out.println("SENDING CUSTOM ATTACHMENTS");
    }
 
    @Override

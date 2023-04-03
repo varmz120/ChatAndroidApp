@@ -41,34 +41,37 @@ import io.getstream.chat.android.offline.plugin.factory.StreamOfflinePluginFacto
  */
 
 public class HomePage extends AppCompatActivity {
-   private final Database mDatabase = new Database();
+   private final Database mDatabase = Database.getInstance();
    private ChatClient client;
-
    private EditText RoomCode;
+   private Bundle b;
 
-
+   private String api_key;
    @Override
    protected void onCreate(Bundle savedInstanceState) {
+      b = getIntent().getExtras();
       super.onCreate(savedInstanceState);
       setContentView(R.layout.homepage);
-      //TODO: Add functionality to handle join room
-      //TODO: Add functionality to let the room creator create a 4 digit code when creating room
 
       Button createRoomButton = findViewById(R.id.createRoom);
       Button submit = findViewById(R.id.roomSubmit);
       Button viewMembers = findViewById(R.id.viewMembers);
       RoomCode = (EditText) findViewById(R.id.roomCode);
       String roomCode = RoomCode.getText().toString();
-      Bundle b = this.getIntent().getExtras();
-      String username = b.getString("username");
+      
+      String userToken = b.getString("userToken");
+      String uid = b.getString("uid");
+      String role = b.getString("role");
+      api_key = b.getString("api_key");
+      
       TextView txtView = findViewById(R.id.usernameField);
-      String welcomeMsg = "Welcome!" + username;
+      String welcomeMsg = "Welcome!" + role;
       txtView.setText(welcomeMsg);
       createRoomButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
             start_client();
-            registerUser(username);
+            registerUser(uid,userToken);
 
          }
       });
@@ -84,16 +87,13 @@ public class HomePage extends AppCompatActivity {
          @Override
          public void onClick(View view) {
             start_client();
-            registerUser(username);
-            join_channel();
-
+            registerUser(uid,userToken);
          }
       });
 
    }
    private void start_client(){
       try {
-         String api_key = "akxdpvv55dsv";
          boolean backGroundSyncEnable = true;
          boolean userPresence = true;
          Config config = new Config(backGroundSyncEnable, userPresence);
@@ -105,16 +105,12 @@ public class HomePage extends AppCompatActivity {
          System.out.println("Error connecting to client object: " + e);
       }
    }
-   private void registerUser(String username){
-      User user = new User();
-      //user.setId("01");
-      user.setName("sarangnirwan");
-      // TODO make algorithm to generate JWT Token
-      String tkn = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDEifQ.T8dm9FWij7dW4i0baXWFa7mb9Aixm2erfZNkij-WpWk";
-      user.setId("6969");
-      String adminToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjk2OSJ9.OZgYJ-SH7XiqRx77xrRw7uZKwWeOoqgtfHxgDSdScwk";
+
+   private void registerUser(String uid, String userToken){
+      User streamUser = new User();
+      streamUser.setId(uid);
       client.connectUser(
-              user,adminToken
+              streamUser,userToken
       ).enqueue(connectionResult->{
          if(connectionResult.isError()) {
             System.out.println("Error connecting to client!" + connectionResult.error());
