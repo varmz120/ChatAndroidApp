@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.loginpage.databinding.ActivityMessageBinding;
+import com.example.loginpage.utility.BundleDeliveryMan;
 import com.example.loginpage.utility.CustomMessageSend;
 import com.example.loginpage.utility.CustomMessageViewHolderFactory;
 import com.example.loginpage.utility.CustomSuggestionListViewHolderFactory;
@@ -28,6 +29,7 @@ import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.Mode.Threa
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.State.NavigateUp;
 
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 import io.getstream.chat.android.client.ChatClient;
@@ -49,8 +51,9 @@ public class ChannelActivity extends AppCompatActivity {
     private final static String CID_KEY = "shk4bq5vqttmrfush2e98d9d83n7bz5cwj8ws4dtxe9xby3nw8hgsr5vjmr4qcms";
     private static ChannelClient classChannel;
     private static Database mDatabase;
+    private BundleDeliveryMan mBundleDeliveryMan = BundleDeliveryMan.getInstance();
 
-    public ChannelActivity(){
+    public ChannelActivity() throws MalformedURLException {
         super(R.layout.activity_message);
     }
     public static Intent newIntent(Context context, ChannelClient channel, Database database) {
@@ -117,11 +120,10 @@ public class ChannelActivity extends AppCompatActivity {
 
         // Step 6 - Handle back button behaviour correctly when you're in a thread
         MessageListHeaderView.OnClickListener backHandler = () -> {
-            Intent int1 = new Intent(ChannelActivity.this,HomePage.class);
-            Bundle b = new Bundle();
-            b.putString("username",ChatClient.instance().getCurrentUser().getName());
-            int1.putExtras(b);
-            startActivity(int1);
+            Intent intent = new Intent(ChannelActivity.this,HomePage.class);
+            Bundle b = mBundleDeliveryMan.HomePageBundle(ChatClient.instance().getCurrentUser().getId());
+            intent.putExtras(b);
+            startActivity(intent);
             messageListViewModel.onEvent(MessageListViewModel.Event.BackButtonPressed.INSTANCE);
         };
         binding.messageListHeaderView.setBackButtonClickListener(backHandler);

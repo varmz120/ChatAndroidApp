@@ -24,6 +24,7 @@ import java.util.Map;
 
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.api.models.FilterObject;
+import io.getstream.chat.android.client.api.models.QueryChannelRequest;
 import io.getstream.chat.android.client.api.models.querysort.QuerySortByField;
 import io.getstream.chat.android.client.api.models.querysort.QuerySorter;
 import io.getstream.chat.android.client.channel.ChannelClient;
@@ -42,10 +43,10 @@ import io.getstream.chat.android.offline.plugin.factory.StreamOfflinePluginFacto
 
 public class HomePage extends AppCompatActivity {
    private final Database mDatabase = Database.getInstance();
-   private ChatClient client;
+   private final ChatClient client = ChatClient.instance();
    private EditText RoomCode;
    private Bundle b;
-
+   private String LIVESTREAM;
    private String api_key;
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -61,49 +62,32 @@ public class HomePage extends AppCompatActivity {
       
       String userToken = b.getString("userToken");
       String uid = b.getString("uid");
-      String role = b.getString("role");
+      //String role = b.getString("role");
       api_key = b.getString("api_key");
-      
+      LIVESTREAM = getString(R.string.livestreamChannelType);
       TextView txtView = findViewById(R.id.usernameField);
-      String welcomeMsg = "Welcome!" + role;
-      txtView.setText(welcomeMsg);
+      //String welcomeMsg = "Welcome!" + role;
+      //txtView.setText(welcomeMsg);
       createRoomButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
-            start_client();
             registerUser(uid,userToken);
-
-         }
-      });
-
-      viewMembers.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View view) {
-            view_members(roomCode);
          }
       });
 
       submit.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
-            start_client();
+            startChannel();
             registerUser(uid,userToken);
          }
       });
-
-   }
-   private void start_client(){
-      try {
-         boolean backGroundSyncEnable = true;
-         boolean userPresence = true;
-         Config config = new Config(backGroundSyncEnable, userPresence);
-         StreamOfflinePluginFactory offlinePlugin = new StreamOfflinePluginFactory(config, getApplicationContext());
-         client = new ChatClient.Builder(api_key, getApplicationContext()).withPlugin(offlinePlugin).build();
-         System.out.println(" Connected to client side ");
-      }
-      catch (Exception e){
-         System.out.println("Error connecting to client object: " + e);
-      }
+      viewMembers.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View view) {
+            view_members(roomCode);
+         }
+      });
    }
 
    private void registerUser(String uid, String userToken){
@@ -124,7 +108,7 @@ public class HomePage extends AppCompatActivity {
    private void startChannel(){
       try{
          String channelId = "messageRoom";
-         ChannelClient channelClient = client.channel("livestream", channelId);
+         ChannelClient channelClient = client.channel(LIVESTREAM, channelId);
          startActivity(ChannelActivity.newIntent(HomePage.this,channelClient,mDatabase));
          System.out.println(" Channel started successfully ");
 

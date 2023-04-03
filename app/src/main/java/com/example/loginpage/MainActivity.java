@@ -11,12 +11,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.loginpage.utility.BundleDeliveryMan;
 import com.example.loginpage.utility.Database;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import io.getstream.chat.android.client.ChatClient;
+import io.getstream.chat.android.offline.plugin.configuration.Config;
+import io.getstream.chat.android.offline.plugin.factory.StreamOfflinePluginFactory;
 import io.getstream.client.Client;
 import io.getstream.core.http.Token;
 
@@ -24,7 +30,7 @@ import java.net.MalformedURLException;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
-    private Database mDatabase = Database.getInstance();
+    private final Database mDatabase = Database.getInstance();
     //new
     private EditText Name;
     private EditText Password;
@@ -32,13 +38,11 @@ public class MainActivity extends AppCompatActivity {
     private Button Login;
     private Button Register;
     private ImageView Profile;
-    private int counter = 5;
-    private FirebaseAuth mAuth;
-    private String role;
-    private String api_key = "c6ys6m7794gr";
 
-    private String secret_key = "4mx3y6jmz23j3y347me4kpar2kwrttf9br3d86tu4sf4e84ya6j3vpqpqm7u5968";
-    Client clientRef = Client.builder(api_key,secret_key).build();
+    private final BundleDeliveryMan mBundleDeliveryMan = BundleDeliveryMan.getInstance();
+    private FirebaseAuth mAuth;
+
+
 
     public MainActivity() throws MalformedURLException {
     }
@@ -53,12 +57,9 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         Name = (EditText) findViewById(R.id.ETUsername);
         Password = (EditText) findViewById(R.id.ETPassword);
-        Info = (TextView) findViewById(R.id.TVAttemptsLeft);
         Login = (Button) findViewById(R.id.LoginButton);
         Profile = (ImageView) findViewById(R.id.imageView);
         Register = (Button) findViewById(R.id.Register);
-        Info.setText("Number of attempts remaining: 5");
-
         Login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -76,25 +77,12 @@ public class MainActivity extends AppCompatActivity {
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     //storing uid for streamUser to use later on
                                     String uid = user.getUid();
-                                    //retrieve and set role from Database
-                                    mDatabase.getRole(uid).addOnSuccessListener(dataSnapshot -> {
-                                        if(dataSnapshot.exists()){
-                                            role = dataSnapshot.getValue().toString();
-                                            Log.d("TAG",role);
-                                        }else{
-                                            role = "user";
-                                            Log.d("TAG",role);}
-                                    });
-                                    //Generating JWT token
-                                    Token userToken = clientRef.frontendToken(uid);
                                     // creating intent to pass information for creating user on to HomePage.java
+                                    start_client();
                                     Intent intent = new Intent(MainActivity.this,HomePage.class);
-                                    intent.putExtra("userToken", userToken.toString());
-                                    intent.putExtra("uid",uid);
-                                    intent.putExtra("role",role);
-                                    intent.putExtra("api_key",api_key);
+                                    Bundle bundle = mBundleDeliveryMan.HomePageBundle(uid);
+                                    intent.putExtras(bundle);
                                     startActivity(intent);
-
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Log.w("TAG", "signInWithEmail:failure", task.getException());
@@ -116,24 +104,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    private void start_client(){
+        try {
+            boolean backGroundSyncEnable = true;
+            boolean userPresence = true;
+            Config config = new Config(backGroundSyncEnable, userPresence);
+            StreamOfflinePluginFactory offlinePlugin = new StreamOfflinePluginFactory(config, getApplicationContext());
+            new ChatClient.Builder(mBundleDeliveryMan.deliverAPI(), getApplicationContext()).withPlugin(offlinePlugin).build();
+            System.out.println(" Connected to client side ");
+        }
+        catch (Exception e){
+            System.out.println("Error connecting to client object: " + e);
+        }
+    }
 
-
-//    private boolean validated(String userUsername, String userPassword) {
-//        System.out.println(userUsername);
-//        System.out.println(userPassword);
-//        if ((Objects.equals(userUsername, "")) && (Objects.equals(userPassword, ""))) {
-//            System.out.println("Validated!");
-//            return true;
-//        }
-//        else {
-//            counter--;
-//            Info.setText("Number of attempts remaining: " + String.valueOf(counter));
-//            if (counter == 0) {
-//                Login.setEnabled(false);
-//            }
-//        }
-//        return false;
-//
-//    }
 
 }
