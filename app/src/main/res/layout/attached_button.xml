@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     >
@@ -17,11 +18,14 @@
         app:layout_constraintHorizontal_bias="0.01"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+
+
         >
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/innerLayout">
+            android:id="@+id/innerLayout"
+            android:longClickable="true">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/upVoteButton"
@@ -37,6 +41,8 @@
                 app:layout_constraintRight_toLeftOf="@+id/message"
                 android:scaleType="fitCenter"
                 />
+
+
             <TextView
                 android:layout_width="match_parent"
                 app:layout_constraintLeft_toRightOf="@+id/upVoteButton"
@@ -50,7 +56,17 @@
                 android:textSize="15sp"
                 android:layout_marginTop="10sp"
                 android:id="@id/message"
+
                 />
+
+            <Button
+                android:id="@+id/delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Button"
+                tools:layout_editor_absoluteX="293dp"
+                tools:layout_editor_absoluteY="11dp"
+                tools:ignore="MissingConstraints" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -59,3 +75,10 @@
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+
+

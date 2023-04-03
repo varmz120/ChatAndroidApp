@@ -32,12 +32,19 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
    AttachedButtonBinding binding;
    public Button upVoteButton;
    private final Database mDatabase;
+
+   public Button delete;
+
+   public ChatClient client;
+
+
    
    public ButtonViewHolder(@NonNull ViewGroup parentView, @NonNull AttachedButtonBinding binding, Database database){
       super(binding.getRoot());
       this.binding = binding;
       this.upVoteButton = binding.getRoot().findViewById(R.id.upVoteButton);
       this.mDatabase = database;
+      this.delete = binding.getRoot().findViewById(R.id.delete);
    }
 
    @Override
@@ -45,6 +52,15 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       Message msg = messageItem.getMessage();
       binding.message.setText(msg.getText());
       String channelId = (String) msg.getExtraData().get("channel_id");
+      delete.setVisibility(View.GONE);
+
+      binding.innerLayout.setOnLongClickListener(new View.OnLongClickListener() {
+         @Override
+         public boolean onLongClick(View view) {
+            delete.setVisibility(View.VISIBLE);
+            return true;
+         }
+      });
       
       mDatabase.getVoteCount(channelId,msg.getId()).onSuccessTask(dataSnapshot -> {
          if(dataSnapshot.exists()){
@@ -92,6 +108,24 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
          }
 
 
+      });
+
+      binding.delete.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View view) {
+
+
+            client.deleteMessage(messageItem.getMessage().getId(),true).enqueue(result -> {
+               if (result.isSuccess()){
+                  Message deletedMessage = result.data();
+                  System.out.println("The deleted message is: "+deletedMessage);
+               }
+               else{
+                  System.out.println("Message is not deleted");
+                  System.out.println(result);
+               }
+            });
+         }
       });
    }
 
