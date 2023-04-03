@@ -35,7 +35,7 @@ public class Database {
    private final String EXTRA_DATA = "extraData";
    private final String USERS_IN_UPVOTES = "users";
    private final String VOTE_COUNT = "vote_count";
-   private final String REPLY_COUNT = "reply_count";
+   private final String REPLY_COUNT = "RC";
    
    public static Database getInstance(){
       if(sDatabase == null){
@@ -51,17 +51,9 @@ public class Database {
       baseReference.child("users").child(userId).child("username").setValue(username);
       baseReference.child("users").child(userId).child("role").setValue(selectedRole);
    }
-   public void sendMessage(String channelId, Message message){
+   public Task<Void> sendMessage(String channelId, Message message){
       // writing task
-      try{
-         if(database == null) throw new Exception("Database object is null! Unable to send message");
-         channelReference.child(channelId).child(MESSAGES).child(message.getId()).setValue(message).onSuccessTask((dataSnapShot)->{
-            System.out.println("Send message: " + dataSnapShot);
-            return null;
-         });
-      } catch (Exception e){
-         System.out.println("Error sending message with ID" + message.getId() + " to database: "+ e);
-      }
+      return channelReference.child(channelId).child(MESSAGES).child(message.getId()).setValue(message);
    }
    public Task<DataSnapshot> getRole(String uid){
       return baseReference.child("users").child(uid).child("role").get();
@@ -103,10 +95,10 @@ public class Database {
    public Task<Void> deleteMessage(String channelId, String messageId){
       // if a message is deleted, it's corresponding replies will be deleted as well
       String correspondingReplyChannelId = channelId + "_" + messageId;
-      return channelReference.child(correspondingReplyChannelId).removeValue().onSuccessTask(data->{
-         channelReference.child(channelId).child(MESSAGES).child(messageId).removeValue();
-         return null;
+      channelReference.child(correspondingReplyChannelId).removeValue().addOnCompleteListener(data->{
+         System.out.println("Corresponding reply channel: " + correspondingReplyChannelId + " for message: " + messageId + " is deleted");
       });
+      return channelReference.child(channelId).child(MESSAGES).child(messageId).removeValue();
    }
    public void connect(){
       try{

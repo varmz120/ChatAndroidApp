@@ -9,6 +9,7 @@ import com.example.loginpage.R;
 import com.example.loginpage.ThreadActivity;
 import com.example.loginpage.databinding.AttachedButtonBinding;
 import com.getstream.sdk.chat.adapter.MessageListItem;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
 
@@ -18,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import io.getstream.chat.android.client.ChatClient;
+import io.getstream.chat.android.client.api.models.QueryChannelRequest;
 import io.getstream.chat.android.client.channel.ChannelClient;
 import io.getstream.chat.android.client.models.Message;
 import io.getstream.chat.android.ui.message.list.adapter.BaseMessageItemViewHolder;
@@ -141,17 +143,22 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                @NonNull
                @Override
                public Task<Object> then(Void unused) throws Exception {
-                  client.deleteMessage(messageItem.getMessage().getId(),true).enqueue(result -> {
+                  client.channel(msg.getCid()).deleteMessage(msg.getId(),true).enqueue(result -> {
                      if (result.isSuccess()){
                         Message deletedMessage = result.data();
-                        System.out.println("The deleted message is: "+deletedMessage);
+                        System.out.println("The deleted message is: " + deletedMessage);
                      }
                      else{
-                        System.out.println("Message is not deleted");
+                        System.out.println("Message is not deleted for messageID: " + msg.getId());
                         System.out.println(result);
                      }
                   });
                   return null;
+               }
+            }).addOnFailureListener(new OnFailureListener() {
+               @Override
+               public void onFailure(@NonNull Exception e) {
+                  System.out.println("Error deleting message from database: " + e);
                }
             });
          }

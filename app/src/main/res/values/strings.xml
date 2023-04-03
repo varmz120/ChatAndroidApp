@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">1D_Project</string>
+    <string name="messagingChannelType">messaging</string>
+    <string name="livestreamChannelType">livestream</string>
     <string-array name="role">
         <item name="Student">Student</item>
         <item name="TA">TA</item>
