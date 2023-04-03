@@ -45,9 +45,13 @@ public class CustomMessageSend implements MessageInputView.MessageSendHandler {
       message.setCid(classChannel.getCid());
       message.setUser(Objects.requireNonNull(client.getCurrentUser()));
       HashMap<String,Object> extraData = new HashMap<>();
+
       extraData.put("vote_count",0);
       extraData.put("reply_count",0);
       extraData.put("channel_id",classChannel.getChannelId());
+      extraData.put("allow_ta","false");
+      extraData.put("allow_student","false");
+
       message.setExtraData(extraData);
       return message;
    }

@@ -49,19 +49,17 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
 
    @Override
    public void bindData(@NonNull MessageListItem.MessageItem messageItem, @Nullable MessageListItemPayloadDiff messageListItemPayloadDiff) {
+      ChatClient client = ChatClient.instance();
       Message msg = messageItem.getMessage();
       binding.message.setText(msg.getText());
       String channelId = (String) msg.getExtraData().get("channel_id");
+      String uid = client.getCurrentUser().getId();
+      String allowStudent = (String) msg.getExtraData().get("allow_student");
+      String allowTA = (String) msg.getExtraData().get("allow_ta");
+      String[] roles =getContext().getResources().getStringArray(R.array.role);
+      String Student = roles[0]; String TA = roles[1]; String Professor = roles[2];
       delete.setVisibility(View.GONE);
-
-      binding.innerLayout.setOnLongClickListener(new View.OnLongClickListener() {
-         @Override
-         public boolean onLongClick(View view) {
-            delete.setVisibility(View.VISIBLE);
-            return true;
-         }
-      });
-      
+     //gets client instance
       mDatabase.getVoteCount(channelId,msg.getId()).onSuccessTask(dataSnapshot -> {
          if(dataSnapshot.exists()){
             Object up_vote_count = dataSnapshot.getValue();
@@ -70,6 +68,24 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             binding.upVoteButton.setText("0");
          }
          return null;
+      });
+      binding.innerLayout.setOnLongClickListener(new View.OnLongClickListener() {
+         @Override
+         public boolean onLongClick(View view) {
+            mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
+               if (dataSnapshot.exists()) {
+                  String userRole = dataSnapshot.getValue().toString();
+                  System.out.println("USER ROLE FROM DATABASE: " + userRole);
+                  boolean permissionGrantedProf = userRole.equals(Professor);
+                  boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
+                  if (permissionGrantedProf || permissionQuestionOwner) {
+                     delete.setVisibility(View.VISIBLE);
+                  }
+               }
+               return  null;
+                    });
+            return true;
+         }
       });
       
       binding.upVoteButton.setOnClickListener(new View.OnClickListener() {
@@ -97,32 +113,45 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       binding.message.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
-            ChatClient client = ChatClient.instance(); //gets client instance
-            String messageId = msg.getId();
-            String newChannelId = channelId + "_" + messageId; // important to keep track of parent page for database
-            ChannelClient channelClient = client.channel("messaging", newChannelId); //uses client instance to make channel
-            Intent myintent = ThreadActivity.newIntent(getContext(),channelClient,mDatabase); //initialises intent
-            myintent.putExtra("messageid",newChannelId); //puts message id
-            view.getContext().startActivity(myintent); //starts activity
-            System.out.println(" Reply channel with ID: " + newChannelId +" started successfully ");
+            mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
+               if(dataSnapshot.exists()){
+                  String userRole = dataSnapshot.getValue().toString();
+                  boolean permissionGrantedStudent = userRole.equals(Student) && allowStudent.equals("true");
+                  boolean permissionGrantedTA = userRole.equals(TA) && allowTA.equals("true");
+                  if(permissionGrantedTA || permissionGrantedStudent){
+                     String messageId = msg.getId();
+                     String newChannelId = channelId + "_" + messageId; // important to keep track of parent page for database
+                     ChannelClient channelClient = client.channel("messaging", newChannelId); //uses client instance to make channel
+                     Intent myintent = ThreadActivity.newIntent(getContext(),channelClient,mDatabase); //initialises intent
+                     myintent.putExtra("messageid",newChannelId); //puts message id
+                     view.getContext().startActivity(myintent); //starts activity
+                     System.out.println(" Reply channel with ID: " + newChannelId +" started successfully ");
+                  }
+               }
+               return null;
+            });
          }
-
 
       });
 
       binding.delete.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
-
-
-            client.deleteMessage(messageItem.getMessage().getId(),true).enqueue(result -> {
-               if (result.isSuccess()){
-                  Message deletedMessage = result.data();
-                  System.out.println("The deleted message is: "+deletedMessage);
-               }
-               else{
-                  System.out.println("Message is not deleted");
-                  System.out.println(result);
+            mDatabase.deleteMessage(channelId,msg.getId()).onSuccessTask(new SuccessContinuation<Void, Object>() {
+               @NonNull
+               @Override
+               public Task<Object> then(Void unused) throws Exception {
+                  client.deleteMessage(messageItem.getMessage().getId(),true).enqueue(result -> {
+                     if (result.isSuccess()){
+                        Message deletedMessage = result.data();
+                        System.out.println("The deleted message is: "+deletedMessage);
+                     }
+                     else{
+                        System.out.println("Message is not deleted");
+                        System.out.println(result);
+                     }
+                  });
+                  return null;
                }
             });
          }
