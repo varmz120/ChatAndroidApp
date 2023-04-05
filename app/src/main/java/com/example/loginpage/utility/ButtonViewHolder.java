@@ -58,7 +58,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       String uid = client.getCurrentUser().getId();
       String allowStudent = (String) msg.getExtraData().get("allow_student");
       String allowTA = (String) msg.getExtraData().get("allow_ta");
-      String[] roles =getContext().getResources().getStringArray(R.array.role);
+      String[] roles = getContext().getResources().getStringArray(R.array.role);
       String Student = roles[0]; String TA = roles[1]; String Professor = roles[2];
       delete.setVisibility(View.GONE);
      //gets client instance
@@ -106,8 +106,6 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                   return null;
                }
             });
-
-            //msg.getExtraData().put("up_votes",added_votes);
             String new_votes = Integer.toString(added_votes);
             upVoteButton.setText(new_votes);
          }
@@ -120,7 +118,8 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                   String userRole = dataSnapshot.getValue().toString();
                   boolean permissionGrantedStudent = userRole.equals(Student) && allowStudent.equals("true");
                   boolean permissionGrantedTA = userRole.equals(TA) && allowTA.equals("true");
-                  if(permissionGrantedTA || permissionGrantedStudent){
+                  boolean permissionProf = userRole.equals(Professor);
+                  if(permissionGrantedTA || permissionGrantedStudent || permissionProf){
                      String messageId = msg.getId();
                      String newChannelId = channelId + "_" + messageId; // important to keep track of parent page for database
                      ChannelClient channelClient = client.channel("messaging", newChannelId); //uses client instance to make channel
