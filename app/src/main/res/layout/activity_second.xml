@@ -1,6 +1,0 @@
-
-<io.getstream.chat.android.ui.message.list.MessageListView
-    android:layout_height="match_parent"
-    android:layout_width="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/messageListView"/>
