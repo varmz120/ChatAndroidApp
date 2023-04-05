@@ -55,7 +55,7 @@
         android:labelFor="@+id/roomCode"
         android:paddingHorizontal="75dp"
         android:paddingBottom="25dp"
-        android:text="****"
+        android:text=""
         android:textSize="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
