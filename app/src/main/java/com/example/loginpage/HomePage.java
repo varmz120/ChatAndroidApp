@@ -7,6 +7,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.loginpage.utility.Database;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
 
@@ -21,6 +23,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.api.models.FilterObject;
@@ -57,8 +60,7 @@ public class HomePage extends AppCompatActivity {
       Button createRoomButton = findViewById(R.id.createRoom);
       Button submit = findViewById(R.id.roomSubmit);
       Button viewMembers = findViewById(R.id.viewMembers);
-      RoomCode = (EditText) findViewById(R.id.roomCode);
-      String roomCode = RoomCode.getText().toString();
+
       
       String userToken = b.getString("userToken");
       String uid = b.getString("uid");
@@ -78,16 +80,15 @@ public class HomePage extends AppCompatActivity {
       submit.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
-            startChannel();
-            registerUser(uid,userToken);
+            registerUser_another(uid,userToken);
          }
       });
-      viewMembers.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View view) {
-            view_members(roomCode);
-         }
-      });
+//      viewMembers.setOnClickListener(new View.OnClickListener() {
+//         @Override
+//         public void onClick(View view) {
+//            view_members(roomCode);
+//         }
+//      });
    }
 
    private void registerUser(String uid, String userToken){
@@ -99,15 +100,54 @@ public class HomePage extends AppCompatActivity {
          if(connectionResult.isError()) {
             System.out.println("Error connecting to client!" + connectionResult.error());
          } else {
-            startChannel();
+            String createRoomCode=String.valueOf(randomInteger());
+            startChannel(createRoomCode);
+            System.out.println("successfully created a room with code:"+createRoomCode);
          }
               }
       );
    }
+   private void registerUser_another(String uid, String userToken){
+      User streamUser = new User();
+      streamUser.setId(uid);
+      client.connectUser(
+              streamUser,userToken
+      ).enqueue(connectionResult->{
+                 if(connectionResult.isError()) {
+                    System.out.println("Error connecting to client!" + connectionResult.error());
+                 } else {
+                    RoomCode = (EditText) findViewById(R.id.roomCode);
+                    String roomCode = RoomCode.getText().toString();
+                    String channelId = "messageRoom"+roomCode;
+                    Task<Boolean> checkChannelTask = mDatabase.checkChannel(channelId);
 
-   private void startChannel(){
+                    checkChannelTask.addOnSuccessListener(new OnSuccessListener<Boolean>() {
+                       @Override
+                       public void onSuccess(Boolean channelExists) {
+                          if (channelExists) {
+                             System.out.println("Channel exists.");
+                             startChannel(roomCode);
+                          } else {
+                             System.out.println("Channel does not exist.");
+                          }
+                       }
+                    });
+
+                    checkChannelTask.addOnFailureListener(new OnFailureListener() {
+                       @Override
+                       public void onFailure(@NonNull Exception e) {
+                          System.out.println("Error checking channel: " + e.getMessage());
+                       }
+                    });
+
+                 }
+              }
+      );
+   }
+
+   private void startChannel(String createRoomCode){
       try{
-         String channelId = "messageRoom";
+         String channelId = "messageRoom"+createRoomCode;
          ChannelClient channelClient = client.channel(LIVESTREAM, channelId);
          startActivity(ChannelActivity.newIntent(HomePage.this,channelClient,mDatabase));
          System.out.println(" Channel started successfully ");
@@ -117,6 +157,13 @@ public class HomePage extends AppCompatActivity {
       }
 
    }
+   //method to create a random 4 digit number for room creating purposes
+   private int randomInteger(){
+      Random rand = new Random();
+      int randomNumber = rand.nextInt(9000) + 1000;
+      return randomNumber;
+   }
+
 
    private void join_channel(){
       try{
