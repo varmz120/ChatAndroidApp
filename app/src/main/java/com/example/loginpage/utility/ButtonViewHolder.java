@@ -1,6 +1,7 @@
 package com.example.loginpage.utility;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -77,7 +78,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
                if (dataSnapshot.exists()) {
                   String userRole = dataSnapshot.getValue().toString();
-                  System.out.println("USER ROLE FROM DATABASE: " + userRole);
+                  Log.i("ButtonViewHolder", "User role from database:"+userRole);
                   boolean permissionGrantedProf = userRole.equals(Professor);
                   boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
                   if (permissionGrantedProf || permissionQuestionOwner) {
@@ -102,7 +103,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                @NonNull
                @Override
                public Task<Object> then(Void unused) throws Exception {
-                  System.out.println("UPVOTED SUCCESSFULLY!");
+                  Log.i("ButtonViewHolder","Upvoted successfully");
                   return null;
                }
             });
@@ -126,7 +127,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                      Intent myintent = ThreadActivity.newIntent(getContext(),channelClient,mDatabase); //initialises intent
                      myintent.putExtra("messageid",newChannelId); //puts message id
                      view.getContext().startActivity(myintent); //starts activity
-                     System.out.println(" Reply channel with ID: " + newChannelId +" started successfully ");
+                     Log.i("ButtonViewHolder"," Reply channel with ID: " + newChannelId +" started successfully ");
                   }
                }
                return null;
@@ -145,11 +146,10 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                   client.channel(msg.getCid()).deleteMessage(msg.getId(),true).enqueue(result -> {
                      if (result.isSuccess()){
                         Message deletedMessage = result.data();
-                        System.out.println("The deleted message is: " + deletedMessage);
+                        Log.i("ButtonViewHolder","The deleted message is: " + deletedMessage);
                      }
                      else{
-                        System.out.println("Message is not deleted for messageID: " + msg.getId());
-                        System.out.println(result);
+                        Log.i("ButtonViewHolder","Message is not deleted for messageID: " + msg.getId()+result);
                      }
                   });
                   return null;
@@ -157,7 +157,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             }).addOnFailureListener(new OnFailureListener() {
                @Override
                public void onFailure(@NonNull Exception e) {
-                  System.out.println("Error deleting message from database: " + e);
+                  Log.e("ButtonViewHolder","Error deleting message from database: " + e);
                }
             });
          }

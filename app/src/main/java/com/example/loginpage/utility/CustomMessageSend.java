@@ -1,5 +1,7 @@
 package com.example.loginpage.utility;
 
+import android.util.Log;
+
 import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
 
@@ -36,12 +38,12 @@ public class CustomMessageSend implements MessageInputView.MessageSendHandler {
          @NonNull
          @Override
          public Task<Object> then(Void unused) throws Exception {
-            System.out.println("Sent message to database with Id: " + message1.getId());
+            Log.d("CustomMessageSend","Sent message to database with ID:"+message1.getId());
             classChannel.sendMessage(message1).enqueue(result -> {
                if(result.isSuccess()){
-                  System.out.println("Message with text: " + message1.getText() + " was sent successfully");
+                  Log.e("CustomMessageSend","Message with text: "+ message1.getText()+" was sent successfully");
                } else {
-                  System.out.println("Error sending message with text " + message1.getText() + result);
+                  Log.e("CustomMessageSend","Error sending message with text " + message1.getText() + result);
                }
             });
             return null;
@@ -94,12 +96,12 @@ public class CustomMessageSend implements MessageInputView.MessageSendHandler {
 
    @Override
    public void sendMessageWithAttachments(@NonNull String s, @NonNull List<? extends Pair<? extends File, String>> list, @Nullable Message message) {
-      System.out.println("SENDING ATTACHMENTS");
+      Log.d("CustomMessageSend","Sending attachments");
    }
 
    @Override
    public void sendMessageWithCustomAttachments(@NonNull String s, @NonNull List<Attachment> list, @Nullable Message message) {
-      System.out.println("SENDING CUSTOM ATTACHMENTS");
+      Log.d("CustomMessageSend","Sending custom attachments");
    }
 
    @Override

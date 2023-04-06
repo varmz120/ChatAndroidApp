@@ -96,7 +96,7 @@ public class Database {
       // if a message is deleted, it's corresponding replies will be deleted as well
       String correspondingReplyChannelId = channelId + "_" + messageId;
       channelReference.child(correspondingReplyChannelId).removeValue().addOnCompleteListener(data->{
-         System.out.println("Corresponding reply channel: " + correspondingReplyChannelId + " for message: " + messageId + " is deleted");
+         Log.i("Database","Corresponding reply channel: " + correspondingReplyChannelId + " for message: " + messageId + " is deleted");
       });
       return channelReference.child(channelId).child(MESSAGES).child(messageId).removeValue();
    }
@@ -107,7 +107,7 @@ public class Database {
          baseReference = database.getReference();
          channelReference = baseReference.child(CHANNELS);
       } catch (Exception e){
-         System.out.println("Error connecting to database: " + e);
+         Log.e("Database","Error connecting to database: " + e);
       }
    }
 

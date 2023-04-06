@@ -111,10 +111,10 @@ public class MainActivity extends AppCompatActivity {
             Config config = new Config(backGroundSyncEnable, userPresence);
             StreamOfflinePluginFactory offlinePlugin = new StreamOfflinePluginFactory(config, getApplicationContext());
             new ChatClient.Builder(mBundleDeliveryMan.deliverAPI(), getApplicationContext()).withPlugin(offlinePlugin).build();
-            System.out.println(" Connected to client side ");
+            Log.i("MainActivity","Successfully connected to client");
         }
         catch (Exception e){
-            System.out.println("Error connecting to client object: " + e);
+            Log.e("MainActivity","Error connecting to client object"+e);
         }
     }
 
