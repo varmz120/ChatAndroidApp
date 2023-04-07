@@ -1,5 +1,6 @@
 package com.example.loginpage.utility;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -62,7 +63,7 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
                     @NonNull
                     @Override
                     public Task<Object> then(Void unused) throws Exception {
-                        System.out.println("REPLY UPVOTE SUCCESSFUL!");
+                        Log.i("ReplyViewHolder","Reply upvote is successful");
                         return null;
                     }
                 });

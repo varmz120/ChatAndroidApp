@@ -4,8 +4,9 @@ import android.os.Bundle;
 
 import java.net.MalformedURLException;
 
+import io.getstream.chat.android.client.ChatClient;
 import io.getstream.client.Client;
-import io.getstream.core.http.Token;
+import io.getstream.chat.android.client.channel.ChannelClient;
 
 /**
  * @author saran
@@ -33,6 +34,19 @@ public class BundleDeliveryMan {
       bundle.putString("userToken",userToken);
       bundle.putString("uid",uid);
       return bundle;
+   }
+   public ChannelClient QuestionsPageBundle(String channelType, String id){
+      return ChatClient.instance().channel(channelType,id);
+   }
+   public Bundle HistoryPageBundle(String uid){
+      Bundle b  = new Bundle();
+      b.putString("uid",uid);
+      return b;
+   }
+   public Bundle SettingsPageBundle(String uid){
+      Bundle b = new Bundle();
+      b.putString("uid",uid);
+      return b;
    }
    public String deliverAPI(){
       return api_key;

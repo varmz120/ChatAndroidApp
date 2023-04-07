@@ -1,11 +1,14 @@
 package com.example.loginpage;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.loginpage.utility.BundleDeliveryMan;
 import com.example.loginpage.utility.Database;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -16,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.lang.reflect.Member;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,7 +54,12 @@ public class HomePage extends AppCompatActivity {
    private EditText RoomCode;
    private Bundle b;
    private String LIVESTREAM;
+   private final BundleDeliveryMan mDeliveryMan = BundleDeliveryMan.getInstance();
    private String api_key;
+
+   public HomePage() throws MalformedURLException {
+   }
+
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       b = getIntent().getExtras();
@@ -59,17 +68,13 @@ public class HomePage extends AppCompatActivity {
 
       Button createRoomButton = findViewById(R.id.createRoom);
       Button submit = findViewById(R.id.roomSubmit);
-      Button viewMembers = findViewById(R.id.viewMembers);
+      Button settingsButton = findViewById(R.id.settingsButton);
 
-      
       String userToken = b.getString("userToken");
       String uid = b.getString("uid");
-      //String role = b.getString("role");
       api_key = b.getString("api_key");
       LIVESTREAM = getString(R.string.livestreamChannelType);
-      TextView txtView = findViewById(R.id.usernameField);
-      //String welcomeMsg = "Welcome!" + role;
-      //txtView.setText(welcomeMsg);
+
       createRoomButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
@@ -83,12 +88,15 @@ public class HomePage extends AppCompatActivity {
             registerUser_another(uid,userToken);
          }
       });
-//      viewMembers.setOnClickListener(new View.OnClickListener() {
-//         @Override
-//         public void onClick(View view) {
-//            view_members(roomCode);
-//         }
-//      });
+      settingsButton.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View view) {
+            Intent intentSettings = new Intent(HomePage.this,SettingActivity.class);
+            Bundle settingsPageBundle = mDeliveryMan.SettingsPageBundle(uid);
+            intentSettings.putExtras(settingsPageBundle);
+            startActivity(intentSettings);
+         }
+      });
    }
 
    private void registerUser(String uid, String userToken){
@@ -98,7 +106,7 @@ public class HomePage extends AppCompatActivity {
               streamUser,userToken
       ).enqueue(connectionResult->{
          if(connectionResult.isError()) {
-            System.out.println("Error connecting to client!" + connectionResult.error());
+            Log.e("HomePage","Error connecting to client."+connectionResult.error());
          } else {
             String createRoomCode=String.valueOf(randomInteger());
             startChannel(createRoomCode);
@@ -150,86 +158,21 @@ public class HomePage extends AppCompatActivity {
          String channelId = "messageRoom"+createRoomCode;
          ChannelClient channelClient = client.channel(LIVESTREAM, channelId);
          startActivity(ChannelActivity.newIntent(HomePage.this,channelClient,mDatabase));
-         System.out.println(" Channel started successfully ");
+         Log.i("HomePage","Channel started successfully");
 
       } catch (Exception e){
-         System.out.println("Unable to start channel on HomePage: " + e);
+         Log.e("HomePage","Unable to start channel on HomePage: " + e);
       }
 
    }
+
    //method to create a random 4 digit number for room creating purposes
    private int randomInteger(){
       Random rand = new Random();
       int randomNumber = rand.nextInt(9000) + 1000;
       return randomNumber;
-   }
-
-
-   private void join_channel(){
-      try{
-
-         ChannelClient channelClient = client.channel("livestream", "messageRoom");
-
-         channelClient.watch().enqueue(result -> {
-            if (result.isSuccess()){
-               Channel channel2 = result.data();
-               System.out.println(channel2.getMembers());
-               startActivity(ChannelActivity.newIntent(this,channelClient,mDatabase));
-            }
-            else{
-               System.out.println(result);
-            }
-         });
-
-//         User user = new User();
-//         user.setName("sarangnirwan");
-//         // TODO make algorithm to generate JWT Token
-//         String tkn = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDEifQ.T8dm9FWij7dW4i0baXWFa7mb9Aixm2erfZNkij-WpWk";
-//         user.setId("6969");
-//         String adminToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjk2OSJ9.OZgYJ-SH7XiqRx77xrRw7uZKwWeOoqgtfHxgDSdScwk";
-////         user.setId("02");
-////         user.setName("Varma");
-////         user.setId("admin");
-////         String tkn = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDIifQ.NAgqyl_yFdiymLKfHNchsgtH0a_lrz1mTSqtFLVU7UA";
-//         client.connectUser(user,adminToken).enqueue(connectionResult->{
-//                    if(connectionResult.isError()) System.out.println("Error connecting to client!" + connectionResult.error());
-//                    else{
-//                       System.out.println("success");
-//                       ChannelClient channelClient = client.channel("livestream", "message_room");
-//
-//                       client.channel("livestream","message_room").watch().enqueue(result -> {
-//                          if (result.isSuccess()){
-//                             Channel channel2 = result.data();
-//                             System.out.println(channel2.getMembers());
-//                             startActivity(ChannelActivity.newIntent(this,channelClient,mDatabase));
-//                          }
-//                          else{
-//                             System.out.println(result);
-//                          }
-//                       });
-//                    }
-//                 }
-//         );
-
-      }
-      catch(Exception e){
-         System.out.println("cannot add users" + e);
-      }
-
-
 
    }
 
-   public void view_members(String roomCode){
-      ChannelClient channelClient2 = client.channel("livestream", roomCode);
-      channelClient2.watch().enqueue(result -> {
-         if (result.isSuccess()) {
-            Channel channel = result.data();
-         } else {
-         }
-      });
-
-
-   }
 
 }

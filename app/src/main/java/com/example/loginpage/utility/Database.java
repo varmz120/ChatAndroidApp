@@ -1,11 +1,6 @@
 package com.example.loginpage.utility;
 
 
-import android.provider.ContactsContract;
-import android.util.Log;
-
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.DataSnapshot;
@@ -13,9 +8,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import io.getstream.chat.android.client.models.Message;
@@ -36,7 +28,7 @@ public class Database {
    private final String MESSAGES = "messages";
    private final String REPLIES = "Replies";
    private final String EXTRA_DATA = "extraData";
-   private final String USERS_IN_UPVOTES = "users";
+   private final String USERS = "users";
    private final String VOTE_COUNT = "vote_count";
    private final String REPLY_COUNT = "RC";
 
@@ -75,8 +67,8 @@ public class Database {
    }
 
    public void storeDetails(String userId, String username, String selectedRole) {
-      baseReference.child("users").child(userId).child("username").setValue(username);
-      baseReference.child("users").child(userId).child("role").setValue(selectedRole);
+      baseReference.child(USERS).child(userId).child("username").setValue(username);
+      baseReference.child(USERS).child(userId).child("role").setValue(selectedRole);
    }
 
    public Task<Void> sendMessage(String channelId, Message message) {
@@ -88,9 +80,9 @@ public class Database {
       return baseReference.child("users").child(uid).child("role").get();
    }
 
-   public Task<DataSnapshot> getMessage(String channelId, String messageId) {
+   public Task<DataSnapshot> getQuestionText(String channelId, String messageId) {
       // reading task
-      return channelReference.child(channelId).child(MESSAGES).child(messageId).get();
+      return channelReference.child(channelId).child(MESSAGES).child(messageId).child("text").get();
    }
 
    public Task<Void> upVoteMessage(String channelId, String messageId, int votes) {
@@ -132,14 +124,23 @@ public class Database {
    public Task<Void> deleteReply(String channelId_messageId, String replyId) {
       return channelReference.child(channelId_messageId).child(REPLIES).child(replyId).removeValue();
    }
+   public DatabaseReference getRepliesReference(String uid){
+      return baseReference.child(USERS).child(uid).child(REPLIES);
+   }
+   public Task<Void> sendReplyToHistory(String uid, Message reply){
+      return baseReference.child(USERS).child(uid).child(REPLIES).child(reply.getId()).setValue(reply);
+   }
 
    public Task<Void> deleteMessage(String channelId, String messageId) {
       // if a message is deleted, it's corresponding replies will be deleted as well
       String correspondingReplyChannelId = channelId + "_" + messageId;
-      channelReference.child(correspondingReplyChannelId).removeValue().addOnCompleteListener(data -> {
-         System.out.println("Corresponding reply channel: " + correspondingReplyChannelId + " for message: " + messageId + " is deleted");
+      channelReference.child(correspondingReplyChannelId).removeValue().addOnCompleteListener(data->{
+         Log.i("Database","Corresponding reply channel: " + correspondingReplyChannelId + " for message: " + messageId + " is deleted");
       });
       return channelReference.child(channelId).child(MESSAGES).child(messageId).removeValue();
+   }
+   public DatabaseReference getMessagesReference(String channelId){
+      return channelReference.child(channelId).child(MESSAGES);
    }
 
    public void connect() {
@@ -148,8 +149,9 @@ public class Database {
          database = FirebaseDatabase.getInstance(referenceId);
          baseReference = database.getReference();
          channelReference = baseReference.child(CHANNELS);
-      } catch (Exception e) {
-         System.out.println("Error connecting to database: " + e);
+      } catch (Exception e){
+         Log.e("Database","Error connecting to database: " + e);
+
       }
    }
 }
