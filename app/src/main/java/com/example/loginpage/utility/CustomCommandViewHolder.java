@@ -1,5 +1,7 @@
 package com.example.loginpage.utility;
 
+import android.util.Log;
+
 import com.example.loginpage.databinding.ItemCommandBinding;
 
 import androidx.annotation.NonNull;
@@ -26,7 +28,7 @@ public final class CustomCommandViewHolder extends BaseSuggestionItemViewHolder<
     @Override
     public void bindItem(@NonNull SuggestionListItem.CommandItem item) {
         String given_command = item.getCommand().getName();
-        System.out.println(item);
+        Log.d("CustomCommandViewHolder","print item:"+item);
         if(given_command.equals("giphy")){
             given_command = "Students";
         } else if (given_command.equals("mute")){

@@ -1,5 +1,7 @@
 package com.example.loginpage.utility;
 
+import android.util.Log;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
@@ -53,23 +55,23 @@ public class CustomReplySend extends CustomMessageSend{
             int count = ((Long) dataSnapshot.getValue()).intValue();
             count += 1;
             mDatabase.updateReplyCountForMessage(parentQuestionPageId,parentMessageId,count).onSuccessTask(dataSnapshot2->{
-               System.out.println("Updated reply count of message " + parentMessageId + " successfully");
+               Log.i("CustomReplySend","Updated reply count of message " + parentMessageId + " successfully");
                client.sendMessage(classChannel.getChannelType(),classChannel.getChannelId(),reply,true).enqueue(result -> {
                   if(result.isSuccess()){
-                     System.out.println("Reply with text: " + reply.getText() + " was sent successfully");
+                     Log.i("CustomReplySend","Reply with text: " + reply.getText() + " was sent successfully");
                   } else {
-                     System.out.println("Error sending reply on client with text " + reply.getText());
+                     Log.i("CustomReplySend","Error sending reply on client with text " + reply.getText());
                   }
                });
                return null;
             });
          }
-         System.out.println("Error getting reply count for message " + parentMessageId);
+         Log.e("CustomReplySend","Error getting reply count for message " + parentMessageId);
          return null;
       }).addOnFailureListener(new OnFailureListener() {
          @Override
          public void onFailure(@NonNull Exception e) {
-            System.out.println("Error getting reply count: "+e);
+            Log.e("CustomReplySend","Error getting reply count: "+e);
          }
       });
 

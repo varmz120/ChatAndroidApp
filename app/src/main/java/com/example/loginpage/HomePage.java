@@ -2,6 +2,7 @@ package com.example.loginpage;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -105,7 +106,7 @@ public class HomePage extends AppCompatActivity {
               streamUser,userToken
       ).enqueue(connectionResult->{
          if(connectionResult.isError()) {
-            System.out.println("Error connecting to client!" + connectionResult.error());
+            Log.e("HomePage","Error connecting to client."+connectionResult.error());
          } else {
             String createRoomCode=String.valueOf(randomInteger());
             startChannel(createRoomCode);
@@ -157,18 +158,20 @@ public class HomePage extends AppCompatActivity {
          String channelId = "messageRoom"+createRoomCode;
          ChannelClient channelClient = client.channel(LIVESTREAM, channelId);
          startActivity(ChannelActivity.newIntent(HomePage.this,channelClient,mDatabase));
-         System.out.println(" Channel started successfully ");
+         Log.i("HomePage","Channel started successfully");
 
       } catch (Exception e){
-         System.out.println("Unable to start channel on HomePage: " + e);
+         Log.e("HomePage","Unable to start channel on HomePage: " + e);
       }
 
    }
+
    //method to create a random 4 digit number for room creating purposes
    private int randomInteger(){
       Random rand = new Random();
       int randomNumber = rand.nextInt(9000) + 1000;
       return randomNumber;
+
    }
 
 
