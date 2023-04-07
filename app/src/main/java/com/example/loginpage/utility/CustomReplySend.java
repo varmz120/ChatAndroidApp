@@ -6,19 +6,16 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
 
-import java.io.File;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.channel.ChannelClient;
-import io.getstream.chat.android.client.models.Attachment;
 import io.getstream.chat.android.client.models.Message;
-import io.getstream.chat.android.ui.message.input.MessageInputView;
-import kotlin.Pair;
+
 
 /**
  * @author saran
@@ -35,7 +32,7 @@ public class CustomReplySend extends CustomMessageSend{
       this.mDatabase = database;
       this.classChannel = channelClient;
       String[] ids = channelClient.getChannelId().split("_");
-      parentQuestionPageId = Objects.equals(ids[0], "messageRoom") ?ids[0]:"Error";
+      parentQuestionPageId = ids[0];
       parentMessageId = ids[1];
    }
    @Override
@@ -46,6 +43,10 @@ public class CustomReplySend extends CustomMessageSend{
          @NonNull
          @Override
          public Task<Object> then(Void unused) throws Exception {
+            mDatabase.sendReplyToHistory(reply.getUser().getId(),reply).onSuccessTask(result->{
+               System.out.println("Successfully sent Reply: " + reply.getId());
+               return null;
+            });
             return null;
          }
       });
