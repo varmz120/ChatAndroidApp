@@ -27,6 +27,9 @@ import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.Mode.Normal;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.Mode.Thread;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.State.NavigateUp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 
 import java.net.MalformedURLException;
@@ -34,6 +37,7 @@ import java.util.List;
 
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.channel.ChannelClient;
+import io.getstream.chat.android.client.models.Channel;
 import io.getstream.chat.android.client.models.Message;
 import io.getstream.chat.android.client.models.User;
 import io.getstream.chat.android.ui.message.input.MessageInputView;
@@ -50,24 +54,22 @@ public class ChannelActivity extends AppCompatActivity {
 
     private final static String CID_KEY = "shk4bq5vqttmrfush2e98d9d83n7bz5cwj8ws4dtxe9xby3nw8hgsr5vjmr4qcms";
     private static ChannelClient classChannel;
-    private static Database mDatabase;
-    private BundleDeliveryMan mBundleDeliveryMan = BundleDeliveryMan.getInstance();
+    private static final Database mDatabase = Database.getInstance();
+    private final BundleDeliveryMan mBundleDeliveryMan = BundleDeliveryMan.getInstance();
 
     public ChannelActivity() throws MalformedURLException {
         super(R.layout.activity_message);
     }
-    public static Intent newIntent(Context context, ChannelClient channel, Database database) {
-        classChannel = channel;
-        mDatabase = database;
+    public static Intent newIntent(Context context, ChannelClient channelClient) {
+        classChannel = channelClient;
         final Intent intent = new Intent(context, ChannelActivity.class);
-        intent.putExtra(CID_KEY, channel.getCid());
+        intent.putExtra(CID_KEY, channelClient.getCid());
         return intent;
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // Step 0 - inflate binding
         ActivityMessageBinding binding = ActivityMessageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -77,8 +79,21 @@ public class ChannelActivity extends AppCompatActivity {
             throw new IllegalStateException("Specifying a channel id is required when starting ChannelActivity");
         }
 
-        // Step 1 - Create three separate ViewModels for the views so it's easy
-        //          to customize them individually
+//        mDatabase.getMessagesReference(classChannel.getChannelId()).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//               if(snapshot.exists()){
+//                   finish();
+//                   startActivity(getIntent());
+//               }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//                System.out.println("Error listening to change under channel in Firebase: " + error);
+//            }
+//        });
+
         ViewModelProvider.Factory factory = new MessageListViewModelFactory.Builder()
                 .cid(cid)
                 .build();

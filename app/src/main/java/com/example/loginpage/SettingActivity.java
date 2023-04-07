@@ -1,5 +1,6 @@
 package com.example.loginpage;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -8,13 +9,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.util.Log;
 
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.example.loginpage.utility.BundleDeliveryMan;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import androidx.annotation.NonNull;
+import java.net.MalformedURLException;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -25,10 +29,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SettingActivity extends AppCompatActivity {
     private MaterialButton changeUsernameButton;
+    private final BundleDeliveryMan mDeliveryMan = BundleDeliveryMan.getInstance();
     private MaterialButton changePasswordButton;
     private MaterialButton historyButton;
     private String newEmail;
     private String newPassword;
+
+
+    public SettingActivity() throws MalformedURLException {
+    }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,7 +98,10 @@ public class SettingActivity extends AppCompatActivity {
         historyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Sarang history functionality
+                Bundle historyPageBundle = mDeliveryMan.HistoryPageBundle(uid);
+                Intent goToHistory = new Intent(SettingActivity.this,HistoryActivity.class);
+                goToHistory.putExtras(historyPageBundle);
+                startActivity(goToHistory);
             }
         });
     }

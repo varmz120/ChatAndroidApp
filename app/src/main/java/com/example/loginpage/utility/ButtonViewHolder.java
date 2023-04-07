@@ -44,20 +44,6 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
    private static final String PREF_NAME = "upvote_pref";
    private static final String KEY_UPVOTED_IDS = "upvoted_ids";
 
-   // method to get the set of upvoted IDs from shared preference
-   private Set<String> getUpvotedIds() {
-      SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-      return preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
-   }
-
-   // method to add an ID to the set of upvoted IDs in shared preference
-   private void addUpvotedId(String id) {
-      SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-      Set<String> upvotedIds = preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
-      upvotedIds.add(id);
-      preferences.edit().putStringSet(KEY_UPVOTED_IDS, upvotedIds).apply();
-   }
-
 
    public Button delete;
 
@@ -83,6 +69,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       String allowTA = (String) msg.getExtraData().get("allow_ta");
       String[] roles = getContext().getResources().getStringArray(R.array.role);
       String Student = roles[0]; String TA = roles[1]; String Professor = roles[2];
+      String LIVESTREAM = getContext().getString(R.string.livestreamChannelType);
       delete.setVisibility(View.GONE);
 
       mDatabase.getVoteCount(channelId,msg.getId()).onSuccessTask(dataSnapshot -> {
@@ -150,8 +137,8 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                   if(permissionGrantedTA || permissionGrantedStudent || permissionProf){
                      String messageId = msg.getId();
                      String newChannelId = channelId + "_" + messageId; // important to keep track of parent page for database
-                     ChannelClient channelClient = client.channel("messaging", newChannelId); //uses client instance to make channel
-                     Intent myintent = ThreadActivity.newIntent(getContext(),channelClient,mDatabase); //initialises intent
+                     ChannelClient channelClient = client.channel(LIVESTREAM, newChannelId); //uses client instance to make channel
+                     Intent myintent = ThreadActivity.newIntent(getContext(),channelClient); //initialises intent
                      myintent.putExtra("messageid",newChannelId); //puts message id
                      view.getContext().startActivity(myintent); //starts activity
                      System.out.println(" Reply channel with ID: " + newChannelId +" started successfully ");
@@ -191,6 +178,18 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
          }
       });
    }
+   // method to get the set of upvoted IDs from shared preference
+   private Set<String> getUpvotedIds() {
+      SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+      return preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
+   }
 
+   // method to add an ID to the set of upvoted IDs in shared preference
+   private void addUpvotedId(String id) {
+      SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+      Set<String> upvotedIds = preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
+      upvotedIds.add(id);
+      preferences.edit().putStringSet(KEY_UPVOTED_IDS, upvotedIds).apply();
+   }
 
 }
