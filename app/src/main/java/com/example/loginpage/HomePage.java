@@ -157,7 +157,7 @@ public class HomePage extends AppCompatActivity {
       try{
          String channelId = "messageRoom"+createRoomCode;
          ChannelClient channelClient = client.channel(LIVESTREAM, channelId);
-         startActivity(ChannelActivity.newIntent(HomePage.this,channelClient,mDatabase));
+         startActivity(ChannelActivity.newIntent(HomePage.this,channelClient));
          Log.i("HomePage","Channel started successfully");
 
       } catch (Exception e){

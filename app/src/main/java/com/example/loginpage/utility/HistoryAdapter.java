@@ -30,8 +30,8 @@ public class HistoryAdapter extends FirebaseRecyclerAdapter<Message,HistoryAdapt
         holder.Reply.setText(model.getText());
         String[] channelId_messageId = model.getCid().split(":")[1].split("_");
         String channelId = channelId_messageId[0];
-        String messageId = channelId_messageId[1];
-        mDatabase.getQuestionText(channelId,messageId).onSuccessTask(dataSnapshot -> {
+        String questionId = channelId_messageId[1];
+        mDatabase.getQuestionText(channelId,questionId).onSuccessTask(dataSnapshot -> {
             if(dataSnapshot.exists()){
                 String questionText = dataSnapshot.getValue().toString();
                 holder.parentQuestion.setText(questionText);

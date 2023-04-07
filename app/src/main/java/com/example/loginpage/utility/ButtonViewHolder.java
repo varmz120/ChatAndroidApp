@@ -107,6 +107,8 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             } else {
                upVoteButton.setEnabled(false); // disable the button
             }
+         }
+      });
       binding.innerLayout.setOnLongClickListener(new View.OnLongClickListener() {
          @Override
          public boolean onLongClick(View view) {
@@ -125,7 +127,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             return true;
          }
       });
-      
+
       binding.upVoteButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
@@ -199,6 +201,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
          }
       });
    }
+
    // method to get the set of upvoted IDs from shared preference
    private Set<String> getUpvotedIds() {
       SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -214,3 +217,4 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
    }
 
 }
+
