@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
         Name = (EditText) findViewById(R.id.ETUsername);
         Password = (EditText) findViewById(R.id.ETPassword);
         Login = (Button) findViewById(R.id.LoginButton);
-        Profile = (ImageView) findViewById(R.id.imageView);
         Register = (Button) findViewById(R.id.Register);
         Login.setOnClickListener(new View.OnClickListener() {
             @Override
