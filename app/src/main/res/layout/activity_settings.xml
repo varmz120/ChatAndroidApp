@@ -6,10 +6,23 @@
     android:layout_height="match_parent"
     >
 
+    <EditText
+        android:id = "@+id/newemail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="194dp"
+        android:layout_marginTop="229dp"
+        android:layout_marginEnd="197dp"
+        app:layout_constraintBottom_toTopOf="@+id/changeUsernameButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/changePasswordButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="88dp"
         android:backgroundTint="@color/stream_ui_accent_red"
         android:text="CHANGE PASSWORD"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -53,5 +66,19 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/historyButton"
         app:layout_constraintVertical_bias="0.552" />
+
+    <EditText
+        android:id="@+id/newpassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="194dp"
+        android:layout_marginTop="229dp"
+        android:layout_marginEnd="197dp"
+        app:layout_constraintBottom_toTopOf="@+id/changePasswordButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
