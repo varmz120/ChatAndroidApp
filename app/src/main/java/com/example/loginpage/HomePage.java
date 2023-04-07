@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.lang.reflect.Member;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,7 +53,12 @@ public class HomePage extends AppCompatActivity {
    private EditText RoomCode;
    private Bundle b;
    private String LIVESTREAM;
+   private final BundleDeliveryMan mDeliveryMan = BundleDeliveryMan.getInstance();
    private String api_key;
+
+   public HomePage() throws MalformedURLException {
+   }
+
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       b = getIntent().getExtras();
@@ -65,12 +71,9 @@ public class HomePage extends AppCompatActivity {
 
       String userToken = b.getString("userToken");
       String uid = b.getString("uid");
-      //String role = b.getString("role");
       api_key = b.getString("api_key");
       LIVESTREAM = getString(R.string.livestreamChannelType);
-      TextView txtView = findViewById(R.id.usernameField);
-      //String welcomeMsg = "Welcome!" + role;
-      //txtView.setText(welcomeMsg);
+
       createRoomButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
@@ -88,9 +91,8 @@ public class HomePage extends AppCompatActivity {
          @Override
          public void onClick(View view) {
             Intent intentSettings = new Intent(HomePage.this,SettingActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putString("uid",uid);
-            intentSettings.putExtras(bundle);
+            Bundle settingsPageBundle = mDeliveryMan.SettingsPageBundle(uid);
+            intentSettings.putExtras(settingsPageBundle);
             startActivity(intentSettings);
          }
       });
