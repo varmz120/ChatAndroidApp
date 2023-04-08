@@ -1,6 +1,8 @@
 package com.example.loginpage.utility;
 
 
+import android.util.Log;
+
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.DataSnapshot;
@@ -83,6 +85,14 @@ public class Database {
    public Task<DataSnapshot> getQuestionText(String channelId, String messageId) {
       // reading task
       return channelReference.child(channelId).child(MESSAGES).child(messageId).child("text").get();
+   }
+   public Task<Void>tickPressed(String channelId, String messageId,String user){
+      return getExtraDataForMessage(channelId, messageId).child(user).setValue("true");
+
+   }
+   public Task<DataSnapshot>getTickPressed(String channelId, String messageId,String user){
+      return getExtraDataForMessage(channelId, messageId).child(user).get();
+
    }
 
    public Task<Void> upVoteMessage(String channelId, String messageId, int votes) {
