@@ -40,8 +40,8 @@ import io.getstream.chat.android.ui.message.list.adapter.MessageListItemPayloadD
 class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageItem> {
     AttachedButtonBinding binding;
     public Button upVoteButton;
-    private final Database mDatabase;
-    private ChatClient client;
+    private final Database mDatabase = Database.getInstance();
+
     public TextView message;
     public ImageButton delete;
     public ImageButton emptyTick;
@@ -63,11 +63,10 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
         preferences.edit().putStringSet(KEY_UPVOTED_IDS, upvotedIds).apply();
     }
 
-    public ReplyViewHolder(@NonNull ViewGroup parentView, @NonNull AttachedButtonBinding binding, Database database){
+    public ReplyViewHolder(@NonNull ViewGroup parentView, @NonNull AttachedButtonBinding binding){
         super(binding.getRoot());
         this.binding = binding;
         this.upVoteButton = binding.getRoot().findViewById(R.id.upVoteButton);
-        this.mDatabase = database;
         this.delete = binding.getRoot().findViewById(R.id.delete);
         this.message = binding.getRoot().findViewById(R.id.message);
         this.emptyTick = binding.getRoot().findViewById(R.id.emptyTick);
@@ -144,8 +143,8 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
                 mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
                     if (dataSnapshot.exists()) {
                         String userRole = dataSnapshot.getValue().toString();
-                        boolean permissionGrantedProf = userRole.equals("Professor");
-                        boolean permissionGrantedTA = userRole.equals("TA");
+                        boolean permissionGrantedProf = userRole.equals(Professor);
+                        boolean permissionGrantedTA = userRole.equals(TA);
                         boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
 
                         if (permissionGrantedProf) {
