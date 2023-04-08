@@ -64,6 +64,9 @@ public class CustomMessageSend implements MessageInputView.MessageSendHandler {
       extraData.put("channel_id",classChannel.getChannelId());
       extraData.put("allow_ta","false");
       extraData.put("allow_student","false");
+      extraData.put("profApproved","false");
+      extraData.put("taApproved","false");
+      extraData.put("studentApproved","false");
 
       message.setExtraData(extraData);
       return message;
