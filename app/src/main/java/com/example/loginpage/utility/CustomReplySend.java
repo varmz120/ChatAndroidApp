@@ -85,6 +85,9 @@ public class CustomReplySend extends CustomMessageSend{
       HashMap<String,Object> extraData = new HashMap<>();
       extraData.put("vote_count",0);
       extraData.put("channel_id",classChannel.getChannelId());
+      extraData.put("profApproved","false");
+      extraData.put("taApproved","false");
+      extraData.put("studentApproved","false");
       message.setExtraData(extraData);
       return message;
    }
