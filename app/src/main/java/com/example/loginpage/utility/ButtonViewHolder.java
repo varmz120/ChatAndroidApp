@@ -44,7 +44,7 @@ import io.getstream.chat.android.ui.message.list.adapter.MessageListItemPayloadD
 class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageItem> {
    AttachedButtonBinding binding;
    public Button upVoteButton;
-   private final Database mDatabase;
+   private final Database mDatabase = Database.getInstance();
    private static final String PREF_NAME = "upvote_pref";
    private static final String KEY_UPVOTED_IDS = "upvoted_ids";
 
@@ -60,11 +60,10 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
    public ImageView blueCircle;
    public ImageView greenCircle;
 
-   public ButtonViewHolder(@NonNull ViewGroup parentView, @NonNull AttachedButtonBinding binding, Database database) {
+   public ButtonViewHolder(@NonNull ViewGroup parentView, @NonNull AttachedButtonBinding binding) {
       super(binding.getRoot());
       this.binding = binding;
       this.upVoteButton = binding.getRoot().findViewById(R.id.upVoteButton);
-      this.mDatabase = database;
       this.delete = binding.getRoot().findViewById(R.id.delete);
       this.message = binding.getRoot().findViewById(R.id.message);
       this.emptyTick = binding.getRoot().findViewById(R.id.emptyTick);
@@ -104,8 +103,8 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
                if (dataSnapshot.exists()) {
                   String userRole = dataSnapshot.getValue().toString();
-                  boolean permissionGrantedProf = userRole.equals("Professor");
-                  boolean permissionGrantedTA = userRole.equals("TA");
+                  boolean permissionGrantedProf = userRole.equals(Professor);
+                  boolean permissionGrantedTA = userRole.equals(TA);
                   boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
 
                   if (permissionGrantedProf) {
@@ -115,14 +114,14 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                      yellowTick.setVisibility(View.GONE);
                   }
 
-                  if (permissionGrantedTA) {
+                  else if (permissionGrantedTA) {
                      emptyTick.setVisibility(View.GONE);
                      blueCircle.setVisibility(View.GONE);
                      greenCircle.setVisibility(View.VISIBLE);
                      yellowTick.setVisibility(View.GONE);
                   }
 
-                  if (permissionQuestionOwner) {
+                  else if (permissionQuestionOwner) {
                      emptyTick.setVisibility(View.GONE);
                      blueCircle.setVisibility(View.GONE);
                      greenCircle.setVisibility(View.GONE);
@@ -131,6 +130,33 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                }
                return null;
             });
+         }
+      });
+      binding.upVoteButton.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View view) {
+            String messageId = msg.getId();
+
+            // Contains the set of string values representing the IDs of the items that the user has upvoted.
+            Set<String> upvotedIds = getUpvotedIds();
+            if (!upvotedIds.contains(messageId)) {
+               int current_votes = Integer.parseInt(upVoteButton.getText().toString());
+               int added_votes = current_votes + 1;
+               mDatabase.upVoteMessage(channelId, messageId, added_votes).onSuccessTask(new SuccessContinuation<Void, Object>() {
+                  @NonNull
+                  @Override
+                  public Task<Object> then(Void unused) throws Exception {
+                     System.out.println("UPVOTED SUCCESSFULLY!");
+                     return null;
+                  }
+               });
+               String new_votes = Integer.toString(added_votes);
+               upVoteButton.setText(new_votes);
+               upVoteButton.setEnabled(false); // disable the button
+               addUpvotedId(messageId); // add the ID to the set of upvoted IDs
+            } else {
+               upVoteButton.setEnabled(false); // disable the button
+            }
          }
       });
 
@@ -171,27 +197,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             return true;
          }
       });
-         binding.upVoteButton.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View view) {
-            //int current_votes = Integer.parseInt(upVoteButton.getText().toString());
-            int current_votes = Integer.parseInt(upVoteButton.getText().toString());
-            //int current_votes = (int) double_type_votes;
-            int added_votes = current_votes + 1;
-            mDatabase.upVoteMessage(channelId,msg.getId(),added_votes).onSuccessTask(new SuccessContinuation<Void, Object>() {
 
-               @NonNull
-               @Override
-               public Task<Object> then(Void unused) throws Exception {
-                  Log.i("ButtonViewHolder","Upvoted successfully");
-                  return null;
-               }
-            });
-            String new_votes = Integer.toString(added_votes);
-            upVoteButton.setText(new_votes);
-
-         }
-      });
 
 
       binding.message.setOnLongClickListener(new View.OnLongClickListener() {
@@ -233,8 +239,11 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       
 
       binding.message.setOnClickListener(new View.OnClickListener() {
-             @Override
-         public boolean onClick(View view) {
+         @Override
+         public void onClick(View view) {
+            mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
+               if(dataSnapshot.exists()){
+                  String userRole = dataSnapshot.getValue().toString();
                   boolean permissionGrantedStudent = userRole.equals(Student) && allowStudent.equals("true");
                   boolean permissionGrantedTA = userRole.equals(TA) && allowTA.equals("true");
                   boolean permissionProf = userRole.equals(Professor);
@@ -245,13 +254,11 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                      Intent myintent = ThreadActivity.newIntent(getContext(),channelClient); //initialises intent
                      myintent.putExtra("messageid",newChannelId); //puts message id
                      view.getContext().startActivity(myintent); //starts activity
-                     Log.i("ButtonViewHolder"," Reply channel with ID: " + newChannelId +" started successfully ");
-
+                     System.out.println(" Reply channel with ID: " + newChannelId +" started successfully ");
                   }
                }
                return null;
             });
-            return true;
          }
       });
 
@@ -312,56 +319,6 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
    }
 
 
-      binding.message.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View view) {
-            mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
-               if (dataSnapshot.exists()) {
-                  String userRole = dataSnapshot.getValue().toString();
-                  boolean permissionGrantedStudent = userRole.equals(Student) && allowStudent.equals("true");
-                  boolean permissionGrantedTA = userRole.equals(TA) && allowTA.equals("true");
-                  boolean permissionProf = userRole.equals(Professor);
-                  if (permissionGrantedTA || permissionGrantedStudent || permissionProf) {
-                     String messageId = msg.getId();
-                     String newChannelId = channelId + "_" + messageId; // important to keep track of parent page for database
-                     ChannelClient channelClient = client.channel("messaging", newChannelId); //uses client instance to make channel
-                     Intent myintent = ThreadActivity.newIntent(getContext(), channelClient, mDatabase); //initialises intent
-                     myintent.putExtra("messageid", newChannelId); //puts message id
-                     view.getContext().startActivity(myintent); //starts activity
-                     System.out.println(" Reply channel with ID: " + newChannelId + " started successfully ");
-                  }
-               }
-               return null;
-            });
-         }
-      });
-
-      binding.upVoteButton.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View view) {
-            String messageId = msg.getId();
-
-            // Contains the set of string values representing the IDs of the items that the user has upvoted.
-            Set<String> upvotedIds = getUpvotedIds();
-            if (!upvotedIds.contains(messageId)) {
-               int current_votes = Integer.parseInt(upVoteButton.getText().toString());
-               int added_votes = current_votes + 1;
-               mDatabase.upVoteMessage(channelId, messageId, added_votes).onSuccessTask(new SuccessContinuation<Void, Object>() {
-                  @NonNull
-                  @Override
-                  public Task<Object> then(Void unused) throws Exception {
-                     System.out.println("UPVOTED SUCCESSFULLY!");
-                     return null;
-                  }
-               });
-               String new_votes = Integer.toString(added_votes);
-               upVoteButton.setText(new_votes);
-               upVoteButton.setEnabled(false); // disable the button
-               addUpvotedId(messageId); // add the ID to the set of upvoted IDs
-            } else {
-               upVoteButton.setEnabled(false); // disable the button
-            }
-         }
-      });
    }
-}
+
+
