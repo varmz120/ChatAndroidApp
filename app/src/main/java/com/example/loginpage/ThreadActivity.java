@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toolbar;
 
 import androidx.activity.OnBackPressedCallback;
@@ -64,6 +65,8 @@ public class ThreadActivity extends AppCompatActivity {
         ActivityMessageBinding binding = ActivityMessageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         Toolbar toolbar = findViewById(R.id.toolbar);
+        TextView channelTitle = findViewById(R.id.toolbar_title);
+        channelTitle.setText("Answers");
         ImageButton backButton = toolbar.findViewById(R.id.back_button);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override

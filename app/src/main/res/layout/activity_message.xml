@@ -38,7 +38,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text = "Channel Title"
+
                 android:textColor="@color/white"
                 android:textSize="@dimen/stream_ui_avatar_text_size_large"
                 android:contentInsetStart="?attr/actionBarSize" />
