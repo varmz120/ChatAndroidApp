@@ -86,6 +86,14 @@ public class Database {
       // reading task
       return channelReference.child(channelId).child(MESSAGES).child(messageId).child("text").get();
    }
+   public Task<Void>tickPressed(String channelId, String messageId,String user){
+      return getExtraDataForMessage(channelId, messageId).child(user).setValue("true");
+
+   }
+   public Task<DataSnapshot>getTickPressed(String channelId, String messageId,String user){
+      return getExtraDataForMessage(channelId, messageId).child(user).get();
+
+   }
 
    public Task<Void> upVoteMessage(String channelId, String messageId, int votes) {
       return getExtraDataForMessage(channelId, messageId).child(VOTE_COUNT).setValue(votes);
