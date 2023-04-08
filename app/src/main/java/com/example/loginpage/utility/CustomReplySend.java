@@ -56,7 +56,7 @@ public class CustomReplySend extends CustomMessageSend{
             count += 1;
             mDatabase.updateReplyCountForMessage(parentQuestionPageId,parentMessageId,count).onSuccessTask(dataSnapshot2->{
                Log.i("CustomReplySend","Updated reply count of message " + parentMessageId + " successfully");
-               client.sendMessage(classChannel.getChannelType(),classChannel.getChannelId(),reply,true).enqueue(result -> {
+               classChannel.sendMessage(reply).enqueue(result -> {
                   if(result.isSuccess()){
                      Log.i("CustomReplySend","Reply with text: " + reply.getText() + " was sent successfully");
                   } else {
