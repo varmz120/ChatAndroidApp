@@ -9,6 +9,9 @@ package com.example.loginpage;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.Toolbar;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -73,7 +76,17 @@ public class ChannelActivity extends AppCompatActivity {
         // Step 0 - inflate binding
         ActivityMessageBinding binding = ActivityMessageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        binding.messageListHeaderView.setTitle(classChannel.getChannelId());
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        ImageButton backButton = toolbar.findViewById(R.id.back_button);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ChannelActivity.this,HomePage.class);
+                Bundle b = mBundleDeliveryMan.HomePageBundle(ChatClient.instance().getCurrentUser().getId());
+                intent.putExtras(b);
+                startActivity(intent);
+            }
+        });
         String cid = getIntent().getStringExtra(CID_KEY);
         if (cid == null) {
             throw new IllegalStateException("Specifying a channel id is required when starting ChannelActivity");

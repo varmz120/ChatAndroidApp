@@ -9,6 +9,9 @@ package com.example.loginpage;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.Toolbar;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
@@ -30,6 +33,7 @@ import com.example.loginpage.utility.Database;
 
 import java.net.MalformedURLException;
 
+import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.channel.ChannelClient;
 import io.getstream.chat.android.client.models.Message;
 import io.getstream.chat.android.ui.message.input.viewmodel.MessageInputViewModelBinding;
@@ -59,7 +63,18 @@ public class ThreadActivity extends AppCompatActivity {
         // Step 0 - inflate binding
         ActivityMessageBinding binding = ActivityMessageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        ImageButton backButton = toolbar.findViewById(R.id.back_button);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String[] channelId_messageId = classChannel.getChannelId().split("_");
+                String parentChannelId = channelId_messageId[0];
+                String channelType = getString(R.string.livestreamChannelType);
+                ChannelClient channelClient = mBundleDeliveryMan.QuestionsPageBundle(channelType,parentChannelId);
+                startActivity(ChannelActivity.newIntent(ThreadActivity.this,channelClient));
+            }
+        });
         String cid = getIntent().getStringExtra(CID_KEY);
         if (cid == null) {
             throw new IllegalStateException("Specifying a channel id is required when starting ThreadActivity");
