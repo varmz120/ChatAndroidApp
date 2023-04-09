@@ -131,10 +131,6 @@ public class Database {
       return channelReference.child(channelId).child(REPLIES).child(replyId).child(EXTRA_DATA).child(VOTE_COUNT).get();
    }
 
-   public Task<Void> setChannel(String channelId) {
-      return channelReference.child(channelId).setValue("");
-   }
-
    public Task<Void> sendReply(String channelId_messageId, Message reply) {
       return channelReference.child(channelId_messageId).child(REPLIES).child(reply.getId()).setValue(reply);
    }

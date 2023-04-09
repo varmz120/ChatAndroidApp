@@ -1,7 +1,16 @@
 package com.example.loginpage.utility;
 
+import android.content.Context;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ToggleButton;
 
+import com.example.loginpage.R;
 import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
 
@@ -10,26 +19,77 @@ import java.util.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.channel.ChannelClient;
 import io.getstream.chat.android.client.models.Attachment;
-import io.getstream.chat.android.client.models.ChannelInfo;
 import io.getstream.chat.android.client.models.Message;
 import io.getstream.chat.android.ui.message.input.MessageInputView;
 import kotlin.Pair;
+
 
 /**
  * @author saran
  * @date 31/3/2023
  */
-public class CustomMessageSend implements MessageInputView.MessageSendHandler {
-   Database mDatabase;
-   ChannelClient classChannel;
-   public CustomMessageSend(){}
-   public CustomMessageSend(Database database, ChannelClient channelClient){
-      mDatabase = database;
-      classChannel = channelClient;
+public class CustomMessageSend extends ConstraintLayout implements MessageInputView.MessageSendHandler{
+   private final Database mDatabase = Database.getInstance();
+   public static ChannelClient classChannel;
+   private boolean allowTaPermission = false;
+   private boolean allowStudentPermission = false;
+
+   public CustomMessageSend(@NonNull Context context) {
+      super(context);
+      setListeners(context);
    }
+
+   public CustomMessageSend(@NonNull Context context, @Nullable AttributeSet attrs) {
+      super(context, attrs);
+      setListeners(context);
+   }
+
+   public CustomMessageSend(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+      super(context, attrs, defStyleAttr);
+      setListeners(context);
+   }
+
+   public CustomMessageSend(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+      super(context, attrs, defStyleAttr, defStyleRes);
+      setListeners(context);
+   }
+   private void setListeners(Context context){
+      LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+      View view = inflater.inflate(R.layout.custom_question_input, this, true);
+      EditText inputField = view.findViewById(R.id.inputField);
+      ImageButton sendButton = view.findViewById(R.id.sendButton);
+      ToggleButton TAToggleButton = view.findViewById(R.id.TAToggleButton);
+      ToggleButton StudentToggleButton = view.findViewById(R.id.studentToggleButton);
+      sendButton.setOnClickListener(new OnClickListener() {
+         @Override
+         public void onClick(View view) {
+            String messageString = inputField.getText().toString();
+            String checkMessage = messageString.trim();
+            if(!checkMessage.equals("")){
+               sendMessage(messageString,null);
+               resetState(inputField,StudentToggleButton,TAToggleButton);
+            }
+         }
+      });
+      TAToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+         @Override
+         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            allowTaPermission = b;
+         }
+      });
+      StudentToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+         @Override
+         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            allowStudentPermission = b;
+         }
+      });
+
+   }
+
    @Override
    public void sendMessage(@NonNull String s, @Nullable Message message) {
       ChatClient client = ChatClient.instance();
@@ -51,6 +111,7 @@ public class CustomMessageSend implements MessageInputView.MessageSendHandler {
       });
 
    }
+
    private Message construct_message(String s,ChatClient client){
       Message message = new Message();
       message.setId(random_id());
@@ -62,8 +123,8 @@ public class CustomMessageSend implements MessageInputView.MessageSendHandler {
       extraData.put("vote_count",0);
       extraData.put("RC",0);
       extraData.put("channel_id",classChannel.getChannelId());
-      extraData.put("allow_ta","false");
-      extraData.put("allow_student","false");
+      extraData.put("allow_ta",allowTaPermission? "true" : "false");
+      extraData.put("allow_student",allowStudentPermission? "true" : "false");
       extraData.put("profApproved","false");
       extraData.put("taApproved","false");
       extraData.put("studentApproved","false");
@@ -85,6 +146,11 @@ public class CustomMessageSend implements MessageInputView.MessageSendHandler {
       }
       return sb.toString();
    }
+   private void resetState(EditText editText, ToggleButton studentButton, ToggleButton TAButton){
+      editText.setText("");
+      studentButton.setChecked(false);
+      TAButton.setChecked(false);
+   }
    @Override
    public void dismissReply() {
 
@@ -92,7 +158,7 @@ public class CustomMessageSend implements MessageInputView.MessageSendHandler {
 
    @Override
    public void editMessage(@NonNull Message message, @NonNull String s) {
-      message.setText(s);
+
    }
 
 
@@ -121,6 +187,5 @@ public class CustomMessageSend implements MessageInputView.MessageSendHandler {
    public void sendToThreadWithCustomAttachments(@NonNull Message message, @NonNull String s, boolean b, @NonNull List<Attachment> list) {
 
    }
-
 
 }

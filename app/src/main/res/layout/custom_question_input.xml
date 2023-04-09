@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <LinearLayout
+        android:id="@+id/message_sender"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="2dp">
+
+        <ToggleButton
+            android:id="@+id/studentToggleButton"
+            android:text="Student"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:textOn="S"
+            android:textOff="S"
+            android:textSize="20dp"
+            android:background="@drawable/toggle_button_background"
+            />
+
+        <ToggleButton
+            android:id="@+id/TAToggleButton"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="TA"
+            android:textOn="T"
+            android:textOff="T"
+            android:textSize="20dp"
+            android:background="@drawable/toggle_button_background"
+ />
+        <EditText
+            android:id="@+id/inputField"
+            android:layout_width="260dp"
+            android:layout_height="wrap_content"
+            android:hint="Type message here"
+ />
+
+        <ImageButton
+            android:id="@+id/sendButton"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/stream_ui_ic_send_message"
+            android:scaleType="fitXY"
+            android:layout_gravity="right"
+            android:text="Send"
+            />
+    </LinearLayout>
+
+
+</merge>
