@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -49,54 +47,36 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+
     <io.getstream.chat.android.ui.message.list.header.MessageListHeaderView
-        android:id="@+id/messageListHeaderView"
+        android:id="@+id/messagesHeaderView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:streamUiMessageListHeaderTitleTextColor="#FF0000"
-        app:streamUiMessageListHeaderDefaultLabelTextStyle="bold"
-        app:streamUiMessageListHeaderShowUserAvatar="false"
         />
 
     <io.getstream.chat.android.ui.message.list.MessageListView
         android:id="@+id/messageListView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginHorizontal="0dp"
+        android:clipToPadding="false"
         app:layout_constraintBottom_toTopOf="@+id/messageInputView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/messageListHeaderView"
-        app:streamUiNewMessagesBehaviour="count_new_messages"
-        app:streamUiBackgroundColor="@color/stream_ui_accent_green"
-        app:streamUiMessageTextColorMine="@android:color/white"
-        app:streamUiMessageTextColorTheirs="@android:color/black"
+        app:layout_constraintTop_toBottomOf="@+id/messagesHeaderView"
         />
-    <io.getstream.chat.android.ui.message.input.MessageInputView
+
+    <com.example.loginpage.utility.CustomMessageSend
         android:id="@+id/messageInputView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-<!--        <CheckBox-->
-<!--            android:id="@+id/checkBoxStudent"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintLeft_toRightOf="@+id/checkBoxTA"-->
-<!--            />-->
-<!--        <CheckBox-->
-<!--            android:id="@+id/checkBoxTA"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintLeft_toRightOf="parent"-->
-<!--            />-->
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/messageListView"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

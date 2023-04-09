@@ -35,7 +35,7 @@ public class CustomMessageViewHolderFactory extends MessageListItemViewHolderFac
    @Override
    public BaseMessageItemViewHolder<? extends MessageListItem> createViewHolder(@NonNull ViewGroup parentView, int viewType){
       if (viewType == BUTTON_VIEW_HOLDER_TYPE) {
-         return new ButtonViewHolder(parentView, AttachedButtonBinding.inflate(LayoutInflater.from(parentView.getContext()), parentView, false),mDatabase);
+         return new ButtonViewHolder(parentView, AttachedButtonBinding.inflate(LayoutInflater.from(parentView.getContext()), parentView, false));
       }
       return super.createViewHolder(parentView, viewType);
    }

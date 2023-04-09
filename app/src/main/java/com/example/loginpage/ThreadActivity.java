@@ -19,7 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.loginpage.databinding.ActivityMessageBinding;
+import com.example.loginpage.databinding.ActivityReplyBinding;
 import com.example.loginpage.utility.BundleDeliveryMan;
 import com.example.loginpage.utility.CustomReplySend;
 import com.example.loginpage.utility.CustomReplyViewHolderFactory;
@@ -62,7 +62,7 @@ public class ThreadActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // Step 0 - inflate binding
-        ActivityMessageBinding binding = ActivityMessageBinding.inflate(getLayoutInflater());
+        ActivityReplyBinding binding = ActivityReplyBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         Toolbar toolbar = findViewById(R.id.toolbar);
         TextView channelTitle = findViewById(R.id.toolbar_title);
@@ -94,9 +94,9 @@ public class ThreadActivity extends AppCompatActivity {
         MessageInputViewModel messageInputViewModel = provider.get(MessageInputViewModel.class);
 
         // Step 2 - Bind the view and ViewModels, they are loosely coupled so it's easy to customize
-        MessageListHeaderViewModelBinding.bind(messageListHeaderViewModel, binding.messageListHeaderView, this);
+        MessageListHeaderViewModelBinding.bind(messageListHeaderViewModel, binding.messagesHeaderView, this);
         MessageListViewModelBinding.bind(messageListViewModel, binding.messageListView, this, true);
-        MessageInputViewModelBinding.bind(messageInputViewModel, binding.messageInputView, this);
+        //MessageInputViewModelBinding.bind(messageInputViewModel, binding.messageInputView, this);
 
         messageListViewModel.getMode().observe(this, mode -> {
             if (mode instanceof Thread) {
@@ -110,9 +110,9 @@ public class ThreadActivity extends AppCompatActivity {
         });
         // Customised View Model for Messages
         binding.messageListView.setMessageViewHolderFactory(new CustomReplyViewHolderFactory(mDatabase));
-        binding.messageInputView.setSendMessageHandler(new CustomReplySend(classChannel,mDatabase));
-        //editing a message so stop replies
-        binding.messageListView.setMessageEditHandler(messageInputViewModel::postMessageToEdit);      //go into edit mode
+        CustomReplySend.classChannel = classChannel;
+        CustomReplySend customisedHandler  = new CustomReplySend(this);
+        //binding.messageInputView.setSendMessageHandler(new CustomReplySend(classChannel,mDatabase));
 
         messageListViewModel.getState().observe(this, state -> {
             if (state instanceof NavigateUp) {
@@ -129,7 +129,7 @@ public class ThreadActivity extends AppCompatActivity {
             startActivity(ChannelActivity.newIntent(this,channelClient));
             messageListViewModel.onEvent(MessageListViewModel.Event.BackButtonPressed.INSTANCE);
         };
-        binding.messageListHeaderView.setBackButtonClickListener(backHandler);
+        binding.messagesHeaderView.setBackButtonClickListener(backHandler);
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
