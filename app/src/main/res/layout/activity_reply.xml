@@ -2,7 +2,48 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     >
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar"
+        android:layout_gravity="center_horizontal"
+        tools:ignore="MissingConstraints">
+
+        <android.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent">
+
+
+
+            <ImageButton
+                android:id="@+id/back_button"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+
+                app:srcCompat="@drawable/baseline_arrow_back_24"
+                android:background="@android:color/transparent"
+
+                android:layout_gravity="start" />
+
+            <TextView
+                android:id = "@+id/toolbar_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+
+                android:textColor="@color/white"
+                android:textSize="@dimen/stream_ui_avatar_text_size_large"
+                android:contentInsetStart="?attr/actionBarSize" />
+
+        </android.widget.Toolbar>
+
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <io.getstream.chat.android.ui.message.list.header.MessageListHeaderView
         android:id="@+id/messagesHeaderView"
