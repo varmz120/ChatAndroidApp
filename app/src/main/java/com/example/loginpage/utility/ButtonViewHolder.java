@@ -145,23 +145,25 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                   boolean permissionGrantedTA = userRole.equals("TA");
                   boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
 
-                  if (permissionGrantedProf) {
-                     emptyTick.setVisibility(View.GONE);
-                     blueCircle.setVisibility(View.VISIBLE);
-                     mDatabase.tickPressed(channelId,msg.getId(),"profApproved");
-                  }
-
-                  if (permissionGrantedTA) {
-                     emptyTick.setVisibility(View.GONE);
-                     greenCircle.setVisibility(View.VISIBLE);
-                     mDatabase.tickPressed(channelId,msg.getId(),"taApproved");
-                  }
-
                   if (permissionQuestionOwner) {
                      emptyTick.setVisibility(View.GONE);
                      yellowTick.setVisibility(View.VISIBLE);
                      mDatabase.tickPressed(channelId,msg.getId(),"studentApproved");
                   }
+
+                  else if (permissionGrantedProf) {
+                     emptyTick.setVisibility(View.GONE);
+                     blueCircle.setVisibility(View.VISIBLE);
+                     mDatabase.tickPressed(channelId,msg.getId(),"profApproved");
+                  }
+
+                  else if (permissionGrantedTA) {
+                     emptyTick.setVisibility(View.GONE);
+                     greenCircle.setVisibility(View.VISIBLE);
+                     mDatabase.tickPressed(channelId,msg.getId(),"taApproved");
+                  }
+
+
                }
                return null;
             });
