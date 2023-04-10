@@ -21,6 +21,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,7 +31,11 @@ import androidx.annotation.Nullable;
 
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.channel.ChannelClient;
+import io.getstream.chat.android.client.events.ChannelUpdatedEvent;
+import io.getstream.chat.android.client.events.ChatEvent;
+import io.getstream.chat.android.client.events.NewMessageEvent;
 import io.getstream.chat.android.client.models.Message;
+import io.getstream.chat.android.client.utils.observable.Disposable;
 import io.getstream.chat.android.ui.message.list.adapter.BaseMessageItemViewHolder;
 import io.getstream.chat.android.ui.message.list.adapter.MessageListItemPayloadDiff;
 
@@ -54,9 +60,11 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
    public TextView message;
 
    public ImageButton emptyTick;
-   public ImageView yellowTick;
-   public ImageView blueCircle;
-   public ImageView greenCircle;
+   public ImageView pinkTick;
+   public ImageView maroonCircle;
+   public ImageView redCircle;
+
+   public Integer Count;
 
    public ButtonViewHolder(@NonNull ViewGroup parentView, @NonNull AttachedButtonBinding binding) {
       super(binding.getRoot());
@@ -65,10 +73,12 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       this.delete = binding.getRoot().findViewById(R.id.delete);
       this.message = binding.getRoot().findViewById(R.id.message);
       this.emptyTick = binding.getRoot().findViewById(R.id.emptyTick);
-      this.yellowTick = binding.getRoot().findViewById(R.id.yellowTick);
-      this.blueCircle = binding.getRoot().findViewById(R.id.blueCircle);
-      this.greenCircle = binding.getRoot().findViewById(R.id.greenCircle);
+      this.pinkTick = binding.getRoot().findViewById(R.id.pinkTick);
+      this.maroonCircle = binding.getRoot().findViewById(R.id.maroonCircle);
+      this.redCircle = binding.getRoot().findViewById(R.id.redCircle);
    }
+
+   private boolean emptyTickClicked = false;
 
    @Override
    public void bindData(@NonNull MessageListItem.MessageItem messageItem, @Nullable MessageListItemPayloadDiff messageListItemPayloadDiff) {
@@ -85,9 +95,9 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       String Professor = roles[2];
       String LIVESTREAM = getContext().getString(R.string.livestreamChannelType);
       delete.setVisibility(View.GONE);
-      yellowTick.setVisibility(View.GONE);
-      blueCircle.setVisibility(View.GONE);
-      greenCircle.setVisibility(View.GONE);
+      pinkTick.setVisibility(View.GONE);
+      redCircle.setVisibility(View.GONE);
+      maroonCircle.setVisibility(View.GONE);
       emptyTick.setVisibility(View.VISIBLE);
 
       mDatabase.getTickPressed(channelId, msg.getId(),"profApproved").onSuccessTask(dataSnapshot -> {
@@ -95,11 +105,8 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             Object profPressed=dataSnapshot.getValue();
             if(profPressed.toString().equals("true")){
                emptyTick.setVisibility(View.GONE);
-               blueCircle.setVisibility(View.VISIBLE);
-
-
+               redCircle.setVisibility(View.VISIBLE);
             }
-
          }
          return null;
 
@@ -109,8 +116,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             Object taPressed=dataSnapshot.getValue();
             if(taPressed.toString().equals("true")){
                emptyTick.setVisibility(View.GONE);
-               greenCircle.setVisibility(View.VISIBLE);
-
+               maroonCircle.setVisibility(View.VISIBLE);
             }
          }
          return null;
@@ -121,8 +127,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             Object studentPressed=dataSnapshot.getValue();
             if(studentPressed.toString().equals("true")){
                emptyTick.setVisibility(View.GONE);
-               yellowTick.setVisibility(View.VISIBLE);
-
+               pinkTick.setVisibility(View.VISIBLE);
             }
             else {
                System.out.println("it is indeed"+studentPressed.toString());
@@ -133,51 +138,69 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
 
       });
 
-
-
       View.OnClickListener ticklistener = new View.OnClickListener() {
          @Override
          public void onClick(View view) {
             mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
                if (dataSnapshot.exists()) {
                   String userRole = dataSnapshot.getValue().toString();
-                  boolean permissionGrantedProf = userRole.equals("Professor");
-                  boolean permissionGrantedTA = userRole.equals("TA");
+                  boolean permissionGrantedProf = userRole.equals(Professor);
+                  boolean permissionGrantedTA = userRole.equals(TA);
                   boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
 
-                  if (permissionGrantedProf) {
-                     emptyTick.setVisibility(View.GONE);
-                     blueCircle.setVisibility(View.VISIBLE);
-                     mDatabase.tickPressed(channelId,msg.getId(),"profApproved");
-                  }
-
-                  if (permissionGrantedTA) {
-                     emptyTick.setVisibility(View.GONE);
-                     greenCircle.setVisibility(View.VISIBLE);
-                     mDatabase.tickPressed(channelId,msg.getId(),"taApproved");
-                  }
-
                   if (permissionQuestionOwner) {
-                     emptyTick.setVisibility(View.GONE);
-                     yellowTick.setVisibility(View.VISIBLE);
-                     mDatabase.tickPressed(channelId,msg.getId(),"studentApproved");
+                     if (emptyTickClicked == false) {
+                        emptyTick.setVisibility(View.GONE);
+                        pinkTick.setVisibility(View.VISIBLE);
+                        mDatabase.tickPressed(channelId, msg.getId(), "studentApproved");
                   }
+                     else {
+                        emptyTick.setVisibility(View.VISIBLE);
+                        pinkTick.setVisibility(View.GONE);
+                        mDatabase.tickRemoved(channelId, msg.getId(), "studentApproved");
+                     }
+
+                     emptyTickClicked = !emptyTickClicked;
+               }
+
+                  else if (permissionGrantedProf) {
+                     if (emptyTickClicked == false) {
+                        emptyTick.setVisibility(View.GONE);
+                        redCircle.setVisibility(View.VISIBLE);
+                        mDatabase.tickPressed(channelId, msg.getId(), "profApproved");
+                     }
+                     else {
+                        emptyTick.setVisibility(View.VISIBLE);
+                        redCircle.setVisibility(View.GONE);
+                        mDatabase.tickRemoved(channelId, msg.getId(), "profApproved");
+                     }
+                     emptyTickClicked = !emptyTickClicked;
+                  }
+
+                  else if (permissionGrantedTA) {
+                     if (emptyTickClicked == false) {
+                        emptyTick.setVisibility(View.GONE);
+                        maroonCircle.setVisibility(View.VISIBLE);
+                        mDatabase.tickPressed(channelId, msg.getId(), "taApproved");
+                     }
+                     else {
+                        emptyTick.setVisibility(View.VISIBLE);
+                        maroonCircle.setVisibility(View.GONE);
+                        mDatabase.tickRemoved(channelId, msg.getId(), "taApproved");
+                     }
+                     emptyTickClicked = !emptyTickClicked;
+                  }
+
                }
                return null;
             });
-
          }
       };
 
       emptyTick.setOnClickListener(ticklistener);
-      yellowTick.setOnClickListener(ticklistener);
-      greenCircle.setOnClickListener(ticklistener);
-      blueCircle.setOnClickListener(ticklistener);
-
-
-
-
-
+      pinkTick.setOnClickListener(ticklistener);
+      maroonCircle.setOnClickListener(ticklistener);
+      redCircle.setOnClickListener(ticklistener);
 
       binding.innerLayout.setOnLongClickListener(new View.OnLongClickListener() {
          @Override
@@ -284,12 +307,26 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             });
          }
       });
-
-      // Must be below. WHY.
+      Disposable disposable = client.subscribe((ChatEvent event) -> {
+         // Check for specific event types
+         if(event.getType().equals("up_vote event")){
+            System.out.println("SUCCESSFULLY LISTENED TO EVENT: " + event.getType());
+            mDatabase.getVoteCount(channelId, msg.getId()).onSuccessTask(dataSnapshot -> {
+               if (dataSnapshot.exists()) {
+                  Object up_vote_count = dataSnapshot.getValue();
+                  binding.upVoteButton.setText(up_vote_count.toString());
+               } else {
+                  binding.upVoteButton.setText("0");
+               }
+               return null;
+            });
+         }
+      });
       mDatabase.getVoteCount(channelId, msg.getId()).onSuccessTask(dataSnapshot -> {
          if (dataSnapshot.exists()) {
             Object up_vote_count = dataSnapshot.getValue();
             binding.upVoteButton.setText(up_vote_count.toString());
+
          } else {
             binding.upVoteButton.setText("0");
          }
@@ -335,6 +372,16 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                   @Override
                   public Task<Object> then(Void unused) throws Exception {
                      System.out.println("UPVOTED SUCCESSFULLY!");
+                     assert channelId != null;
+                     HashMap<Object,String> extraData = new HashMap<>();
+                     extraData.put("vote_count",Integer.toString(added_votes));
+                     client.channel(LIVESTREAM,channelId).sendEvent("up_vote event",extraData).enqueue(result -> {
+                        if (result.isSuccess()) {
+                           System.out.println("SUCCESSFULLY SENT UPVOTED EVENT: " + result);
+                        } else {
+                           System.out.println("Error sending upvote event: " + result);
+                        }
+                     });
                      return null;
                   }
                });
@@ -359,6 +406,13 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       Set<String> upvotedIds = preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
       upvotedIds.add(id);
       preferences.edit().putStringSet(KEY_UPVOTED_IDS, upvotedIds).apply();
+   }
+   private int handleExtraData(Object count){
+      if(count instanceof Integer){
+         return (int) count;
+      }
+      Double count_double = (Double) count;
+      return count_double.intValue();
    }
 
 

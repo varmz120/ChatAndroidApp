@@ -15,6 +15,9 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,10 +36,11 @@ import java.util.Random;
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.api.models.FilterObject;
 import io.getstream.chat.android.client.api.models.QueryChannelRequest;
-import io.getstream.chat.android.client.api.models.QueryChannelsRequest;
 import io.getstream.chat.android.client.api.models.querysort.QuerySortByField;
 import io.getstream.chat.android.client.api.models.querysort.QuerySorter;
 import io.getstream.chat.android.client.channel.ChannelClient;
+import io.getstream.chat.android.client.events.ChatEvent;
+import io.getstream.chat.android.client.events.NewMessageEvent;
 import io.getstream.chat.android.client.models.Channel;
 import io.getstream.chat.android.client.models.CustomObject;
 import io.getstream.chat.android.client.models.Filters;
@@ -177,6 +181,8 @@ public class HomePage extends AppCompatActivity {
       try{
          String channelId = "messageRoom"+createRoomCode;
          ChannelClient channelClient = client.channel(LIVESTREAM, channelId);
+         channelClient.watch().execute();
+         //enableRefreshFromDatabase(channelClient);
          startActivity(ChannelActivity.newIntent(HomePage.this,channelClient));
          Log.i("HomePage","Channel started successfully");
 
@@ -185,6 +191,25 @@ public class HomePage extends AppCompatActivity {
       }
 
    }
+//   private void enableRefreshFromDatabase(ChannelClient classChannel){
+//      mDatabase.getMessagesReference(classChannel.getChannelId()).addValueEventListener(new ValueEventListener() {
+//         @Override
+//         public void onDataChange(@NonNull DataSnapshot snapshot) {
+//            WatchChannelRequest watchChannelRequest = new WatchChannelRequest();
+//            watchChannelRequest.setShouldRefresh(true);
+//            watchChannelRequest.setPresence(true);
+//            watchChannelRequest.setState(true);
+//            watchChannelRequest.setWatch(true);
+//            ChatClient.instance().channel(classChannel.getCid()).watch(watchChannelRequest).execute();
+//            //startActivity(ChannelActivity.newIntent(HomePage.this,classChannel));
+//         }
+//
+//         @Override
+//         public void onCancelled(@NonNull DatabaseError error) {
+//
+//         }
+//      });
+//   }
 
    //method to create a random 4 digit number for room creating purposes
    private int randomInteger(){

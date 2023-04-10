@@ -90,6 +90,10 @@ public class Database {
       return getExtraDataForMessage(channelId, messageId).child(user).setValue("true");
 
    }
+   public Task<Void>tickRemoved(String channelId, String messageId,String user){
+      return getExtraDataForMessage(channelId, messageId).child(user).setValue("false");
+
+   }
    public Task<DataSnapshot>getTickPressed(String channelId, String messageId,String user){
       return getExtraDataForMessage(channelId, messageId).child(user).get();
 
