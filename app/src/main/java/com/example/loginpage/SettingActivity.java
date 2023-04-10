@@ -32,6 +32,7 @@ public class SettingActivity extends AppCompatActivity {
     private final BundleDeliveryMan mDeliveryMan = BundleDeliveryMan.getInstance();
     private MaterialButton changePasswordButton;
     private MaterialButton historyButton;
+    private MaterialButton backButton;
     private String newEmail;
     private String newPassword;
 
@@ -47,6 +48,8 @@ public class SettingActivity extends AppCompatActivity {
         changeUsernameButton = findViewById(R.id.changeUsernameButton);
         changePasswordButton  = findViewById(R.id.changePasswordButton);
         historyButton = findViewById(R.id.historyButton);
+        backButton = findViewById(R.id.backButtonSettings);
+
         changePasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -102,6 +105,15 @@ public class SettingActivity extends AppCompatActivity {
                 Intent goToHistory = new Intent(SettingActivity.this,HistoryActivity.class);
                 goToHistory.putExtras(historyPageBundle);
                 startActivity(goToHistory);
+            }
+        });
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle bundle = mDeliveryMan.HomePageBundle(uid);
+                Intent intent = new Intent(SettingActivity.this,HomePage.class);
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
         });
     }

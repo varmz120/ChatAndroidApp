@@ -36,6 +36,7 @@ import java.util.Random;
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.api.models.FilterObject;
 import io.getstream.chat.android.client.api.models.QueryChannelRequest;
+import io.getstream.chat.android.client.api.models.QueryChannelsRequest;
 import io.getstream.chat.android.client.api.models.querysort.QuerySortByField;
 import io.getstream.chat.android.client.api.models.querysort.QuerySorter;
 import io.getstream.chat.android.client.channel.ChannelClient;
@@ -131,7 +132,7 @@ public class HomePage extends AppCompatActivity {
                     System.out.println("Error connecting to client!" + connectionResult.error());
                  } else {
 
-                    RoomCode = (EditText) findViewById(R.id.roomCode);
+                    RoomCode = findViewById(R.id.roomCode);
                     String roomCode = RoomCode.getText().toString();
                     String channelId = "messageRoom"+roomCode;
                     FilterObject filter = Filters.and(
@@ -191,25 +192,7 @@ public class HomePage extends AppCompatActivity {
       }
 
    }
-//   private void enableRefreshFromDatabase(ChannelClient classChannel){
-//      mDatabase.getMessagesReference(classChannel.getChannelId()).addValueEventListener(new ValueEventListener() {
-//         @Override
-//         public void onDataChange(@NonNull DataSnapshot snapshot) {
-//            WatchChannelRequest watchChannelRequest = new WatchChannelRequest();
-//            watchChannelRequest.setShouldRefresh(true);
-//            watchChannelRequest.setPresence(true);
-//            watchChannelRequest.setState(true);
-//            watchChannelRequest.setWatch(true);
-//            ChatClient.instance().channel(classChannel.getCid()).watch(watchChannelRequest).execute();
-//            //startActivity(ChannelActivity.newIntent(HomePage.this,classChannel));
-//         }
-//
-//         @Override
-//         public void onCancelled(@NonNull DatabaseError error) {
-//
-//         }
-//      });
-//   }
+
 
    //method to create a random 4 digit number for room creating purposes
    private int randomInteger(){

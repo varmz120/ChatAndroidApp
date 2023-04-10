@@ -55,7 +55,7 @@
         app:layout_constraintVertical_bias="0.361" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/Back"
+        android:id="@+id/backButtonSettings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/stream_ui_accent_red"
