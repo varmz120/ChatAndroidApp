@@ -82,7 +82,7 @@
                 app:srcCompat="@drawable/deletebutton_original4" />
 
             <ImageView
-                android:id="@+id/yellowTick"
+                android:id="@+id/pinkTick"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="9dp"
@@ -90,10 +90,21 @@
                 app:layout_constraintBottom_toTopOf="@id/delete"
                 app:layout_constraintRight_toRightOf="@+id/innerLayout"
                 app:layout_constraintTop_toTopOf="@id/innerLayout"
-                app:srcCompat="@drawable/yellowtick" />
+                app:srcCompat="@drawable/pinktick" />
 
             <ImageView
-                android:id="@+id/greenCircle"
+                android:id="@+id/redCircle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:layout_marginBottom="7dp"
+                app:layout_constraintBottom_toTopOf="@id/delete"
+                app:layout_constraintRight_toRightOf="@+id/innerLayout"
+                app:layout_constraintTop_toTopOf="@id/innerLayout"
+                app:srcCompat="@drawable/redcircle" />
+
+            <ImageView
+                android:id="@+id/maroonCircle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
@@ -101,17 +112,7 @@
                 app:layout_constraintBottom_toTopOf="@id/delete"
                 app:layout_constraintRight_toRightOf="@+id/innerLayout"
                 app:layout_constraintTop_toTopOf="@id/innerLayout"
-                app:srcCompat="@drawable/greencircle" />
-
-            <ImageView
-                android:id="@+id/blueCircle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="7dp"
-                app:layout_constraintBottom_toTopOf="@id/delete"
-                app:layout_constraintRight_toRightOf="@+id/innerLayout"
-                app:layout_constraintTop_toTopOf="@id/innerLayout"
-                app:srcCompat="@drawable/bluecircle" />
+                app:srcCompat="@drawable/marooncircle" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
