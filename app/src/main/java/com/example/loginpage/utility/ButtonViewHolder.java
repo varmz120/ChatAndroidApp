@@ -149,46 +149,19 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                   boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
 
                   if (permissionQuestionOwner) {
-                     if (emptyTickClicked == false) {
-                        emptyTick.setVisibility(View.GONE);
-                        pinkTick.setVisibility(View.VISIBLE);
-                        mDatabase.tickPressed(channelId, msg.getId(), "studentApproved");
+                     // send a channel event that ticks this message using the UI components below
+                     ownerTick(channelId,msg);
+                     eventSender(channelId,CustomEvents.OWNER_TICK);
                   }
-                     else {
-                        emptyTick.setVisibility(View.VISIBLE);
-                        pinkTick.setVisibility(View.GONE);
-                        mDatabase.tickRemoved(channelId, msg.getId(), "studentApproved");
-                     }
-
-                     emptyTickClicked = !emptyTickClicked;
-               }
 
                   else if (permissionGrantedProf) {
-                     if (emptyTickClicked == false) {
-                        emptyTick.setVisibility(View.GONE);
-                        redCircle.setVisibility(View.VISIBLE);
-                        mDatabase.tickPressed(channelId, msg.getId(), "profApproved");
-                     }
-                     else {
-                        emptyTick.setVisibility(View.VISIBLE);
-                        redCircle.setVisibility(View.GONE);
-                        mDatabase.tickRemoved(channelId, msg.getId(), "profApproved");
-                     }
-                     emptyTickClicked = !emptyTickClicked;
+                        profTick(channelId,msg);
+                        eventSender(channelId, CustomEvents.PROF_TICK);
                   }
 
                   else if (permissionGrantedTA) {
-                     if (emptyTickClicked == false) {
-                        emptyTick.setVisibility(View.GONE);
-                        maroonCircle.setVisibility(View.VISIBLE);
-                        mDatabase.tickPressed(channelId, msg.getId(), "taApproved");
-                     }
-                     else {
-                        emptyTick.setVisibility(View.VISIBLE);
-                        maroonCircle.setVisibility(View.GONE);
-                        mDatabase.tickRemoved(channelId, msg.getId(), "taApproved");
-                     }
-                     emptyTickClicked = !emptyTickClicked;
+                     TATick(channelId,msg);
+                     eventSender(channelId,CustomEvents.TA_TICK);
                   }
 
                }
@@ -308,9 +281,9 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
          }
       });
       Disposable disposable = client.subscribe((ChatEvent event) -> {
-         // Check for specific event types
-         if(event.getType().equals("up_vote event")){
-            System.out.println("SUCCESSFULLY LISTENED TO EVENT: " + event.getType());
+         String eventType = event.getType();
+         if(eventType.equals(CustomEvents.UPVOTE.toString())){
+            System.out.println("SUCCESSFULLY LISTENED TO EVENT: " + eventType);
             mDatabase.getVoteCount(channelId, msg.getId()).onSuccessTask(dataSnapshot -> {
                if (dataSnapshot.exists()) {
                   Object up_vote_count = dataSnapshot.getValue();
@@ -320,6 +293,12 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                }
                return null;
             });
+         } else if(event.getType().equals(CustomEvents.PROF_TICK.toString())){
+               profTick(channelId,msg);
+         } else if(eventType.equals(CustomEvents.TA_TICK.toString())){
+               TATick(channelId,msg);
+         } else if(eventType.equals(CustomEvents.OWNER_TICK.toString())){
+               ownerTick(channelId,msg);
          }
       });
       mDatabase.getVoteCount(channelId, msg.getId()).onSuccessTask(dataSnapshot -> {
@@ -372,16 +351,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                   @Override
                   public Task<Object> then(Void unused) throws Exception {
                      System.out.println("UPVOTED SUCCESSFULLY!");
-                     assert channelId != null;
-                     HashMap<Object,String> extraData = new HashMap<>();
-                     extraData.put("vote_count",Integer.toString(added_votes));
-                     client.channel(LIVESTREAM,channelId).sendEvent("up_vote event",extraData).enqueue(result -> {
-                        if (result.isSuccess()) {
-                           System.out.println("SUCCESSFULLY SENT UPVOTED EVENT: " + result);
-                        } else {
-                           System.out.println("Error sending upvote event: " + result);
-                        }
-                     });
+                     eventSender(channelId,CustomEvents.UPVOTE);
                      return null;
                   }
                });
@@ -407,12 +377,57 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       upvotedIds.add(id);
       preferences.edit().putStringSet(KEY_UPVOTED_IDS, upvotedIds).apply();
    }
-   private int handleExtraData(Object count){
-      if(count instanceof Integer){
-         return (int) count;
+   private void ownerTick(String channelId, Message msg){
+      if (!emptyTickClicked) {
+         emptyTick.setVisibility(View.GONE);
+         pinkTick.setVisibility(View.VISIBLE);
+         mDatabase.tickPressed(channelId, msg.getId(), "studentApproved");
       }
-      Double count_double = (Double) count;
-      return count_double.intValue();
+      else {
+         emptyTick.setVisibility(View.VISIBLE);
+         pinkTick.setVisibility(View.GONE);
+         mDatabase.tickRemoved(channelId, msg.getId(), "studentApproved");
+      }
+
+      emptyTickClicked = !emptyTickClicked;
+   }
+   private void profTick(String channelId, Message msg){
+      if (!emptyTickClicked) {
+         emptyTick.setVisibility(View.GONE);
+         redCircle.setVisibility(View.VISIBLE);
+         mDatabase.tickPressed(channelId, msg.getId(), "profApproved");
+      }
+      else {
+         emptyTick.setVisibility(View.VISIBLE);
+         redCircle.setVisibility(View.GONE);
+         mDatabase.tickRemoved(channelId, msg.getId(), "profApproved");
+      }
+      emptyTickClicked = !emptyTickClicked;
+
+   }
+   private void TATick(String channelId, Message msg){
+      if (!emptyTickClicked) {
+         emptyTick.setVisibility(View.GONE);
+         maroonCircle.setVisibility(View.VISIBLE);
+         mDatabase.tickPressed(channelId, msg.getId(), "taApproved");
+      }
+      else {
+         emptyTick.setVisibility(View.VISIBLE);
+         maroonCircle.setVisibility(View.GONE);
+         mDatabase.tickRemoved(channelId, msg.getId(), "taApproved");
+      }
+      emptyTickClicked = !emptyTickClicked;
+
+   }
+   private void eventSender(String channelCid, CustomEvents eventType){
+
+      client.channel(channelCid).sendEvent(eventType.toString(),new HashMap<>()).enqueue(result -> {
+         if (result.isSuccess()) {
+            System.out.println("SUCCESSFULLY SENT EVENT: " + eventType);
+         } else {
+            System.out.println("Error sending custom event: " + eventType + "-->" + result);
+         }
+      });
    }
 
 
