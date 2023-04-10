@@ -21,6 +21,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,7 +31,11 @@ import androidx.annotation.Nullable;
 
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.channel.ChannelClient;
+import io.getstream.chat.android.client.events.ChannelUpdatedEvent;
+import io.getstream.chat.android.client.events.ChatEvent;
+import io.getstream.chat.android.client.events.NewMessageEvent;
 import io.getstream.chat.android.client.models.Message;
+import io.getstream.chat.android.client.utils.observable.Disposable;
 import io.getstream.chat.android.ui.message.list.adapter.BaseMessageItemViewHolder;
 import io.getstream.chat.android.ui.message.list.adapter.MessageListItemPayloadDiff;
 
@@ -141,8 +147,8 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
                if (dataSnapshot.exists()) {
                   String userRole = dataSnapshot.getValue().toString();
-                  boolean permissionGrantedProf = userRole.equals("Professor");
-                  boolean permissionGrantedTA = userRole.equals("TA");
+                  boolean permissionGrantedProf = userRole.equals(Professor);
+                  boolean permissionGrantedTA = userRole.equals(TA);
                   boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
 
                   if (permissionQuestionOwner) {
@@ -286,12 +292,26 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             });
          }
       });
-
-      // Must be below. WHY.
+      Disposable disposable = client.subscribe((ChatEvent event) -> {
+         // Check for specific event types
+         if(event.getType().equals("up_vote event")){
+            System.out.println("SUCCESSFULLY LISTENED TO EVENT: " + event.getType());
+            mDatabase.getVoteCount(channelId, msg.getId()).onSuccessTask(dataSnapshot -> {
+               if (dataSnapshot.exists()) {
+                  Object up_vote_count = dataSnapshot.getValue();
+                  binding.upVoteButton.setText(up_vote_count.toString());
+               } else {
+                  binding.upVoteButton.setText("0");
+               }
+               return null;
+            });
+         }
+      });
       mDatabase.getVoteCount(channelId, msg.getId()).onSuccessTask(dataSnapshot -> {
          if (dataSnapshot.exists()) {
             Object up_vote_count = dataSnapshot.getValue();
             binding.upVoteButton.setText(up_vote_count.toString());
+
          } else {
             binding.upVoteButton.setText("0");
          }
@@ -337,6 +357,16 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                   @Override
                   public Task<Object> then(Void unused) throws Exception {
                      System.out.println("UPVOTED SUCCESSFULLY!");
+                     assert channelId != null;
+                     HashMap<Object,String> extraData = new HashMap<>();
+                     extraData.put("vote_count",Integer.toString(added_votes));
+                     client.channel(LIVESTREAM,channelId).sendEvent("up_vote event",extraData).enqueue(result -> {
+                        if (result.isSuccess()) {
+                           System.out.println("SUCCESSFULLY SENT UPVOTED EVENT: " + result);
+                        } else {
+                           System.out.println("Error sending upvote event: " + result);
+                        }
+                     });
                      return null;
                   }
                });
@@ -361,6 +391,13 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       Set<String> upvotedIds = preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
       upvotedIds.add(id);
       preferences.edit().putStringSet(KEY_UPVOTED_IDS, upvotedIds).apply();
+   }
+   private int handleExtraData(Object count){
+      if(count instanceof Integer){
+         return (int) count;
+      }
+      Double count_double = (Double) count;
+      return count_double.intValue();
    }
 
 
