@@ -199,19 +199,31 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
                         boolean permissionGrantedProf = userRole.equals(Professor);
                         boolean permissionGrantedTA = userRole.equals(TA);
                         boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
+                        mDatabase.getExtraDataForReplies_diff(channelId_messageId, msg.getId()).onSuccessTask(dataSnap -> {
+                            JSONObject jsonObject = new JSONObject(dataSnap.getValue().toString());
+                            String taApproved = jsonObject.getString("taApproved");
+                            String studentApproved = jsonObject.getString("studentApproved");
+                            String profApproved = jsonObject.getString("profApproved");
+                            System.out.println(profApproved);
+                            if (permissionQuestionOwner) {
+                                // send a channel event that ticks this message using the UI components below
+                                ownerTick(channelId,msg,studentApproved);
+                                //eventSender(LIVESTREAM,channelId,CustomEvents.OWNER_TICK);
+                            }
 
-                        if (permissionGrantedProf) {
-                            profTick(channelId,msg);
+                            else if (permissionGrantedProf) {
+                                profTick(channelId,msg,profApproved);
+                                //eventSender(LIVESTREAM,channelId, CustomEvents.PROF_TICK);
+                            }
 
-                        }
+                            else if (permissionGrantedTA) {
+                                TATick(channelId,msg,taApproved);
+                                //eventSender(LIVESTREAM,channelId,CustomEvents.TA_TICK);
+                            }
+                            return null;
 
-                        if (permissionGrantedTA) {
-                            TATick(channelId,msg);
-                        }
 
-                        if (permissionQuestionOwner) {
-                            ownerTick(channelId,msg);
-                        }
+                        });
                     }
                     return null;
                 });
@@ -388,8 +400,22 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
 
         emptyTickClicked = !emptyTickClicked;
     }
-    private void profTick(String channelId, Message msg){
-        if (!emptyTickClicked) {
+    private void ownerTick(String channelId, Message msg,String studentApproved){
+        if (studentApproved.equals("false")) {
+            emptyTick.setVisibility(View.GONE);
+            pinkTick.setVisibility(View.VISIBLE);
+            mDatabase.ReplyTickPressed(channelId, msg.getId(), "studentApproved");
+        }
+        else {
+            emptyTick.setVisibility(View.VISIBLE);
+            pinkTick.setVisibility(View.GONE);
+            mDatabase.ReplyTickRemoved(channelId, msg.getId(), "studentApproved");
+        }
+
+        emptyTickClicked = !emptyTickClicked;
+    }
+    private void profTick(String channelId, Message msg,String profApproved){
+        if (profApproved.equals("false")) {
             emptyTick.setVisibility(View.GONE);
             redCircle.setVisibility(View.VISIBLE);
             mDatabase.ReplyTickPressed(channelId, msg.getId(), "profApproved");
@@ -402,8 +428,8 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
         emptyTickClicked = !emptyTickClicked;
 
     }
-    private void TATick(String channelId, Message msg){
-        if (!emptyTickClicked) {
+    private void TATick(String channelId, Message msg,String taApproved){
+        if (taApproved.equals("false")) {
             emptyTick.setVisibility(View.GONE);
             maroonCircle.setVisibility(View.VISIBLE);
             mDatabase.ReplyTickPressed(channelId, msg.getId(), "taApproved");

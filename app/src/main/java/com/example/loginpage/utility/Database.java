@@ -138,6 +138,9 @@ public class Database {
    public Task<DataSnapshot> getExtraDataForMessage_diff(String channelId, String messageId) {
       return channelReference.child(channelId).child(MESSAGES).child(messageId).child(EXTRA_DATA).get();
    }
+   public Task<DataSnapshot> getExtraDataForReplies_diff(String channelId, String replyId) {
+      return channelReference.child(channelId).child(REPLIES).child(replyId).child(EXTRA_DATA).get();
+   }
    public DatabaseReference getExtraDataForReply(String channelId, String replyId) {
 
       return channelReference.child(channelId).child(REPLIES).child(replyId).child(EXTRA_DATA);
