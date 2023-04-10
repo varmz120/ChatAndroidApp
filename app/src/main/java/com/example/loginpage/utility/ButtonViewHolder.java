@@ -25,6 +25,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -45,6 +46,10 @@ import io.getstream.chat.android.client.utils.observable.Disposable;
 import io.getstream.chat.android.ui.message.list.adapter.BaseMessageItemViewHolder;
 import io.getstream.chat.android.ui.message.list.adapter.MessageListItemPayloadDiff;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
 /**
  * @author saran
  * @date 25/2/2023
@@ -61,7 +66,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
 
    public ImageButton delete;
 
-   public ChatClient client;
+   public final ChatClient client = ChatClient.instance();
 
    public TextView message;
 
@@ -88,7 +93,6 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
 
    @Override
    public void bindData(@NonNull MessageListItem.MessageItem messageItem, @Nullable MessageListItemPayloadDiff messageListItemPayloadDiff) {
-      ChatClient client = ChatClient.instance();
       Message msg = messageItem.getMessage();
       binding.message.setText(msg.getText());
       String channelId = (String) msg.getExtraData().get("channel_id");
@@ -131,6 +135,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                      pinkTick.setVisibility(View.VISIBLE);
                   }
                   else{pinkTick.setVisibility(View.GONE);}
+
 
 
                   String vote_count = jsonObject.getString("vote_count");
@@ -202,17 +207,17 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                   if (permissionQuestionOwner) {
                      // send a channel event that ticks this message using the UI components below
                      ownerTick(channelId,msg);
-                     eventSender(channelId,CustomEvents.OWNER_TICK);
+                     //eventSender(LIVESTREAM,channelId,CustomEvents.OWNER_TICK);
                   }
 
                   else if (permissionGrantedProf) {
                         profTick(channelId,msg);
-                        eventSender(channelId, CustomEvents.PROF_TICK);
+                        //eventSender(LIVESTREAM,channelId, CustomEvents.PROF_TICK);
                   }
 
                   else if (permissionGrantedTA) {
-                     TATick(channelId,msg);
-                     eventSender(channelId,CustomEvents.TA_TICK);
+                      TATick(channelId,msg);
+                     //eventSender(LIVESTREAM,channelId,CustomEvents.TA_TICK);
                   }
 
                }
@@ -225,6 +230,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       pinkTick.setOnClickListener(ticklistener);
       maroonCircle.setOnClickListener(ticklistener);
       redCircle.setOnClickListener(ticklistener);
+      //setCustomEventListeners(channelId,msg);
 
       binding.innerLayout.setOnLongClickListener(new View.OnLongClickListener() {
          @Override
@@ -333,27 +339,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             });
          }
       });
-      Disposable disposable = client.subscribe((ChatEvent event) -> {
-         String eventType = event.getType();
-         if(eventType.equals(CustomEvents.UPVOTE.toString())){
-            System.out.println("SUCCESSFULLY LISTENED TO EVENT: " + eventType);
-            mDatabase.getVoteCount(channelId, msg.getId()).onSuccessTask(dataSnapshot -> {
-               if (dataSnapshot.exists()) {
-                  Object up_vote_count = dataSnapshot.getValue();
-                  binding.upVoteButton.setText(up_vote_count.toString());
-               } else {
-                  binding.upVoteButton.setText("0");
-               }
-               return null;
-            });
-         } else if(event.getType().equals(CustomEvents.PROF_TICK.toString())){
-               profTick(channelId,msg);
-         } else if(eventType.equals(CustomEvents.TA_TICK.toString())){
-               TATick(channelId,msg);
-         } else if(eventType.equals(CustomEvents.OWNER_TICK.toString())){
-               ownerTick(channelId,msg);
-         }
-      });
+
       mDatabase.getVoteCount(channelId, msg.getId()).onSuccessTask(dataSnapshot -> {
          if (dataSnapshot.exists()) {
             Object up_vote_count = dataSnapshot.getValue();
@@ -407,7 +393,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                   @Override
                   public Task<Object> then(Void unused) throws Exception {
                      System.out.println("UPVOTED SUCCESSFULLY!");
-                     eventSender(channelId,CustomEvents.UPVOTE);
+                     //eventSender(LIVESTREAM,channelId,CustomEvents.UPVOTE);
                      return null;
                   }
                });
@@ -476,16 +462,42 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       emptyTickClicked = !emptyTickClicked;
 
    }
-   private void eventSender(String channelCid, CustomEvents eventType){
-
-      client.channel(channelCid).sendEvent(eventType.toString(),new HashMap<>()).enqueue(result -> {
-         if (result.isSuccess()) {
-            System.out.println("SUCCESSFULLY SENT EVENT: " + eventType);
-         } else {
-            System.out.println("Error sending custom event: " + eventType + "-->" + result);
-         }
-      });
-   }
+//   private void eventSender(String channelType, String channelId, CustomEvents eventType){
+//
+//      client.channel(channelType,channelId).sendEvent(eventType.toString(),new HashMap<>()).enqueue(result -> {
+//         if (result.isSuccess()) {
+//            System.out.println("SUCCESSFULLY SENT EVENT: " + eventType);
+//         } else {
+//            System.out.println("Error sending custom event: " + eventType + "-->" + result);
+//         }
+//      });
+//   }
+//   private void setCustomEventListeners(String channelId, Message msg){
+//      Disposable disposable = client.subscribe((ChatEvent event) -> {
+//         String eventType = event.getType();
+//         if(eventType.equals(CustomEvents.UPVOTE.toString())){
+//            System.out.println("SUCCESSFULLY LISTENED TO EVENT: " + eventType);
+//            int current_votes = Integer.parseInt((String) binding.upVoteButton.getText());
+//            current_votes++;
+//            binding.upVoteButton.setText(Integer.toString(current_votes));
+////            mDatabase.getVoteCount(channelId, msg.getId()).onSuccessTask(dataSnapshot -> {
+////               if (dataSnapshot.exists()) {
+////                  Object up_vote_count = dataSnapshot.getValue();
+////                  binding.upVoteButton.setText(up_vote_count.toString());
+////               } else {
+////                  binding.upVoteButton.setText("0");
+////               }
+////               return null;
+////            });
+//         } else if(eventType.equals(CustomEvents.PROF_TICK.toString())){
+//            profTick(channelId,msg);
+//         } else if(eventType.equals(CustomEvents.TA_TICK.toString())){
+//            TATick(channelId,msg);
+//         } else if(eventType.equals(CustomEvents.OWNER_TICK.toString())){
+//            ownerTick(channelId,msg);
+//         }
+//      });
+//   }
 
 
 
