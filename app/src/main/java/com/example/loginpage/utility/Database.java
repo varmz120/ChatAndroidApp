@@ -106,6 +106,11 @@ public class Database {
       return channelReference.child(channelId).child(REPLIES).child(replyId).child(EXTRA_DATA).child(user).setValue("true");
 
    }
+   public Task<Void>ReplyTickRemoved(String channelId, String replyId,String user){
+      return channelReference.child(channelId).child(REPLIES).child(replyId).child(EXTRA_DATA).child(user).setValue("false");
+
+   }
+
 
    public Task<Void> upVoteMessage(String channelId, String messageId, int votes) {
       return getExtraDataForMessage(channelId, messageId).child(VOTE_COUNT).setValue(votes);
@@ -129,6 +134,16 @@ public class Database {
 
    public DatabaseReference getExtraDataForMessage(String channelId, String messageId) {
       return channelReference.child(channelId).child(MESSAGES).child(messageId).child(EXTRA_DATA);
+   }
+   public Task<DataSnapshot> getExtraDataForMessage_diff(String channelId, String messageId) {
+      return channelReference.child(channelId).child(MESSAGES).child(messageId).child(EXTRA_DATA).get();
+   }
+   public Task<DataSnapshot> getExtraDataForReplies_diff(String channelId, String replyId) {
+      return channelReference.child(channelId).child(REPLIES).child(replyId).child(EXTRA_DATA).get();
+   }
+   public DatabaseReference getExtraDataForReply(String channelId, String replyId) {
+
+      return channelReference.child(channelId).child(REPLIES).child(replyId).child(EXTRA_DATA);
    }
 
    public Task<DataSnapshot> getReplyUpVoteCount(String channelId, String replyId) {

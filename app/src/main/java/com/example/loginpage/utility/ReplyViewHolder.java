@@ -19,6 +19,9 @@ import com.getstream.sdk.chat.adapter.MessageListItem;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -26,6 +29,9 @@ import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.models.Message;
@@ -50,16 +56,18 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
     public ImageView redCircle;
     private static final String PREF_NAME = "upvote_pref";
     private static final String KEY_UPVOTED_IDS = "upvoted_ids";
+    private boolean emptyTickClicked = false;
     private Set<String> getUpvotedIds() {
         SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         return preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
     }
 
     // method to add an ID to the set of upvoted IDs in shared preference
-    private void addUpvotedId(String id) {
+    private void addUpvotedId(String userId, String messageId) {
         SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         Set<String> upvotedIds = preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
-        upvotedIds.add(id);
+        String upvotedId = userId + ":" + messageId;
+        upvotedIds.add(upvotedId);
         preferences.edit().putStringSet(KEY_UPVOTED_IDS, upvotedIds).apply();
     }
 
@@ -94,6 +102,51 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
         maroonCircle.setVisibility(View.GONE);
         redCircle.setVisibility(View.GONE);
         emptyTick.setVisibility(View.VISIBLE);
+        mDatabase.getExtraDataForReply(channelId_messageId, msg.getId()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(snapshot.getValue().toString());
+                        String taApproved = jsonObject.getString("taApproved");
+                        String studentApproved = jsonObject.getString("studentApproved");
+                        String profApproved = jsonObject.getString("profApproved");
+                        if(taApproved.equals("true") || studentApproved.equals("true") || profApproved.equals("true")){
+                            emptyTick.setVisibility(View.GONE);
+                        }
+                        else {emptyTick.setVisibility(View.VISIBLE);}
+                        if(profApproved.equals("true")){
+                            redCircle.setVisibility(View.VISIBLE);
+                        }
+                        else{redCircle.setVisibility(View.GONE);}
+                        if(taApproved.equals("true")){
+                            maroonCircle.setVisibility(View.VISIBLE);
+                        }
+                        else{maroonCircle.setVisibility(View.GONE);}
+                        if(studentApproved.equals("true")){
+                            pinkTick.setVisibility(View.VISIBLE);
+                        }
+                        else{pinkTick.setVisibility(View.GONE);}
+
+
+
+                        String vote_count = jsonObject.getString("vote_count");
+                        binding.upVoteButton.setText(vote_count);
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                } else {
+                    System.out.println("SNAPSHOT DOES NOT EXIST: " + snapshot);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         mDatabase.getReplyTickPressed(channelId_messageId,msg.getId(),"profApproved").onSuccessTask(dataSnapshot -> {
             if (dataSnapshot.exists()) {
@@ -146,24 +199,31 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
                         boolean permissionGrantedProf = userRole.equals(Professor);
                         boolean permissionGrantedTA = userRole.equals(TA);
                         boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
+                        mDatabase.getExtraDataForReplies_diff(channelId_messageId, msg.getId()).onSuccessTask(dataSnap -> {
+                            JSONObject jsonObject = new JSONObject(dataSnap.getValue().toString());
+                            String taApproved = jsonObject.getString("taApproved");
+                            String studentApproved = jsonObject.getString("studentApproved");
+                            String profApproved = jsonObject.getString("profApproved");
+                            System.out.println(profApproved);
+                            if (permissionQuestionOwner) {
+                                // send a channel event that ticks this message using the UI components below
+                                ownerTick(channelId,msg,studentApproved);
+                                //eventSender(LIVESTREAM,channelId,CustomEvents.OWNER_TICK);
+                            }
 
-                        if (permissionGrantedProf) {
-                            emptyTick.setVisibility(View.GONE);
-                            redCircle.setVisibility(View.VISIBLE);
-                            mDatabase.ReplyTickPressed(channelId_messageId,msg.getId(),"profApproved");
-                        }
+                            else if (permissionGrantedProf) {
+                                profTick(channelId,msg,profApproved);
+                                //eventSender(LIVESTREAM,channelId, CustomEvents.PROF_TICK);
+                            }
 
-                        if (permissionGrantedTA) {
-                            emptyTick.setVisibility(View.GONE);
-                            maroonCircle.setVisibility(View.VISIBLE);
-                            mDatabase.ReplyTickPressed(channelId_messageId,msg.getId(),"taApproved");
-                        }
+                            else if (permissionGrantedTA) {
+                                TATick(channelId,msg,taApproved);
+                                //eventSender(LIVESTREAM,channelId,CustomEvents.TA_TICK);
+                            }
+                            return null;
 
-                        if (permissionQuestionOwner) {
-                            emptyTick.setVisibility(View.GONE);
-                            pinkTick.setVisibility(View.VISIBLE);
-                            mDatabase.ReplyTickPressed(channelId_messageId,msg.getId(),"studentApproved");
-                        }
+
+                        });
                     }
                     return null;
                 });
@@ -295,8 +355,10 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
             @Override
             public void onClick(View view) {
                 String messageId = msg.getId();
+                String userId = uid;
                 Set<String> upvotedIds = getUpvotedIds();
-                if (!upvotedIds.contains(messageId)){
+                String upvotedId = userId + ":" + messageId;
+                if (!upvotedIds.contains(upvotedId)){
                     int current_votes = Integer.parseInt(upVoteButton.getText().toString());
                     //int current_votes = (int) double_type_votes;
                     int added_votes = current_votes + 1;
@@ -313,7 +375,7 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
                     String new_votes = Integer.toString(added_votes);
                     upVoteButton.setText(new_votes);
                     upVoteButton.setEnabled(false); // disable the button
-                    addUpvotedId(messageId); // add the ID to the set of upvoted IDs
+                    addUpvotedId(userId,messageId); // add the ID to the set of upvoted IDs
                 }
                 else{
                     upVoteButton.setEnabled(false); // disable the button
@@ -321,7 +383,64 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
 
             }
         });
-    }
 
+
+    }
+    private void ownerTick(String channelId, Message msg){
+        if (!emptyTickClicked) {
+            emptyTick.setVisibility(View.GONE);
+            pinkTick.setVisibility(View.VISIBLE);
+            mDatabase.ReplyTickPressed(channelId, msg.getId(), "studentApproved");
+        }
+        else {
+            emptyTick.setVisibility(View.VISIBLE);
+            pinkTick.setVisibility(View.GONE);
+            mDatabase.ReplyTickRemoved(channelId, msg.getId(), "studentApproved");
+        }
+
+        emptyTickClicked = !emptyTickClicked;
+    }
+    private void ownerTick(String channelId, Message msg,String studentApproved){
+        if (studentApproved.equals("false")) {
+            emptyTick.setVisibility(View.GONE);
+            pinkTick.setVisibility(View.VISIBLE);
+            mDatabase.ReplyTickPressed(channelId, msg.getId(), "studentApproved");
+        }
+        else {
+            emptyTick.setVisibility(View.VISIBLE);
+            pinkTick.setVisibility(View.GONE);
+            mDatabase.ReplyTickRemoved(channelId, msg.getId(), "studentApproved");
+        }
+
+        emptyTickClicked = !emptyTickClicked;
+    }
+    private void profTick(String channelId, Message msg,String profApproved){
+        if (profApproved.equals("false")) {
+            emptyTick.setVisibility(View.GONE);
+            redCircle.setVisibility(View.VISIBLE);
+            mDatabase.ReplyTickPressed(channelId, msg.getId(), "profApproved");
+        }
+        else {
+            emptyTick.setVisibility(View.VISIBLE);
+            redCircle.setVisibility(View.GONE);
+            mDatabase.ReplyTickRemoved(channelId, msg.getId(), "profApproved");
+        }
+        emptyTickClicked = !emptyTickClicked;
+
+    }
+    private void TATick(String channelId, Message msg,String taApproved){
+        if (taApproved.equals("false")) {
+            emptyTick.setVisibility(View.GONE);
+            maroonCircle.setVisibility(View.VISIBLE);
+            mDatabase.ReplyTickPressed(channelId, msg.getId(), "taApproved");
+        }
+        else {
+            emptyTick.setVisibility(View.VISIBLE);
+            maroonCircle.setVisibility(View.GONE);
+            mDatabase.ReplyTickRemoved(channelId, msg.getId(), "taApproved");
+        }
+        emptyTickClicked = !emptyTickClicked;
+
+    }
 
 }

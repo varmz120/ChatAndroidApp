@@ -204,22 +204,33 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                   boolean permissionGrantedProf = userRole.equals(Professor);
                   boolean permissionGrantedTA = userRole.equals(TA);
                   boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
+                  mDatabase.getExtraDataForMessage_diff(channelId, msg.getId()).onSuccessTask(dataSnap -> {
+                     JSONObject jsonObject = new JSONObject(dataSnap.getValue().toString());
+                     String taApproved = jsonObject.getString("taApproved");
+                     String studentApproved = jsonObject.getString("studentApproved");
+                     String profApproved = jsonObject.getString("profApproved");
+                     System.out.println(profApproved);
+                     if (permissionQuestionOwner) {
+                        // send a channel event that ticks this message using the UI components below
+                        ownerTick(channelId,msg,studentApproved);
+                        //eventSender(LIVESTREAM,channelId,CustomEvents.OWNER_TICK);
+                     }
 
-                  if (permissionQuestionOwner) {
-                     // send a channel event that ticks this message using the UI components below
-                     ownerTick(channelId,msg);
-                     //eventSender(LIVESTREAM,channelId,CustomEvents.OWNER_TICK);
-                  }
-
-                  else if (permissionGrantedProf) {
-                        profTick(channelId,msg);
+                     else if (permissionGrantedProf) {
+                        profTick(channelId,msg,profApproved);
                         //eventSender(LIVESTREAM,channelId, CustomEvents.PROF_TICK);
-                  }
+                     }
 
-                  else if (permissionGrantedTA) {
-                      TATick(channelId,msg);
-                     //eventSender(LIVESTREAM,channelId,CustomEvents.TA_TICK);
-                  }
+                     else if (permissionGrantedTA) {
+                        TATick(channelId,msg,taApproved);
+                        //eventSender(LIVESTREAM,channelId,CustomEvents.TA_TICK);
+                     }
+                     return null;
+
+
+                  });
+
+
 
                }
                return null;
@@ -420,8 +431,8 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       upvotedIds.add(upvotedId);
       preferences.edit().putStringSet(KEY_UPVOTED_IDS, upvotedIds).apply();
    }
-   private void ownerTick(String channelId, Message msg){
-      if (!emptyTickClicked) {
+   private void ownerTick(String channelId, Message msg,String studentApproved){
+      if (studentApproved.equals("false")) {
          emptyTick.setVisibility(View.GONE);
          pinkTick.setVisibility(View.VISIBLE);
          mDatabase.tickPressed(channelId, msg.getId(), "studentApproved");
@@ -434,8 +445,8 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
 
       emptyTickClicked = !emptyTickClicked;
    }
-   private void profTick(String channelId, Message msg){
-      if (!emptyTickClicked) {
+   private void profTick(String channelId, Message msg,String profApproved){
+      if (profApproved.equals("false")) {
          emptyTick.setVisibility(View.GONE);
          redCircle.setVisibility(View.VISIBLE);
          mDatabase.tickPressed(channelId, msg.getId(), "profApproved");
@@ -448,8 +459,8 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       emptyTickClicked = !emptyTickClicked;
 
    }
-   private void TATick(String channelId, Message msg){
-      if (!emptyTickClicked) {
+   private void TATick(String channelId, Message msg,String taApproved){
+      if (taApproved.equals("false")) {
          emptyTick.setVisibility(View.GONE);
          maroonCircle.setVisibility(View.VISIBLE);
          mDatabase.tickPressed(channelId, msg.getId(), "taApproved");
