@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.loginpage.utility.BundleDeliveryMan;
 import com.example.loginpage.utility.Database;
@@ -32,6 +33,7 @@ import java.util.Random;
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.api.models.FilterObject;
 import io.getstream.chat.android.client.api.models.QueryChannelRequest;
+import io.getstream.chat.android.client.api.models.QueryChannelsRequest;
 import io.getstream.chat.android.client.api.models.querysort.QuerySortByField;
 import io.getstream.chat.android.client.api.models.querysort.QuerySorter;
 import io.getstream.chat.android.client.channel.ChannelClient;
@@ -124,29 +126,47 @@ public class HomePage extends AppCompatActivity {
                  if(connectionResult.isError()) {
                     System.out.println("Error connecting to client!" + connectionResult.error());
                  } else {
+
                     RoomCode = (EditText) findViewById(R.id.roomCode);
                     String roomCode = RoomCode.getText().toString();
                     String channelId = "messageRoom"+roomCode;
-                    Task<Boolean> checkChannelTask = mDatabase.checkChannel(channelId);
+                    FilterObject filter = Filters.and(
+                            Filters.eq("type", "livestream"),
+                            Filters.in("id", Arrays.asList(channelId))
+                    );
 
-                    checkChannelTask.addOnSuccessListener(new OnSuccessListener<Boolean>() {
-                       @Override
-                       public void onSuccess(Boolean channelExists) {
-                          if (channelExists) {
-                             System.out.println("Channel exists.");
-                             startChannel(roomCode);
-                          } else {
-                             System.out.println("Channel does not exist.");
+                    int offset = 0;
+                    int limit = 10;
+                    QuerySortByField<Channel> sort = QuerySortByField.descByName("last_message_at");
+                    int messageLimit = 0;
+                    int memberLimit = 0;
+
+                    QueryChannelsRequest request = new QueryChannelsRequest(filter, offset, limit, sort, messageLimit, memberLimit)
+                            .withWatch()
+                            .withState();
+
+                    client.queryChannels(request).enqueue(result -> {
+                       if (result.isSuccess()) {
+                          List<Channel> channels = result.data();
+                          System.out.println(channels);
+                          System.out.println("Channels printed");
+                          if(channels.size()==0){
+                             Log.w("TAG", "channel does not exist");
+                             Toast.makeText(HomePage.this, "channel does not exist",
+                                     Toast.LENGTH_SHORT).show();
                           }
+                          if(channels.size()!=0){
+                             startChannel(roomCode);
+                          }
+                       } else {
+                          System.out.println(result);
                        }
                     });
 
-                    checkChannelTask.addOnFailureListener(new OnFailureListener() {
-                       @Override
-                       public void onFailure(@NonNull Exception e) {
-                          System.out.println("Error checking channel: " + e.getMessage());
-                       }
-                    });
+
+
+
+
 
                  }
               }
