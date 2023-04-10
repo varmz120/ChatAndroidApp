@@ -49,7 +49,7 @@
                 android:background="@color/stream_ui_grey_whisper"
                 android:gravity="center|center_vertical"
                 android:paddingStart="100dp"
-                android:paddingEnd="10dp"
+                android:paddingEnd="80dp"
                 android:text=""
                 android:textColor="@color/black"
                 android:textSize="15sp"
