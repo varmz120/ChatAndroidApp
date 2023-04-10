@@ -76,6 +76,7 @@ public class HomePage extends AppCompatActivity {
       Button createRoomButton = findViewById(R.id.createRoom);
       Button submit = findViewById(R.id.roomSubmit);
       Button settingsButton = findViewById(R.id.settingsButton);
+      Button logOut=findViewById(R.id.logOut);
 
       String userToken = b.getString("userToken");
       String uid = b.getString("uid");
@@ -102,6 +103,15 @@ public class HomePage extends AppCompatActivity {
             Bundle settingsPageBundle = mDeliveryMan.SettingsPageBundle(uid);
             intentSettings.putExtras(settingsPageBundle);
             startActivity(intentSettings);
+         }
+      });
+
+      logOut.setOnClickListener(new View.OnClickListener(){
+         @Override
+         public void onClick(View view) {
+            Intent intentLogOut = new Intent(HomePage.this,MainActivity.class);
+            startActivity(intentLogOut);
+
          }
       });
    }
