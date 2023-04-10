@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -114,7 +115,7 @@ public class ChannelActivity extends AppCompatActivity {
                         if (client.getCurrentUser().getId().equals(channel1.getCreatedBy().getId())){
                             classChannel.delete().enqueue(result1 -> {
                                 if (result1.isSuccess()){
-                                    System.out.println("Channel has been deleted");
+                                    Log.i("ChannelActivity","Channel has been deleted");
                                     Toast.makeText(getApplicationContext(), "The channel has been deleted.", Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(ChannelActivity.this,HomePage.class);
                                     Bundle b = mBundleDeliveryMan.HomePageBundle(ChatClient.instance().getCurrentUser().getId());
@@ -122,18 +123,17 @@ public class ChannelActivity extends AppCompatActivity {
                                     startActivity(intent);
                                 }
                                 else{
-                                    System.out.println("Channel not deleted");
-                                    System.out.println("Result of channel.delete()"+result1);
+                                    Log.i("ChannelActivity","Result of channel.delete()"+result1);
                                 }
                             });
                         }
                         else{
                             Toast.makeText(getApplicationContext(), "The user does not have permission to delete.", Toast.LENGTH_SHORT).show();
-                            System.out.println("User does not have permission to delete");
+                            Log.e("ChannelActivity","User does not have permission to delete");
                         }
                     }
                     else{
-                        System.out.println("Result of channel.watch()"+result);
+                        Log.i("ChannelActivity","Result of channel.watch()"+result);
                     }
                 });
 

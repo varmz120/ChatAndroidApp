@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -45,7 +46,6 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
         Role = (Spinner) findViewById(R.id.spinnerRole);
         Register = (Button) findViewById(R.id.register);
-        //roleView = (TextView) findViewById(R.id.role);
         Back = (Button) findViewById(R.id.back);
         mDatabase = Database.getInstance();
 
@@ -57,7 +57,6 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedRole = parent.getItemAtPosition(position).toString();
-                //Toast.makeText(getApplicationContext(), "Selected: " + selectedText, Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -71,6 +70,10 @@ public class RegisterActivity extends AppCompatActivity {
                 Username = ((EditText) findViewById(R.id.newusername)).getText().toString();
                 Password = ((EditText) findViewById(R.id.newpassword)).getText().toString();
                 confirmPassword = ((EditText) findViewById(R.id.confirmpassword)).getText().toString();
+                if (TextUtils.isEmpty(Username)){
+                    Toast.makeText(getApplicationContext(),"Username is empty!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 if (selectedRole.equals("")){
                     Toast.makeText(RegisterActivity.this,"Registration failed, please select a role",Toast.LENGTH_LONG).show();
                 } else if (Password.equalsIgnoreCase(confirmPassword) && !Password.equalsIgnoreCase("")) {
@@ -81,11 +84,6 @@ public class RegisterActivity extends AppCompatActivity {
                                     if (task.isSuccessful()) {
                                         // Get the user ID
                                         String userId = mAuth.getCurrentUser().getUid();
-
-                                        // Store additional user information in the Firebase Realtime Database
-//                                        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-//                                        mDatabase.child("users").child(userId).child("username").setValue(Username);
-//                                        mDatabase.child("users").child(userId).child("role").setValue(selectedRole);
                                         mDatabase.storeDetails(userId,Username,selectedRole);
 
                                         // Show success message

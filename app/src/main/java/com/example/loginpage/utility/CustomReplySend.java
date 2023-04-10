@@ -91,7 +91,7 @@ public class CustomReplySend extends ConstraintLayout implements MessageInputVie
          @Override
          public Task<Object> then(Void unused) throws Exception {
             mDatabase.sendReplyToHistory(reply.getUser().getId(),reply).onSuccessTask(result->{
-               System.out.println("Successfully sent Reply: " + reply.getId());
+               Log.i("CustomReplySend","Successfully sent Reply: " + reply.getId());
                return null;
             });
             return null;

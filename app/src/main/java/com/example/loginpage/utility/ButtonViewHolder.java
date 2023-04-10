@@ -3,6 +3,7 @@ package com.example.loginpage.utility;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -146,7 +147,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                }
 
             } else {
-               System.out.println("SNAPSHOT DOES NOT EXIST: " + snapshot);
+               Log.e("ButtonViewHolder","Snapshot does not exist: " + snapshot);
             }
          }
 
@@ -186,7 +187,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                pinkTick.setVisibility(View.VISIBLE);
             }
             else {
-               System.out.println("it is indeed"+studentPressed.toString());
+               Log.i("ButtonViewHolder","It is indeed"+studentPressed.toString());
             }
 
          }
@@ -238,7 +239,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
                if (dataSnapshot.exists()) {
                   String userRole = dataSnapshot.getValue().toString(); // Give userRole
-                  System.out.println("USER ROLE FROM DATABASE: " + userRole);
+                  Log.i("ButtonViewHolder","User role from database: " + userRole);
                   boolean permissionGrantedProf = userRole.equals(Professor);
                   boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
                   if (permissionGrantedProf || permissionQuestionOwner) {
@@ -279,7 +280,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
                if (dataSnapshot.exists()) {
                   String userRole = dataSnapshot.getValue().toString();
-                  System.out.println("USER ROLE FROM DATABASE: " + userRole);
+                  Log.i("ButtonViewHolder","User role from database: " + userRole);
                   boolean permissionGrantedProf = userRole.equals(Professor);
                   boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
                   if (permissionGrantedProf || permissionQuestionOwner) {
@@ -322,11 +323,11 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                      if (result.isSuccess()) {
                         Message deletedMessage = result.data();
                         Toast.makeText(getContext(), "Your message has been deleted.", Toast.LENGTH_SHORT).show();
-                        System.out.println("The deleted message is: " + deletedMessage);
+                        Log.i("ButtonViewHolder","The deleted message is: " + deletedMessage);
                      } else {
                         Toast.makeText(getContext(), "You cannot delete this message.", Toast.LENGTH_SHORT).show();
-                        System.out.println("Message is not deleted for messageID: " + msg.getId());
-                        System.out.println(result);
+                        Log.e("ButtonViewHolder","Message is not deleted for messageID: " + msg.getId());
+                        Log.e("ButtonViewHolder", String.valueOf(result));
                      }
                   });
                   return null;
@@ -334,7 +335,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             }).addOnFailureListener(new OnFailureListener() {
                @Override
                public void onFailure(@NonNull Exception e) {
-                  System.out.println("Error deleting message from database: " + e);
+                  Log.e("ButtonViewHolder","Error deleting message from database: " + e);
                }
             });
          }
@@ -367,7 +368,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                      Intent myintent = ThreadActivity.newIntent(getContext(), channelClient); //initialises intent
                      myintent.putExtra("messageid", newChannelId); //puts message id
                      view.getContext().startActivity(myintent); //starts activity
-                     System.out.println(" Reply channel with ID: " + newChannelId + " started successfully ");
+                     Log.i("ButtonViewHolder"," Reply channel with ID: " + newChannelId + " started successfully ");
                   }
                }
                return null;
@@ -392,8 +393,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                   @NonNull
                   @Override
                   public Task<Object> then(Void unused) throws Exception {
-                     System.out.println("UPVOTED SUCCESSFULLY!");
-                     //eventSender(LIVESTREAM,channelId,CustomEvents.UPVOTE);
+                     Log.i("ButtonViewHolder","Upvoted successfully!");
                      return null;
                   }
                });
@@ -462,43 +462,4 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       emptyTickClicked = !emptyTickClicked;
 
    }
-//   private void eventSender(String channelType, String channelId, CustomEvents eventType){
-//
-//      client.channel(channelType,channelId).sendEvent(eventType.toString(),new HashMap<>()).enqueue(result -> {
-//         if (result.isSuccess()) {
-//            System.out.println("SUCCESSFULLY SENT EVENT: " + eventType);
-//         } else {
-//            System.out.println("Error sending custom event: " + eventType + "-->" + result);
-//         }
-//      });
-//   }
-//   private void setCustomEventListeners(String channelId, Message msg){
-//      Disposable disposable = client.subscribe((ChatEvent event) -> {
-//         String eventType = event.getType();
-//         if(eventType.equals(CustomEvents.UPVOTE.toString())){
-//            System.out.println("SUCCESSFULLY LISTENED TO EVENT: " + eventType);
-//            int current_votes = Integer.parseInt((String) binding.upVoteButton.getText());
-//            current_votes++;
-//            binding.upVoteButton.setText(Integer.toString(current_votes));
-////            mDatabase.getVoteCount(channelId, msg.getId()).onSuccessTask(dataSnapshot -> {
-////               if (dataSnapshot.exists()) {
-////                  Object up_vote_count = dataSnapshot.getValue();
-////                  binding.upVoteButton.setText(up_vote_count.toString());
-////               } else {
-////                  binding.upVoteButton.setText("0");
-////               }
-////               return null;
-////            });
-//         } else if(eventType.equals(CustomEvents.PROF_TICK.toString())){
-//            profTick(channelId,msg);
-//         } else if(eventType.equals(CustomEvents.TA_TICK.toString())){
-//            TATick(channelId,msg);
-//         } else if(eventType.equals(CustomEvents.OWNER_TICK.toString())){
-//            ownerTick(channelId,msg);
-//         }
-//      });
-//   }
-
-
-
 }
