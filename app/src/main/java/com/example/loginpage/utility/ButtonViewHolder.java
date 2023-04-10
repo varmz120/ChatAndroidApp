@@ -255,6 +255,8 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                      });
                      delete.startAnimation(animation);
                   }
+
+
                }
                return null;
             });
@@ -369,10 +371,13 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
          @Override
          public void onClick(View view) {
             String messageId = msg.getId();
+            String userId = uid;
 
             // Contains the set of string values representing the IDs of the items that the user has upvoted.
             Set<String> upvotedIds = getUpvotedIds();
-            if (!upvotedIds.contains(messageId)) {
+            String upvotedId = userId + ":" + messageId;
+
+            if (!upvotedIds.contains(upvotedId)) {
                int current_votes = Integer.parseInt(upVoteButton.getText().toString());
                int added_votes = current_votes + 1;
                mDatabase.upVoteMessage(channelId, messageId, added_votes).onSuccessTask(new SuccessContinuation<Void, Object>() {
@@ -387,7 +392,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                String new_votes = Integer.toString(added_votes);
                upVoteButton.setText(new_votes);
                upVoteButton.setEnabled(false); // disable the button
-               addUpvotedId(messageId); // add the ID to the set of upvoted IDs
+               addUpvotedId(userId, messageId); // add the user ID and message ID to the set of upvoted IDs
             } else {
                upVoteButton.setEnabled(false); // disable the button
             }
@@ -400,10 +405,11 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
    }
 
    // method to add an ID to the set of upvoted IDs in shared preference
-   private void addUpvotedId(String id) {
+   private void addUpvotedId(String userId, String messageId) {
       SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
       Set<String> upvotedIds = preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
-      upvotedIds.add(id);
+      String upvotedId = userId + ":" + messageId;
+      upvotedIds.add(upvotedId);
       preferences.edit().putStringSet(KEY_UPVOTED_IDS, upvotedIds).apply();
    }
    private void ownerTick(String channelId, Message msg){
