@@ -33,6 +33,9 @@ import java.util.Set;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.channel.ChannelClient;
 import io.getstream.chat.android.client.events.ChannelUpdatedEvent;
@@ -117,17 +120,22 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                   String studentApproved = jsonObject.getString("studentApproved");
                   String profApproved = jsonObject.getString("profApproved");
                   if(taApproved.equals("true") || studentApproved.equals("true") || profApproved.equals("true")){
-                        emptyTick.setVisibility(View.GONE);
-                     }
+                     emptyTick.setVisibility(View.GONE);
+                  }
+                  else {emptyTick.setVisibility(View.VISIBLE);}
                   if(profApproved.equals("true")){
                      redCircle.setVisibility(View.VISIBLE);
                   }
+                  else{redCircle.setVisibility(View.GONE);}
                   if(taApproved.equals("true")){
                      maroonCircle.setVisibility(View.VISIBLE);
                   }
+                  else{maroonCircle.setVisibility(View.GONE);}
                   if(studentApproved.equals("true")){
                      pinkTick.setVisibility(View.VISIBLE);
                   }
+                  else{pinkTick.setVisibility(View.GONE);}
+
 
 
                   String vote_count = jsonObject.getString("vote_count");
