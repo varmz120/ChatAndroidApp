@@ -20,6 +20,9 @@ import com.getstream.sdk.chat.adapter.MessageListItem;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +31,9 @@ import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.channel.ChannelClient;
@@ -99,6 +105,51 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
       redCircle.setVisibility(View.GONE);
       maroonCircle.setVisibility(View.GONE);
       emptyTick.setVisibility(View.VISIBLE);
+
+      mDatabase.getExtraDataForMessage(channelId, msg.getId()).addValueEventListener(new ValueEventListener() {
+         @Override
+         public void onDataChange(@NonNull DataSnapshot snapshot) {
+            if (snapshot.exists()) {
+               try {
+                  JSONObject jsonObject = new JSONObject(snapshot.getValue().toString());
+                  String taApproved = jsonObject.getString("taApproved");
+                  String studentApproved = jsonObject.getString("studentApproved");
+                  String profApproved = jsonObject.getString("profApproved");
+                  if(taApproved.equals("true") || studentApproved.equals("true") || profApproved.equals("true")){
+                     emptyTick.setVisibility(View.GONE);
+                  }
+                  else {emptyTick.setVisibility(View.VISIBLE);}
+                  if(profApproved.equals("true")){
+                     redCircle.setVisibility(View.VISIBLE);
+                  }
+                  else{redCircle.setVisibility(View.GONE);}
+                  if(taApproved.equals("true")){
+                     maroonCircle.setVisibility(View.VISIBLE);
+                  }
+                  else{maroonCircle.setVisibility(View.GONE);}
+                  if(studentApproved.equals("true")){
+                     pinkTick.setVisibility(View.VISIBLE);
+                  }
+                  else{pinkTick.setVisibility(View.GONE);}
+
+
+                  String vote_count = jsonObject.getString("vote_count");
+                  binding.upVoteButton.setText(vote_count);
+
+               } catch (JSONException e) {
+                  throw new RuntimeException(e);
+               }
+
+            } else {
+               System.out.println("SNAPSHOT DOES NOT EXIST: " + snapshot);
+            }
+         }
+
+         @Override
+         public void onCancelled(@NonNull DatabaseError error) {
+
+         }
+      });
 
       mDatabase.getTickPressed(channelId, msg.getId(),"profApproved").onSuccessTask(dataSnapshot -> {
          if (dataSnapshot.exists()) {

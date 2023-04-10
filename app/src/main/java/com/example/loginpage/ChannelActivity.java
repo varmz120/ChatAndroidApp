@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 
@@ -43,6 +44,7 @@ import java.net.MalformedURLException;
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.channel.ChannelClient;
 
+import io.getstream.chat.android.client.models.Channel;
 import io.getstream.chat.android.client.models.Message;
 
 import io.getstream.chat.android.ui.message.input.MessageInputView;
@@ -95,6 +97,46 @@ public class ChannelActivity extends AppCompatActivity {
                 Bundle b = mBundleDeliveryMan.HomePageBundle(ChatClient.instance().getCurrentUser().getId());
                 intent.putExtras(b);
                 startActivity(intent);
+            }
+        });
+
+        ImageButton deleteChannel = toolbar.findViewById(R.id.deleteChannel);
+        deleteChannel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                ChatClient client = ChatClient.instance();
+
+                classChannel.watch().enqueue(result -> {
+                    if (result.isSuccess()){
+                        Channel channel1 = result.data();
+
+                        if (client.getCurrentUser().getId().equals(channel1.getCreatedBy().getId())){
+                            classChannel.delete().enqueue(result1 -> {
+                                if (result1.isSuccess()){
+                                    System.out.println("Channel has been deleted");
+                                    Toast.makeText(getApplicationContext(), "The channel has been deleted.", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(ChannelActivity.this,HomePage.class);
+                                    Bundle b = mBundleDeliveryMan.HomePageBundle(ChatClient.instance().getCurrentUser().getId());
+                                    intent.putExtras(b);
+                                    startActivity(intent);
+                                }
+                                else{
+                                    System.out.println("Channel not deleted");
+                                    System.out.println("Result of channel.delete()"+result1);
+                                }
+                            });
+                        }
+                        else{
+                            Toast.makeText(getApplicationContext(), "The user does not have permission to delete.", Toast.LENGTH_SHORT).show();
+                            System.out.println("User does not have permission to delete");
+                        }
+                    }
+                    else{
+                        System.out.println("Result of channel.watch()"+result);
+                    }
+                });
+
             }
         });
 

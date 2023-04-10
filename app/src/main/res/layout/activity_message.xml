@@ -30,6 +30,13 @@
 
                 android:layout_gravity="start" />
 
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/deleteChannel"
+                android:layout_gravity="end"
+                app:srcCompat = "@drawable/deletebutton_original4" />
+
             <TextView
                 android:id = "@+id/toolbar_title"
                 android:layout_width="match_parent"
