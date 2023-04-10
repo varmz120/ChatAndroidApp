@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -65,31 +66,35 @@ public class MainActivity extends AppCompatActivity {
                 String email = Name.getText().toString();
                 String password = Password.getText().toString();
                 mAuth = FirebaseAuth.getInstance();
-                mAuth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    // Sign in success, update UI with the signed-in user's information
-                                    Log.d("TAG", "signInWithEmail:success");
-                                    // Creating Firebase User
-                                    FirebaseUser user = mAuth.getCurrentUser();
-                                    //storing uid for streamUser to use later on
-                                    String uid = user.getUid();
-                                    // creating intent to pass information for creating user on to HomePage.java
-                                    start_client();
-                                    Intent intent = new Intent(MainActivity.this,HomePage.class);
-                                    Bundle bundle = mBundleDeliveryMan.HomePageBundle(uid);
-                                    intent.putExtras(bundle);
-                                    startActivity(intent);
-                                } else {
-                                    // If sign in fails, display a message to the user.
-                                    Log.w("TAG", "signInWithEmail:failure", task.getException());
-                                    Toast.makeText(MainActivity.this, "Authentication failed.",
-                                            Toast.LENGTH_SHORT).show();
+                try {
+                    mAuth.signInWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        // Sign in success, update UI with the signed-in user's information
+                                        Log.d("TAG", "signInWithEmail:success");
+                                        // Creating Firebase User
+                                        FirebaseUser user = mAuth.getCurrentUser();
+                                        //storing uid for streamUser to use later on
+                                        String uid = user.getUid();
+                                        // creating intent to pass information for creating user on to HomePage.java
+                                        start_client();
+                                        Intent intent = new Intent(MainActivity.this, HomePage.class);
+                                        Bundle bundle = mBundleDeliveryMan.HomePageBundle(uid);
+                                        intent.putExtras(bundle);
+                                        startActivity(intent);
+                                    } else {
+                                        // If sign in fails, display a message to the user.
+                                        Log.w("TAG", "signInWithEmail:failure", task.getException());
+                                        Toast.makeText(MainActivity.this, "Authentication failed.",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
                                 }
-                            }
-                        });
+                            });
+                }catch(IllegalArgumentException e){
+                    Toast.makeText(getApplicationContext(), "Verify that you have entered valid non-null values!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

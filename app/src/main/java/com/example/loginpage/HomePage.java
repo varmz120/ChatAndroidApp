@@ -69,6 +69,16 @@ public class HomePage extends AppCompatActivity {
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
+      // Setting up handler for uncaught exceptions
+      Thread.setDefaultUncaughtExceptionHandler (new Thread.UncaughtExceptionHandler()
+      {
+         @Override
+         public void uncaughtException (@NonNull Thread thread, @NonNull Throwable e)
+         {
+            handleUncaughtException (thread, e);
+         }
+      });
+
       b = getIntent().getExtras();
       super.onCreate(savedInstanceState);
       setContentView(R.layout.homepage);
@@ -115,7 +125,11 @@ public class HomePage extends AppCompatActivity {
          }
       });
    }
-
+   //we handle exceptions here
+   public void handleUncaughtException (Thread thread, Throwable e)
+   {
+      Toast.makeText(getApplicationContext(),"An unexpected error has occurred.",Toast.LENGTH_LONG).show();
+   }
    private void registerUser(String uid, String userToken){
       User streamUser = new User();
       streamUser.setId(uid);
@@ -127,7 +141,7 @@ public class HomePage extends AppCompatActivity {
          } else {
             String createRoomCode=String.valueOf(randomInteger());
             startChannel(createRoomCode);
-            System.out.println("successfully created a room with code:"+createRoomCode);
+            Log.i("HomePage","successfully created a room with code:"+createRoomCode);
          }
               }
       );
@@ -139,7 +153,7 @@ public class HomePage extends AppCompatActivity {
               streamUser,userToken
       ).enqueue(connectionResult->{
                  if(connectionResult.isError()) {
-                    System.out.println("Error connecting to client!" + connectionResult.error());
+                    Log.e("HomePage","Error connecting to client!" + connectionResult.error());
                  } else {
 
                     RoomCode = findViewById(R.id.roomCode);
@@ -163,8 +177,7 @@ public class HomePage extends AppCompatActivity {
                     client.queryChannels(request).enqueue(result -> {
                        if (result.isSuccess()) {
                           List<Channel> channels = result.data();
-                          System.out.println(channels);
-                          System.out.println("Channels printed");
+                          Log.i("HomePage","Channels printed: "+channels);
                           if(channels.size()==0){
                              Log.w("TAG", "channel does not exist");
                              Toast.makeText(HomePage.this, "channel does not exist",
@@ -174,7 +187,7 @@ public class HomePage extends AppCompatActivity {
                              startChannel(roomCode);
                           }
                        } else {
-                          System.out.println(result);
+                          Log.i("HomePage", String.valueOf(result));
                        }
                     });
 

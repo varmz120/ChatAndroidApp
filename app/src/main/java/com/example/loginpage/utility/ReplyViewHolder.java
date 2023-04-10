@@ -130,7 +130,7 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
 
                 }
                 else {
-                    System.out.println("it is indeed"+studentPressed.toString());
+                    Log.i("ReplyViewHolder","it is indeed"+studentPressed.toString());
                 }
 
             }
@@ -182,7 +182,7 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
                 mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
                     if (dataSnapshot.exists()) {
                         String userRole = dataSnapshot.getValue().toString(); // Give userRole
-                        System.out.println("USER ROLE FROM DATABASE: " + userRole);
+                        Log.i("ReplyViewHolder","User role from database: " + userRole);
                         boolean permissionGrantedProf = userRole.equals(Professor);
                         boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
                         if (permissionGrantedProf || permissionQuestionOwner) {
@@ -221,7 +221,7 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
                 mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
                     if (dataSnapshot.exists()) {
                         String userRole = dataSnapshot.getValue().toString();
-                        System.out.println("USER ROLE FROM DATABASE: " + userRole);
+                        Log.i("ReplyViewHolder","User role from database: " + userRole);
                         boolean permissionGrantedProf = userRole.equals(Professor);
                         boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
                         if (permissionGrantedProf || permissionQuestionOwner) {
@@ -264,11 +264,11 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
                             if (result.isSuccess()) {
                                 Message deletedMessage = result.data();
                                 Toast.makeText(getContext(), "Your message has been deleted.", Toast.LENGTH_SHORT).show();
-                                System.out.println("The deleted message is: " + deletedMessage);
+                                Log.i("ReplyViewHolder","The deleted message is: " + deletedMessage);
                             } else {
                                 Toast.makeText(getContext(), "You cannot delete this message.", Toast.LENGTH_SHORT).show();
-                                System.out.println("Message is not deleted for messageID: " + msg.getId());
-                                System.out.println(result);
+                                Log.e("ReplyViewHolder","Message is not deleted for messageID: " + msg.getId());
+                                Log.e("ReplyViewHolder",String.valueOf(result));
                             }
                         });
                         return null;
@@ -276,7 +276,7 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        System.out.println("Error deleting message from database: " + e);
+                        Log.e("ReplyViewHolder","Error deleting message from database: " + e);
                     }
                 });
             }
