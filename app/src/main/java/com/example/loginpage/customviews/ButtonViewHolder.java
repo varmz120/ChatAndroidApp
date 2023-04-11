@@ -360,17 +360,18 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
             mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
                if (dataSnapshot.exists()) {
                   String userRole = dataSnapshot.getValue().toString();
+                  boolean permissionOwner= msg.getUser().getId().equals(uid);
                   boolean permissionGrantedStudent = userRole.equals(Student) && allowStudent.equals("true");
                   boolean permissionGrantedTA = userRole.equals(TA) && allowTA.equals("true");
                   boolean permissionProf = userRole.equals(Professor);
-                  if (permissionGrantedTA || permissionGrantedStudent || permissionProf) {
+                  if (permissionGrantedTA  ||permissionGrantedStudent || permissionProf||permissionOwner) {
                      String messageId = msg.getId();
                      String newChannelId = channelId + "_" + messageId; // important to keep track of parent page for database
                      ChannelClient channelClient = client.channel(LIVESTREAM, newChannelId); //uses client instance to make channel
                      Intent myintent = ReplyActivity.newIntent(getContext(), channelClient); //initialises intent
                      myintent.putExtra("messageid", newChannelId); //puts message id
                      view.getContext().startActivity(myintent); //starts activity
-                     Log.i("ButtonViewHolder"," Reply channel with ID: " + newChannelId + " started successfully ");
+                     System.out.println(" Reply channel with ID: " + newChannelId + " started successfully ");
                   }
                }
                return null;
