@@ -5,7 +5,7 @@
     android:id="@+id/CreateRoom"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_app">
+    android:background="@drawable/button_rounded_background">
 
     <TextView
         android:id="@+id/usernameField"
