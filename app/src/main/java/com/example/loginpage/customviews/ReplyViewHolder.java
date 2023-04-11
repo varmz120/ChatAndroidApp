@@ -1,4 +1,4 @@
-package com.example.loginpage.utility;
+package com.example.loginpage.customviews;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.loginpage.R;
 import com.example.loginpage.databinding.AttachedButtonBinding;
+import com.example.loginpage.utility.Database;
 import com.getstream.sdk.chat.adapter.MessageListItem;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.SuccessContinuation;

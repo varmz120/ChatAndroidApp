@@ -1,4 +1,4 @@
-package com.example.loginpage.utility;
+package com.example.loginpage.customviews;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -6,6 +6,8 @@ import android.widget.Button;
 
 
 import com.example.loginpage.databinding.AttachedButtonBinding;
+import com.example.loginpage.utility.Database;
+
 import com.getstream.sdk.chat.adapter.MessageListItem;
 
 import java.util.List;

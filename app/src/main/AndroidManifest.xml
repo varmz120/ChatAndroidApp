@@ -38,7 +38,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".ChannelActivity"
+            android:name=".QuestionActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -52,7 +52,7 @@
         </activity>
 
         <activity
-            android:name=".ThreadActivity"
+            android:name=".ReplyActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -69,10 +69,6 @@
                 android:value="" />
         </activity>
 
-        <activity
-            android:name=".SettingActivity"
-            android:exported="true">
-        </activity>
 
     </application>
 

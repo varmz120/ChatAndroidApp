@@ -1,4 +1,4 @@
-package com.example.loginpage.utility;
+package com.example.loginpage.customviews;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,8 +15,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.loginpage.R;
-import com.example.loginpage.ThreadActivity;
+import com.example.loginpage.ReplyActivity;
 import com.example.loginpage.databinding.AttachedButtonBinding;
+import com.example.loginpage.utility.Database;
 import com.getstream.sdk.chat.adapter.MessageListItem;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.SuccessContinuation;
@@ -25,9 +26,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,16 +37,9 @@ import org.json.JSONObject;
 
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.channel.ChannelClient;
-import io.getstream.chat.android.client.events.ChannelUpdatedEvent;
-import io.getstream.chat.android.client.events.ChatEvent;
-import io.getstream.chat.android.client.events.NewMessageEvent;
 import io.getstream.chat.android.client.models.Message;
-import io.getstream.chat.android.client.utils.observable.Disposable;
 import io.getstream.chat.android.ui.message.list.adapter.BaseMessageItemViewHolder;
 import io.getstream.chat.android.ui.message.list.adapter.MessageListItemPayloadDiff;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 /**
@@ -376,7 +367,7 @@ class ButtonViewHolder extends BaseMessageItemViewHolder<MessageListItem.Message
                      String messageId = msg.getId();
                      String newChannelId = channelId + "_" + messageId; // important to keep track of parent page for database
                      ChannelClient channelClient = client.channel(LIVESTREAM, newChannelId); //uses client instance to make channel
-                     Intent myintent = ThreadActivity.newIntent(getContext(), channelClient); //initialises intent
+                     Intent myintent = ReplyActivity.newIntent(getContext(), channelClient); //initialises intent
                      myintent.putExtra("messageid", newChannelId); //puts message id
                      view.getContext().startActivity(myintent); //starts activity
                      Log.i("ButtonViewHolder"," Reply channel with ID: " + newChannelId + " started successfully ");

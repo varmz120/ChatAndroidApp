@@ -1,8 +1,7 @@
-package com.example.loginpage;
+package com.example.loginpage.utility;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -19,6 +18,8 @@ import android.view.ViewGroup;
 import android.view.Window;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.loginpage.HomePage;
+import com.example.loginpage.R;
 
 /**
  * A simple {@link Fragment} subclass.

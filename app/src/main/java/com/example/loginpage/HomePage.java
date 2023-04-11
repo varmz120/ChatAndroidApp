@@ -1,67 +1,33 @@
 package com.example.loginpage;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.airbnb.lottie.LottieAnimationView;
 import com.example.loginpage.utility.BundleDeliveryMan;
 import com.example.loginpage.utility.Database;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.SuccessContinuation;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
+import com.example.loginpage.utility.LoadingDialogFragment;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
 
-import java.lang.reflect.Member;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.api.models.FilterObject;
-import io.getstream.chat.android.client.api.models.QueryChannelRequest;
 import io.getstream.chat.android.client.api.models.QueryChannelsRequest;
 import io.getstream.chat.android.client.api.models.querysort.QuerySortByField;
-import io.getstream.chat.android.client.api.models.querysort.QuerySorter;
 import io.getstream.chat.android.client.channel.ChannelClient;
-import io.getstream.chat.android.client.events.ChatEvent;
-import io.getstream.chat.android.client.events.NewMessageEvent;
 import io.getstream.chat.android.client.models.Channel;
-import io.getstream.chat.android.client.models.CustomObject;
 import io.getstream.chat.android.client.models.Filters;
-import io.getstream.chat.android.client.models.Message;
 import io.getstream.chat.android.client.models.User;
-import io.getstream.chat.android.offline.plugin.configuration.Config;
-import io.getstream.chat.android.offline.plugin.factory.StreamOfflinePluginFactory;
-import android.app.Application;
 
 /**
  * @author saran
@@ -256,7 +222,7 @@ public class HomePage extends AppCompatActivity {
          ChannelClient channelClient = client.channel(LIVESTREAM, channelId);
          channelClient.watch().execute();
          //enableRefreshFromDatabase(channelClient);
-         startActivity(ChannelActivity.newIntent(HomePage.this,channelClient));
+         startActivity(QuestionActivity.newIntent(HomePage.this,channelClient));
          Log.i("HomePage","Channel started successfully");
 
       } catch (Exception e){

@@ -21,9 +21,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.loginpage.databinding.ActivityReplyBinding;
 import com.example.loginpage.utility.BundleDeliveryMan;
-import com.example.loginpage.utility.CustomReplySend;
-import com.example.loginpage.utility.CustomReplyViewHolderFactory;
+import com.example.loginpage.customviews.CustomReplySend;
+import com.example.loginpage.customviews.CustomReplyViewHolderFactory;
 
+import com.example.loginpage.utility.LoadingDialogFragment;
 import com.getstream.sdk.chat.viewmodel.MessageInputViewModel;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.Mode.Normal;
@@ -34,17 +35,15 @@ import com.example.loginpage.utility.Database;
 
 import java.net.MalformedURLException;
 
-import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.channel.ChannelClient;
 import io.getstream.chat.android.client.models.Message;
-import io.getstream.chat.android.ui.message.input.viewmodel.MessageInputViewModelBinding;
 import io.getstream.chat.android.ui.message.list.header.MessageListHeaderView;
 import io.getstream.chat.android.ui.message.list.header.viewmodel.MessageListHeaderViewModel;
 import io.getstream.chat.android.ui.message.list.header.viewmodel.MessageListHeaderViewModelBinding;
 import io.getstream.chat.android.ui.message.list.viewmodel.MessageListViewModelBinding;
 import io.getstream.chat.android.ui.message.list.viewmodel.factory.MessageListViewModelFactory;
 
-public class ThreadActivity extends AppCompatActivity {
+public class ReplyActivity extends AppCompatActivity {
 
     private final static String CID_KEY = "wg8ebbdfv74pkrfaqstha627gs3s96s7smr7ehwseaep5v5sn2z56gn5e9auuwhn";
     private static ChannelClient classChannel;
@@ -52,10 +51,10 @@ public class ThreadActivity extends AppCompatActivity {
     private final BundleDeliveryMan mBundleDeliveryMan = BundleDeliveryMan.getInstance();
 
     public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
-    public ThreadActivity() throws MalformedURLException {super(R.layout.activity_message);}
+    public ReplyActivity() throws MalformedURLException {super(R.layout.activity_message);}
     public static Intent newIntent(Context context, ChannelClient channel) {
         classChannel = channel;
-        final Intent intent = new Intent(context, ThreadActivity.class);
+        final Intent intent = new Intent(context, ReplyActivity.class);
         intent.putExtra(CID_KEY, channel.getCid());
         return intent;
     }
@@ -81,7 +80,7 @@ public class ThreadActivity extends AppCompatActivity {
                 String parentChannelId = channelId_messageId[0];
                 String channelType = getString(R.string.livestreamChannelType);
                 ChannelClient channelClient = mBundleDeliveryMan.QuestionsPageBundle(channelType,parentChannelId);
-                startActivity(ChannelActivity.newIntent(ThreadActivity.this,channelClient));
+                startActivity(QuestionActivity.newIntent(ReplyActivity.this,channelClient));
             }
         });
         String cid = getIntent().getStringExtra(CID_KEY);
@@ -132,7 +131,7 @@ public class ThreadActivity extends AppCompatActivity {
             String parentChannelId = channelId_messageId[0];
             String channelType = getString(R.string.livestreamChannelType);
             ChannelClient channelClient = mBundleDeliveryMan.QuestionsPageBundle(channelType,parentChannelId);
-            startActivity(ChannelActivity.newIntent(this,channelClient));
+            startActivity(QuestionActivity.newIntent(this,channelClient));
             messageListViewModel.onEvent(MessageListViewModel.Event.BackButtonPressed.INSTANCE);
         };
         binding.messagesHeaderView.setBackButtonClickListener(backHandler);

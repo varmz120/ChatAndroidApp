@@ -19,7 +19,6 @@ import android.widget.Toolbar;
 
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -27,10 +26,11 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.loginpage.databinding.ActivityMessageBinding;
 
 import com.example.loginpage.utility.BundleDeliveryMan;
-import com.example.loginpage.utility.CustomMessageSend;
-import com.example.loginpage.utility.CustomMessageViewHolderFactory;
+import com.example.loginpage.customviews.CustomMessageSend;
+import com.example.loginpage.customviews.CustomMessageViewHolderFactory;
 
 import com.example.loginpage.utility.Database;
+import com.example.loginpage.utility.LoadingDialogFragment;
 import com.getstream.sdk.chat.viewmodel.MessageInputViewModel;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.Mode.Normal;
@@ -48,8 +48,6 @@ import io.getstream.chat.android.client.channel.ChannelClient;
 import io.getstream.chat.android.client.models.Channel;
 import io.getstream.chat.android.client.models.Message;
 
-import io.getstream.chat.android.ui.message.input.MessageInputView;
-import io.getstream.chat.android.ui.message.input.viewmodel.MessageInputViewModelBinding;
 import io.getstream.chat.android.ui.message.list.header.MessageListHeaderView;
 import io.getstream.chat.android.ui.message.list.header.viewmodel.MessageListHeaderViewModel;
 import io.getstream.chat.android.ui.message.list.header.viewmodel.MessageListHeaderViewModelBinding;
@@ -57,7 +55,7 @@ import io.getstream.chat.android.ui.message.list.viewmodel.MessageListViewModelB
 import io.getstream.chat.android.ui.message.list.viewmodel.factory.MessageListViewModelFactory;
 
 
-public class ChannelActivity extends AppCompatActivity {
+public class QuestionActivity extends AppCompatActivity {
 
     private final static String CID_KEY = "shk4bq5vqttmrfush2e98d9d83n7bz5cwj8ws4dtxe9xby3nw8hgsr5vjmr4qcms";
     private static ChannelClient classChannel;
@@ -66,12 +64,12 @@ public class ChannelActivity extends AppCompatActivity {
 
     public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
 
-    public ChannelActivity() throws MalformedURLException {
+    public QuestionActivity() throws MalformedURLException {
         super(R.layout.activity_message);
     }
     public static Intent newIntent(Context context, ChannelClient channelClient) {
         classChannel = channelClient;
-        final Intent intent = new Intent(context, ChannelActivity.class);
+        final Intent intent = new Intent(context, QuestionActivity.class);
         intent.putExtra(CID_KEY, channelClient.getCid());
         return intent;
     }
@@ -99,7 +97,7 @@ public class ChannelActivity extends AppCompatActivity {
                 if (!loadingDialogFragment.isAdded()) {
                     loadingDialogFragment.show(getSupportFragmentManager(), "loader");
                 }
-                Intent intent = new Intent(ChannelActivity.this,HomePage.class);
+                Intent intent = new Intent(QuestionActivity.this,HomePage.class);
                 Bundle b = mBundleDeliveryMan.HomePageBundle(ChatClient.instance().getCurrentUser().getId());
                 intent.putExtras(b);
                 startActivity(intent);
@@ -128,7 +126,7 @@ public class ChannelActivity extends AppCompatActivity {
 
                                     Log.i("ChannelActivity","Channel has been deleted");
                                     Toast.makeText(getApplicationContext(), "The channel has been deleted.", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(ChannelActivity.this,HomePage.class);
+                                    Intent intent = new Intent(QuestionActivity.this,HomePage.class);
                                     Bundle b = mBundleDeliveryMan.HomePageBundle(ChatClient.instance().getCurrentUser().getId());
                                     intent.putExtras(b);
                                     startActivity(intent);
@@ -200,7 +198,7 @@ public class ChannelActivity extends AppCompatActivity {
 
         // Step 6 - Handle back button behaviour correctly when you're in a thread
         MessageListHeaderView.OnClickListener backHandler = () -> {
-            Intent intent = new Intent(ChannelActivity.this,HomePage.class);
+            Intent intent = new Intent(QuestionActivity.this,HomePage.class);
             Bundle b = mBundleDeliveryMan.HomePageBundle(ChatClient.instance().getCurrentUser().getId());
             intent.putExtras(b);
             startActivity(intent);
