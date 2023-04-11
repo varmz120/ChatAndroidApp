@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/CreateRoom"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/background_app">
 
     <TextView
         android:id="@+id/usernameField"
@@ -53,9 +54,10 @@
         android:layout_height="wrap_content"
         android:autofillHints="CODE"
         android:labelFor="@+id/roomCode"
-        android:paddingHorizontal="75dp"
-        android:paddingBottom="25dp"
-        android:textSize="25dp"
+        android:padding="10dp"
+        android:textSize="20dp"
+        android:background="@drawable/edit_text_background"
+        android:hint="Room code"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
