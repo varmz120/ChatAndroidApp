@@ -1,14 +1,23 @@
 package com.example.loginpage;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.loginpage.utility.BundleDeliveryMan;
 import com.example.loginpage.utility.Database;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -20,7 +29,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import java.lang.reflect.Member;
 import java.net.MalformedURLException;
@@ -49,6 +61,7 @@ import io.getstream.chat.android.client.models.Message;
 import io.getstream.chat.android.client.models.User;
 import io.getstream.chat.android.offline.plugin.configuration.Config;
 import io.getstream.chat.android.offline.plugin.factory.StreamOfflinePluginFactory;
+import android.app.Application;
 
 /**
  * @author saran
@@ -64,12 +77,29 @@ public class HomePage extends AppCompatActivity {
    private final BundleDeliveryMan mDeliveryMan = BundleDeliveryMan.getInstance();
    private String api_key;
 
+
+   public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
+
+
+
+
    public HomePage() throws MalformedURLException {
    }
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
-      // Setting up handler for uncaught exceptions
+
+
+
+
+
+
+
+
+
+
+
+              // Setting up handler for uncaught exceptions
       Thread.setDefaultUncaughtExceptionHandler (new Thread.UncaughtExceptionHandler()
       {
          @Override
@@ -82,6 +112,7 @@ public class HomePage extends AppCompatActivity {
       b = getIntent().getExtras();
       super.onCreate(savedInstanceState);
       setContentView(R.layout.homepage);
+
 
       Button createRoomButton = findViewById(R.id.createRoom);
       Button submit = findViewById(R.id.roomSubmit);
@@ -96,19 +127,29 @@ public class HomePage extends AppCompatActivity {
       createRoomButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
+            if (!loadingDialogFragment.isAdded()) {
+               loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+            }
             registerUser(uid,userToken);
+
          }
       });
 
       submit.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
+            if (!loadingDialogFragment.isAdded()) {
+               loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+            }
             registerUser_another(uid,userToken);
          }
       });
       settingsButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
+            if (!loadingDialogFragment.isAdded()) {
+               loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+            }
             Intent intentSettings = new Intent(HomePage.this,SettingActivity.class);
             Bundle settingsPageBundle = mDeliveryMan.SettingsPageBundle(uid);
             intentSettings.putExtras(settingsPageBundle);
@@ -119,12 +160,20 @@ public class HomePage extends AppCompatActivity {
       logOut.setOnClickListener(new View.OnClickListener(){
          @Override
          public void onClick(View view) {
+            if (!loadingDialogFragment.isAdded()) {
+               loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+            }
             Intent intentLogOut = new Intent(HomePage.this,MainActivity.class);
             startActivity(intentLogOut);
 
          }
       });
    }
+
+
+
+
+
    //we handle exceptions here
    public void handleUncaughtException (Thread thread, Throwable e)
    {
@@ -224,6 +273,7 @@ public class HomePage extends AppCompatActivity {
       return randomNumber;
 
    }
+
 
 
 }

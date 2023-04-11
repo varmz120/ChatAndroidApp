@@ -64,6 +64,8 @@ public class ChannelActivity extends AppCompatActivity {
     private static final Database mDatabase = Database.getInstance();
     private final BundleDeliveryMan mBundleDeliveryMan = BundleDeliveryMan.getInstance();
 
+    public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
+
     public ChannelActivity() throws MalformedURLException {
         super(R.layout.activity_message);
     }
@@ -94,6 +96,9 @@ public class ChannelActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!loadingDialogFragment.isAdded()) {
+                    loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+                }
                 Intent intent = new Intent(ChannelActivity.this,HomePage.class);
                 Bundle b = mBundleDeliveryMan.HomePageBundle(ChatClient.instance().getCurrentUser().getId());
                 intent.putExtras(b);
@@ -101,10 +106,15 @@ public class ChannelActivity extends AppCompatActivity {
             }
         });
 
+
+
         ImageButton deleteChannel = toolbar.findViewById(R.id.deleteChannel);
         deleteChannel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!loadingDialogFragment.isAdded()) {
+                    loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+                }
 
                 ChatClient client = ChatClient.instance();
 
@@ -115,6 +125,7 @@ public class ChannelActivity extends AppCompatActivity {
                         if (client.getCurrentUser().getId().equals(channel1.getCreatedBy().getId())){
                             classChannel.delete().enqueue(result1 -> {
                                 if (result1.isSuccess()){
+
                                     Log.i("ChannelActivity","Channel has been deleted");
                                     Toast.makeText(getApplicationContext(), "The channel has been deleted.", Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(ChannelActivity.this,HomePage.class);

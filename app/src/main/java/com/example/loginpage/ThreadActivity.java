@@ -50,6 +50,8 @@ public class ThreadActivity extends AppCompatActivity {
     private static ChannelClient classChannel;
     private static final Database mDatabase = Database.getInstance();
     private final BundleDeliveryMan mBundleDeliveryMan = BundleDeliveryMan.getInstance();
+
+    public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
     public ThreadActivity() throws MalformedURLException {super(R.layout.activity_message);}
     public static Intent newIntent(Context context, ChannelClient channel) {
         classChannel = channel;
@@ -71,6 +73,10 @@ public class ThreadActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!loadingDialogFragment.isAdded()) {
+                    loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+                }
+
                 String[] channelId_messageId = classChannel.getChannelId().split("_");
                 String parentChannelId = channelId_messageId[0];
                 String channelType = getString(R.string.livestreamChannelType);

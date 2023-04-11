@@ -31,6 +31,8 @@ public class HistoryActivity extends AppCompatActivity {
     private final BundleDeliveryMan mDeliveryMan = BundleDeliveryMan.getInstance();
     private final Database mDatabase = Database.getInstance();
 
+    public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
+
     public HistoryActivity() throws MalformedURLException {
     }
 
@@ -45,6 +47,9 @@ public class HistoryActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!loadingDialogFragment.isAdded()) {
+                    loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+                }
                 Bundle homePageBundle = mDeliveryMan.SettingsPageBundle(uid);
                 Intent goToHomePage = new Intent(HistoryActivity.this,SettingActivity.class);
                 goToHomePage.putExtras(homePageBundle);

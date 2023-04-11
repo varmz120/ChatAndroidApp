@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     private final BundleDeliveryMan mBundleDeliveryMan = BundleDeliveryMan.getInstance();
     private FirebaseAuth mAuth;
 
+    public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
+
 
 
     public MainActivity() throws MalformedURLException {
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         init();
     }
 
@@ -63,6 +66,10 @@ public class MainActivity extends AppCompatActivity {
         Login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!loadingDialogFragment.isAdded()) {
+                    loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+                }
+
                 String email = Name.getText().toString();
                 String password = Password.getText().toString();
                 mAuth = FirebaseAuth.getInstance();
@@ -102,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
         Register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!loadingDialogFragment.isAdded()) {
+                    loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+                }
                 Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
 
                 startActivity(intent);

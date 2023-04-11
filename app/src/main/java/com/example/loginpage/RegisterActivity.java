@@ -37,6 +37,8 @@ public class RegisterActivity extends AppCompatActivity {
     private ArrayAdapter<CharSequence> adapter;
     private Database mDatabase;
 
+    public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
+
 
     private static Integer userid = 0;
 
@@ -108,6 +110,9 @@ public class RegisterActivity extends AppCompatActivity {
         Back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!loadingDialogFragment.isAdded()) {
+                    loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+                }
                 Intent intent = new Intent(RegisterActivity.this,MainActivity.class);
                 startActivity(intent);
             }

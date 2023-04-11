@@ -36,6 +36,7 @@ public class SettingActivity extends AppCompatActivity {
     private String newEmail;
     private String newPassword;
 
+    public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
 
     public SettingActivity() throws MalformedURLException {
     }
@@ -77,6 +78,7 @@ public class SettingActivity extends AppCompatActivity {
         changeUsernameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 // TODO: JK Firebase change username functionality
                 newEmail = ((EditText)findViewById(R.id.newemail)).getText().toString();
                 Log.d("TAG",newEmail);
@@ -101,6 +103,9 @@ public class SettingActivity extends AppCompatActivity {
         historyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!loadingDialogFragment.isAdded()) {
+                    loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+                }
                 Bundle historyPageBundle = mDeliveryMan.HistoryPageBundle(uid);
                 Intent goToHistory = new Intent(SettingActivity.this,HistoryActivity.class);
                 goToHistory.putExtras(historyPageBundle);
@@ -110,6 +115,9 @@ public class SettingActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!loadingDialogFragment.isAdded()) {
+                    loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+                }
                 Bundle bundle = mDeliveryMan.HomePageBundle(uid);
                 Intent intent = new Intent(SettingActivity.this,HomePage.class);
                 intent.putExtras(bundle);
