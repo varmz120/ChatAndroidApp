@@ -10,4 +10,11 @@
     <color name="red">#FF0000</color>
     <color name="toggle_button_default">#FFFFFF</color>
     <color name="toggle_button_pressed">#00FF00</color>
+    <color name="beige">#EAE0DA</color>
+    <color name="blue">#A0C3D2</color>
+    <color name="green">#83C585</color>
+    <color name="pink">#EAC7C7</color>
+    <color name="dark_pink">#E75480</color>
+    #e75480
+
 </resources>
