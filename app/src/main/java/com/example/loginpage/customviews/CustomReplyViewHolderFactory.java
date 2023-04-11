@@ -1,4 +1,4 @@
-package com.example.loginpage.utility;
+package com.example.loginpage.customviews;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -6,13 +6,14 @@ import android.widget.Button;
 
 
 import com.example.loginpage.databinding.AttachedButtonBinding;
+import com.example.loginpage.utility.Database;
 import com.getstream.sdk.chat.adapter.MessageListItem;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import io.getstream.chat.android.client.models.Message;
-import io.getstream.chat.android.ui.message.list.MessageListView;
+import com.example.loginpage.customviews.ReplyViewHolder;
 import io.getstream.chat.android.ui.message.list.adapter.BaseMessageItemViewHolder;
 import io.getstream.chat.android.ui.message.list.adapter.MessageListItemViewHolderFactory;
 import io.getstream.chat.android.ui.message.list.adapter.MessageListListenerContainer;

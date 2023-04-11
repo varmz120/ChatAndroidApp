@@ -1,4 +1,4 @@
-package com.example.loginpage.utility;
+package com.example.loginpage.customviews;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.ToggleButton;
 
 import com.example.loginpage.R;
+import com.example.loginpage.utility.Database;
 import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
 
@@ -119,7 +120,6 @@ public class CustomMessageSend extends ConstraintLayout implements MessageInputV
       message.setCid(classChannel.getCid());
       message.setUser(Objects.requireNonNull(client.getCurrentUser()));
       HashMap<String,Object> extraData = new HashMap<>();
-
       extraData.put("vote_count",0);
       extraData.put("RC",0);
       extraData.put("channel_id",classChannel.getChannelId());

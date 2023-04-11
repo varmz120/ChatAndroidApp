@@ -76,7 +76,7 @@
         app:layout_constraintTop_toBottomOf="@+id/messagesHeaderView"
         />
 
-    <com.example.loginpage.utility.CustomMessageSend
+    <com.example.loginpage.customviews.CustomMessageSend
         android:id="@+id/messageInputView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
