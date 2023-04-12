@@ -37,32 +37,33 @@ import kotlin.Pair;
  * @date 31/3/2023
  */
 
-public class CustomReplySend extends ConstraintLayout implements MessageInputView.MessageSendHandler {
-   private final Database mDatabase = Database.getInstance();
+public class CustomReplySend extends ConstraintLayout implements ChannelSender{
+   private Database mDatabase;
    public static ChannelClient classChannel;
 
    public CustomReplySend(@NonNull Context context) {
       super(context);
       LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-      setUpListeners(context);
+      init(context);
    }
 
    public CustomReplySend(@NonNull Context context, @Nullable AttributeSet attrs) {
       super(context, attrs);
       LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-      setUpListeners(context);
+      init(context);
    }
 
    public CustomReplySend(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
       super(context, attrs, defStyleAttr);
-      setUpListeners(context);
+      init(context);
    }
 
    public CustomReplySend(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
       super(context, attrs, defStyleAttr, defStyleRes);
-      setUpListeners(context);
+      init(context);
    }
-   private void setUpListeners(Context context){
+
+   public void setUpListeners(Context context){
       LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
       View view = inflater.inflate(R.layout.custom_reply_input, this, true);
       EditText inputField = view.findViewById(R.id.replyInputField);
@@ -73,16 +74,25 @@ public class CustomReplySend extends ConstraintLayout implements MessageInputVie
             String messageString = inputField.getText().toString();
             String checkMessage = messageString.trim();
             if(!checkMessage.equals("")){
-               sendMessage(messageString,null);
+               sendMessage(messageString);
                inputField.setText("");
             }
          }
       });
    }
 
+   @Override
+   public void init(Context context) {
+      setDatabase();
+      setUpListeners(context);
+   }
 
    @Override
-   public void sendMessage(@NonNull String s, @Nullable Message message) {
+   public void setDatabase() {
+      this.mDatabase  = Database.getInstance();
+   }
+
+   public void sendMessage(@NonNull String s) {
       ChatClient client = ChatClient.instance();
       String[] ids = classChannel.getChannelId().split("_");
       String parentQuestionPageId = ids[0];
@@ -125,7 +135,7 @@ public class CustomReplySend extends ConstraintLayout implements MessageInputVie
       });
 
    }
-   private Message construct_message(String s, ChatClient client){
+   public Message construct_message(String s, ChatClient client){
       Message message = new Message();
       message.setId(random_id());
       message.setText(s);
@@ -140,7 +150,7 @@ public class CustomReplySend extends ConstraintLayout implements MessageInputVie
       message.setExtraData(extraData);
       return message;
    }
-   private String random_id(){
+   public String random_id(){
       String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
               + "0123456789"
               + "abcdefghijklmnopqrstuvxyz";
@@ -155,38 +165,4 @@ public class CustomReplySend extends ConstraintLayout implements MessageInputVie
       return sb.toString();
    }
 
-   @Override
-   public void dismissReply() {
-
-   }
-
-   @Override
-   public void editMessage(@NonNull Message message, @NonNull String s) {
-
-   }
-
-   @Override
-   public void sendMessageWithAttachments(@NonNull String s, @NonNull List<? extends Pair<? extends File, String>> list, @Nullable Message message) {
-
-   }
-
-   @Override
-   public void sendMessageWithCustomAttachments(@NonNull String s, @NonNull List<Attachment> list, @Nullable Message message) {
-
-   }
-
-   @Override
-   public void sendToThread(@NonNull Message message, @NonNull String s, boolean b) {
-
-   }
-
-   @Override
-   public void sendToThreadWithAttachments(@NonNull Message message, @NonNull String s, boolean b, @NonNull List<? extends Pair<? extends File, String>> list) {
-
-   }
-
-   @Override
-   public void sendToThreadWithCustomAttachments(@NonNull Message message, @NonNull String s, boolean b, @NonNull List<Attachment> list) {
-
-   }
 }

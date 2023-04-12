@@ -34,32 +34,32 @@ import kotlin.Pair;
  * @author saran
  * @date 31/3/2023
  */
-public class CustomMessageSend extends ConstraintLayout implements MessageInputView.MessageSendHandler{
-   private final Database mDatabase = Database.getInstance();
+public class CustomMessageSend extends ConstraintLayout implements ChannelSender{
+   private Database mDatabase;
    public static ChannelClient classChannel;
    private boolean allowTaPermission = false;
    private boolean allowStudentPermission = false;
 
    public CustomMessageSend(@NonNull Context context) {
       super(context);
-      setListeners(context);
+      init(context);
    }
 
    public CustomMessageSend(@NonNull Context context, @Nullable AttributeSet attrs) {
       super(context, attrs);
-      setListeners(context);
+      init(context);
    }
 
    public CustomMessageSend(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
       super(context, attrs, defStyleAttr);
-      setListeners(context);
+      init(context);
    }
 
    public CustomMessageSend(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
       super(context, attrs, defStyleAttr, defStyleRes);
-      setListeners(context);
+      init(context);
    }
-   private void setListeners(Context context){
+   public void setUpListeners(Context context){
       LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
       View view = inflater.inflate(R.layout.custom_question_input, this, true);
       EditText inputField = view.findViewById(R.id.inputField);
@@ -72,7 +72,7 @@ public class CustomMessageSend extends ConstraintLayout implements MessageInputV
             String messageString = inputField.getText().toString();
             String checkMessage = messageString.trim();
             if(!checkMessage.equals("")){
-               sendMessage(messageString,null);
+               sendMessage(messageString);
                resetState(inputField,StudentToggleButton,TAToggleButton);
             }
          }
@@ -93,7 +93,17 @@ public class CustomMessageSend extends ConstraintLayout implements MessageInputV
    }
 
    @Override
-   public void sendMessage(@NonNull String s, @Nullable Message message) {
+   public void init(Context context) {
+      setDatabase();
+      setUpListeners(context);
+   }
+
+   @Override
+   public void setDatabase() {
+      mDatabase = Database.getInstance();
+   }
+
+   public void sendMessage(@NonNull String s) {
       ChatClient client = ChatClient.instance();
       Message message1 = construct_message(s,client);
       mDatabase.sendMessage(classChannel.getChannelId(),message1).onSuccessTask(new SuccessContinuation<Void, Object>() {
@@ -114,7 +124,7 @@ public class CustomMessageSend extends ConstraintLayout implements MessageInputV
 
    }
 
-   private Message construct_message(String s,ChatClient client){
+   public Message construct_message(String s,ChatClient client){
       Message message = new Message();
       message.setId(random_id());
       message.setText(s);
@@ -133,7 +143,7 @@ public class CustomMessageSend extends ConstraintLayout implements MessageInputV
       message.setExtraData(extraData);
       return message;
    }
-   private String random_id(){
+   public String random_id(){
       String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
               + "0123456789"
               + "abcdefghijklmnopqrstuvxyz";
@@ -151,42 +161,6 @@ public class CustomMessageSend extends ConstraintLayout implements MessageInputV
       editText.setText("");
       studentButton.setChecked(false);
       TAButton.setChecked(false);
-   }
-   @Override
-   public void dismissReply() {
-
-   }
-
-   @Override
-   public void editMessage(@NonNull Message message, @NonNull String s) {
-
-   }
-
-
-
-   @Override
-   public void sendMessageWithAttachments(@NonNull String s, @NonNull List<? extends Pair<? extends File, String>> list, @Nullable Message message) {
-      Log.d("CustomMessageSend","Sending attachments");
-   }
-
-   @Override
-   public void sendMessageWithCustomAttachments(@NonNull String s, @NonNull List<Attachment> list, @Nullable Message message) {
-      Log.d("CustomMessageSend","Sending custom attachments");
-   }
-
-   @Override
-   public void sendToThread(@NonNull Message message, @NonNull String s, boolean b) {
-
-   }
-
-   @Override
-   public void sendToThreadWithAttachments(@NonNull Message message, @NonNull String s, boolean b, @NonNull List<? extends Pair<? extends File, String>> list) {
-
-   }
-
-   @Override
-   public void sendToThreadWithCustomAttachments(@NonNull Message message, @NonNull String s, boolean b, @NonNull List<Attachment> list) {
-
    }
 
 }
