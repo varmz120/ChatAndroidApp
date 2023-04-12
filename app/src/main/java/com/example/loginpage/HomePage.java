@@ -136,10 +136,6 @@ public class HomePage extends AppCompatActivity {
       });
    }
 
-
-
-
-
    //we handle exceptions here
    public void handleUncaughtException (Thread thread, Throwable e)
    {
@@ -192,7 +188,7 @@ public class HomePage extends AppCompatActivity {
                     client.queryChannels(request).enqueue(result -> {
                        if (result.isSuccess()) {
                           List<Channel> channels = result.data();
-                          Log.i("HomePage","Channels printed: "+channels);
+                          Log.i("HomePage","Channels printed: " + channels);
                           if(channels.size()==0){
                              Log.w("TAG", "channel does not exist");
                              Toast.makeText(HomePage.this, "channel does not exist",
@@ -205,11 +201,6 @@ public class HomePage extends AppCompatActivity {
                           Log.i("HomePage", String.valueOf(result));
                        }
                     });
-
-
-
-
-
 
                  }
               }

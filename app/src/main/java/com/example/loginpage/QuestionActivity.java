@@ -169,7 +169,7 @@ public class QuestionActivity extends AppCompatActivity {
         });
         // Customised View Model for Messages
         CustomMessageSend.classChannel = classChannel;
-        CustomMessageSend customisedHandler = new CustomMessageSend(this);
+        new CustomMessageSend(this);
 
         binding.messageListView.setMessageViewHolderFactory(new CustomMessageViewHolderFactory());
 

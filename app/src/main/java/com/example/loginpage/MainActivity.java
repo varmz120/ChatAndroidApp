@@ -33,20 +33,15 @@ import java.net.MalformedURLException;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
-    private final Database mDatabase = Database.getInstance();
     //new
     private EditText Name;
     private EditText Password;
-    private TextView Info;
     private Button Login;
     private Button Register;
-    private ImageView Profile;
 
     public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
     private final BundleDeliveryMan mBundleDeliveryMan = BundleDeliveryMan.getInstance();
     private FirebaseAuth mAuth;
-
-
 
     public MainActivity() throws MalformedURLException {
     }
@@ -59,10 +54,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
-        Name = (EditText) findViewById(R.id.ETUsername);
-        Password = (EditText) findViewById(R.id.ETPassword);
-        Login = (Button) findViewById(R.id.LoginButton);
-        Register = (Button) findViewById(R.id.Register);
+        Name = findViewById(R.id.ETUsername);
+        Password = findViewById(R.id.ETPassword);
+        Login = findViewById(R.id.LoginButton);
+        Register = findViewById(R.id.Register);
         Login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -128,7 +123,11 @@ public class MainActivity extends AppCompatActivity {
             Log.i("MainActivity","Successfully connected to client");
         }
         catch (Exception e){
-            Log.e("MainActivity","Error connecting to client object"+e);
+            Log.e("MainActivity","Error connecting to client object" + e);
+            Toast toast = new Toast(this);
+            toast.setText("API KEY from stream.io has expired. Get a new one from stream.io and add that in the Environment folder under constants together with the secret key as CID_KEY");
+            toast.setDuration(Toast.LENGTH_LONG);
+            toast.show();
         }
     }
 
