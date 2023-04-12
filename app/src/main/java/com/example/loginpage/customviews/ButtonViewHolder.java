@@ -51,14 +51,8 @@ import io.getstream.chat.android.ui.message.list.adapter.MessageListItemPayloadD
 class ButtonViewHolder extends CustomViewHolder {
    AttachedButtonBinding binding;
    public Button upVoteButton;
-   private final Database mDatabase = Database.getInstance();
-
-   public final ChatClient client = ChatClient.instance();
-   private static final String PREF_NAME = "upvote_pref";
-   private static final String KEY_UPVOTED_IDS = "upvoted_ids";
 
    // method to get the set of upvoted IDs from shared preference
-
    public ImageButton delete;
 
    public TextView message;
@@ -87,52 +81,24 @@ class ButtonViewHolder extends CustomViewHolder {
       Message msg = messageItem.getMessage();
       binding.message.setText(msg.getText());
       String channelId = (String) msg.getExtraData().get(ExtraData.CHANNEL_ID);
-      String uid = client.getCurrentUser().getId();
-      String LIVESTREAM = getContext().getString(R.string.livestreamChannelType);
-      String allowStudent = (String) msg.getExtraData().get(ExtraData.ALLOW_STUDENT);
-      String allowTA = (String) msg.getExtraData().get(ExtraData.ALLOW_TA);
 
-      binding.message.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View view) {
-            mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
-               if (dataSnapshot.exists()) {
-                  String userRole = dataSnapshot.getValue().toString();
-                  boolean permissionOwner= msg.getUser().getId().equals(uid);
-                  boolean permissionGrantedStudent = userRole.equals(Roles.STUDENT) && allowStudent.equals("true");
-                  boolean permissionGrantedTA = userRole.equals(Roles.TA) && allowTA.equals("true");
-                  boolean permissionProf = userRole.equals(Roles.PROFESSOR);
-                  if (permissionGrantedTA  || permissionGrantedStudent || permissionProf || permissionOwner) {
-                     String messageId = msg.getId();
-                     String newChannelId = channelId + "_" + messageId; // important to keep track of parent page for database
-                     ChannelClient channelClient = client.channel(LIVESTREAM, newChannelId); //uses client instance to make channel
-                     Intent myintent = ReplyActivity.newIntent(getContext(), channelClient); //initialises intent
-                     myintent.putExtra("messageid", newChannelId); //puts message id
-                     view.getContext().startActivity(myintent); //starts activity
-                     System.out.println(" Reply channel with ID: " + newChannelId + " started successfully ");
-                  }
-               }
-               return null;
-            });
-         }
-      });
-      super.setUpOverallState(channelId,uid,msg);
+      super.setUpOverallState(channelId,msg);
 
    }
    private Set<String> getUpvotedIds() {
-      SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-      return preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
+      SharedPreferences preferences = getContext().getSharedPreferences(this.getPrefName(), Context.MODE_PRIVATE);
+      return preferences.getStringSet(this.getKeyUpvotedIds(), new HashSet<>());
    }
 
    // method to add an ID to the set of upvoted IDs in shared preference
    private void addUpvotedId(String userId, String messageId) {
-      SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-      Set<String> upvotedIds = preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
+      SharedPreferences preferences = getContext().getSharedPreferences(this.getPrefName(), Context.MODE_PRIVATE);
+      Set<String> upvotedIds = preferences.getStringSet(this.getKeyUpvotedIds(), new HashSet<>());
       String upvotedId = userId + ":" + messageId;
       upvotedIds.add(upvotedId);
-      preferences.edit().putStringSet(KEY_UPVOTED_IDS, upvotedIds).apply();
+      preferences.edit().putStringSet(this.getKeyUpvotedIds(), upvotedIds).apply();
    }
-   private void ownerTick(String channelId, Message msg,String studentApproved){
+   private void ownerTick(String channelId, Message msg,String studentApproved,Database mDatabase){
       if (studentApproved.equals("false")) {
          emptyTick.setVisibility(View.GONE);
          pinkTick.setVisibility(View.VISIBLE);
@@ -146,7 +112,7 @@ class ButtonViewHolder extends CustomViewHolder {
 
       emptyTickClicked = !emptyTickClicked;
    }
-   private void profTick(String channelId, Message msg,String profApproved){
+   private void profTick(String channelId, Message msg,String profApproved,Database mDatabase){
       if (profApproved.equals("false")) {
          emptyTick.setVisibility(View.GONE);
          redCircle.setVisibility(View.VISIBLE);
@@ -160,7 +126,7 @@ class ButtonViewHolder extends CustomViewHolder {
       emptyTickClicked = !emptyTickClicked;
 
    }
-   private void TATick(String channelId, Message msg,String taApproved){
+   private void TATick(String channelId, Message msg,String taApproved,Database mDatabase){
       if (taApproved.equals("false")) {
          emptyTick.setVisibility(View.GONE);
          maroonCircle.setVisibility(View.VISIBLE);
@@ -174,7 +140,7 @@ class ButtonViewHolder extends CustomViewHolder {
       emptyTickClicked = !emptyTickClicked;
 
    }
-   void setUpDatabaseStateListener(String channelId, Message msg){
+   void setUpDatabaseStateListener(String channelId, Message msg,Database mDatabase){
       mDatabase.getExtraDataForMessage(channelId, msg.getId()).addValueEventListener(new ValueEventListener() {
          @Override
          public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -222,7 +188,7 @@ class ButtonViewHolder extends CustomViewHolder {
       });
    }
    @Override
-   void upVoteButtonListener(String channelId, String uid,Message msg){
+   void upVoteButtonListener(String channelId, String uid,Message msg, Database mDatabase){
       binding.upVoteButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
@@ -255,7 +221,36 @@ class ButtonViewHolder extends CustomViewHolder {
    }
 
    @Override
-   void deleteButtonListener(String channelId, Message msg) {
+   void deleteButtonListener(String channelId, Message msg, Database mDatabase, ChatClient client) {
+      String uid = client.getCurrentUser().getId();
+      String LIVESTREAM = getContext().getString(R.string.livestreamChannelType);
+      String allowStudent = (String) msg.getExtraData().get(ExtraData.ALLOW_STUDENT);
+      String allowTA = (String) msg.getExtraData().get(ExtraData.ALLOW_TA);
+
+      binding.message.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View view) {
+            mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
+               if (dataSnapshot.exists()) {
+                  String userRole = dataSnapshot.getValue().toString();
+                  boolean permissionOwner= msg.getUser().getId().equals(uid);
+                  boolean permissionGrantedStudent = userRole.equals(Roles.STUDENT) && allowStudent.equals("true");
+                  boolean permissionGrantedTA = userRole.equals(Roles.TA) && allowTA.equals("true");
+                  boolean permissionProf = userRole.equals(Roles.PROFESSOR);
+                  if (permissionGrantedTA  || permissionGrantedStudent || permissionProf || permissionOwner) {
+                     String messageId = msg.getId();
+                     String newChannelId = channelId + "_" + messageId; // important to keep track of parent page for database
+                     ChannelClient channelClient = client.channel(LIVESTREAM, newChannelId); //uses client instance to make channel
+                     Intent myintent = ReplyActivity.newIntent(getContext(), channelClient); //initialises intent
+                     myintent.putExtra("messageid", newChannelId); //puts message id
+                     view.getContext().startActivity(myintent); //starts activity
+                     System.out.println(" Reply channel with ID: " + newChannelId + " started successfully ");
+                  }
+               }
+               return null;
+            });
+         }
+      });
       binding.delete.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
@@ -289,7 +284,7 @@ class ButtonViewHolder extends CustomViewHolder {
    }
 
    @Override
-   void setMessageListener(String uid, Message msg) {
+   void setMessageListener(String uid, Message msg,Database mDatabase) {
       binding.message.setOnLongClickListener(new View.OnLongClickListener() {
          @Override
          public boolean onLongClick(View view) {
@@ -331,7 +326,7 @@ class ButtonViewHolder extends CustomViewHolder {
    }
 
    @Override
-   void setUpInnerLayoutListener(String uid, Message msg) {
+   void setUpInnerLayoutListener(String uid, Message msg,Database mDatabase) {
       binding.innerLayout.setOnLongClickListener(new View.OnLongClickListener() {
          @Override
          public boolean onLongClick(View view) {
@@ -375,7 +370,7 @@ class ButtonViewHolder extends CustomViewHolder {
    }
 
    @Override
-   void setUpTickListeners(String channelId, String uid, Message msg) {
+   void setUpTickListeners(String channelId, String uid, Message msg,Database mDatabase) {
       View.OnClickListener ticklistener = new View.OnClickListener() {
          @Override
          public void onClick(View view) {
@@ -393,17 +388,17 @@ class ButtonViewHolder extends CustomViewHolder {
                      System.out.println(profApproved);
                      if (permissionQuestionOwner) {
                         // send a channel event that ticks this message using the UI components below
-                        ownerTick(channelId,msg,studentApproved);
+                        ownerTick(channelId,msg,studentApproved,mDatabase);
                         //eventSender(LIVESTREAM,channelId,CustomEvents.OWNER_TICK);
                      }
 
                      else if (permissionGrantedProf) {
-                        profTick(channelId,msg,profApproved);
+                        profTick(channelId,msg,profApproved,mDatabase);
                         //eventSender(LIVESTREAM,channelId, CustomEvents.PROF_TICK);
                      }
 
                      else if (permissionGrantedTA) {
-                        TATick(channelId,msg,taApproved);
+                        TATick(channelId,msg,taApproved,mDatabase);
                         //eventSender(LIVESTREAM,channelId,CustomEvents.TA_TICK);
                      }
                      return null;
@@ -426,7 +421,7 @@ class ButtonViewHolder extends CustomViewHolder {
    }
 
    @Override
-   void setUpInitialState(String channelId, Message msg) {
+   void setUpInitialState(String channelId, Message msg,Database mDatabase) {
       delete.setVisibility(View.GONE);
       pinkTick.setVisibility(View.GONE);
       redCircle.setVisibility(View.GONE);
@@ -440,6 +435,9 @@ class ButtonViewHolder extends CustomViewHolder {
             if(profPressed.toString().equals("true")){
                emptyTick.setVisibility(View.GONE);
                redCircle.setVisibility(View.VISIBLE);
+            } else {
+               emptyTick.setVisibility(View.VISIBLE);
+               redCircle.setVisibility(View.GONE);
             }
          }
          return null;
@@ -451,6 +449,9 @@ class ButtonViewHolder extends CustomViewHolder {
             if(taPressed.toString().equals("true")){
                emptyTick.setVisibility(View.GONE);
                maroonCircle.setVisibility(View.VISIBLE);
+            } else {
+               emptyTick.setVisibility(View.VISIBLE);
+               maroonCircle.setVisibility(View.GONE);
             }
          }
          return null;
@@ -464,7 +465,8 @@ class ButtonViewHolder extends CustomViewHolder {
                pinkTick.setVisibility(View.VISIBLE);
             }
             else {
-               Log.i("ButtonViewHolder","It is indeed"+studentPressed.toString());
+               emptyTick.setVisibility(View.VISIBLE);
+               pinkTick.setVisibility(View.GONE);
             }
 
          }

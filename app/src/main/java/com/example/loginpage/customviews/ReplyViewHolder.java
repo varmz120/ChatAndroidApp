@@ -47,8 +47,7 @@ import io.getstream.chat.android.ui.message.list.adapter.MessageListItemPayloadD
 class ReplyViewHolder extends CustomViewHolder {
     AttachedButtonBinding binding;
     public Button upVoteButton;
-    private final Database mDatabase = Database.getInstance();
-    private final ChatClient client = ChatClient.instance();
+
 
     public TextView message;
     public ImageButton delete;
@@ -56,8 +55,6 @@ class ReplyViewHolder extends CustomViewHolder {
     public ImageView pinkTick;
     public ImageView maroonCircle;
     public ImageView redCircle;
-    private static final String PREF_NAME = "upvote_pref";
-    private static final String KEY_UPVOTED_IDS = "upvoted_ids";
     private boolean emptyTickClicked = false;
 
     public ReplyViewHolder(@NonNull ViewGroup parentView, @NonNull AttachedButtonBinding binding){
@@ -77,10 +74,9 @@ class ReplyViewHolder extends CustomViewHolder {
         Message msg = messageItem.getMessage();
         binding.message.setText(msg.getText());
         String channelId_messageId = (String) msg.getExtraData().get(ExtraData.CHANNEL_ID);
-        String uid = client.getCurrentUser().getId();
-        super.setUpOverallState(channelId_messageId,uid,msg);
+        super.setUpOverallState(channelId_messageId,msg);
     }
-    void setUpInitialState(String channelId_messageId, Message msg){
+    void setUpInitialState(String channelId_messageId, Message msg, Database mDatabase){
         delete.setVisibility(View.GONE);
         pinkTick.setVisibility(View.GONE);
         maroonCircle.setVisibility(View.GONE);
@@ -142,7 +138,7 @@ class ReplyViewHolder extends CustomViewHolder {
     }
 
 
-    void setUpTickListeners(String channelId_messageId, String uid, Message msg){
+    void setUpTickListeners(String channelId_messageId, String uid, Message msg, Database mDatabase){
         View.OnClickListener ticklistener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -160,17 +156,17 @@ class ReplyViewHolder extends CustomViewHolder {
                             System.out.println(profApproved);
                             if (permissionQuestionOwner) {
                                 // send a channel event that ticks this message using the UI components below
-                                ownerTick(channelId_messageId,msg,studentApproved);
+                                ownerTick(channelId_messageId,msg,studentApproved,mDatabase);
                                 //eventSender(LIVESTREAM,channelId,CustomEvents.OWNER_TICK);
                             }
 
                             else if (permissionGrantedProf) {
-                                profTick(channelId_messageId,msg,profApproved);
+                                profTick(channelId_messageId,msg,profApproved,mDatabase);
                                 //eventSender(LIVESTREAM,channelId, CustomEvents.PROF_TICK);
                             }
 
                             else if (permissionGrantedTA) {
-                                TATick(channelId_messageId,msg,taApproved);
+                                TATick(channelId_messageId,msg,taApproved,mDatabase);
                                 //eventSender(LIVESTREAM,channelId,CustomEvents.TA_TICK);
                             }
                             return null;
@@ -190,20 +186,20 @@ class ReplyViewHolder extends CustomViewHolder {
         redCircle.setOnClickListener(ticklistener);
     }
     private Set<String> getUpvotedIds() {
-        SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        return preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
+        SharedPreferences preferences = getContext().getSharedPreferences(this.getPrefName(), Context.MODE_PRIVATE);
+        return preferences.getStringSet(this.getKeyUpvotedIds(), new HashSet<>());
     }
 
     // method to add an ID to the set of upvoted IDs in shared preference
     private void addUpvotedId(String userId, String messageId) {
-        SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        Set<String> upvotedIds = preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
+        SharedPreferences preferences = getContext().getSharedPreferences(this.getPrefName(), Context.MODE_PRIVATE);
+        Set<String> upvotedIds = preferences.getStringSet(this.getKeyUpvotedIds(), new HashSet<>());
         String upvotedId = userId + ":" + messageId;
         upvotedIds.add(upvotedId);
-        preferences.edit().putStringSet(KEY_UPVOTED_IDS, upvotedIds).apply();
+        preferences.edit().putStringSet(this.getKeyUpvotedIds(), upvotedIds).apply();
     }
 
-    private void ownerTick(String channelId, Message msg,String studentApproved){
+    private void ownerTick(String channelId, Message msg,String studentApproved, Database mDatabase){
         if (studentApproved.equals("false")) {
             emptyTick.setVisibility(View.GONE);
             pinkTick.setVisibility(View.VISIBLE);
@@ -217,7 +213,7 @@ class ReplyViewHolder extends CustomViewHolder {
 
         emptyTickClicked = !emptyTickClicked;
     }
-    private void profTick(String channelId, Message msg,String profApproved){
+    private void profTick(String channelId, Message msg,String profApproved, Database mDatabase){
         if (profApproved.equals("false")) {
             emptyTick.setVisibility(View.GONE);
             redCircle.setVisibility(View.VISIBLE);
@@ -231,7 +227,7 @@ class ReplyViewHolder extends CustomViewHolder {
         emptyTickClicked = !emptyTickClicked;
 
     }
-    private void TATick(String channelId, Message msg,String taApproved){
+    private void TATick(String channelId, Message msg,String taApproved, Database mDatabase){
         if (taApproved.equals("false")) {
             emptyTick.setVisibility(View.GONE);
             maroonCircle.setVisibility(View.VISIBLE);
@@ -247,7 +243,7 @@ class ReplyViewHolder extends CustomViewHolder {
     }
 
     @Override
-    void setUpDatabaseStateListener(String channelId_messageId, Message msg) {
+    void setUpDatabaseStateListener(String channelId_messageId, Message msg, Database mDatabase) {
         mDatabase.getExtraDataForReply(channelId_messageId, msg.getId()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -296,7 +292,7 @@ class ReplyViewHolder extends CustomViewHolder {
     }
 
     @Override
-    void upVoteButtonListener(String channelId_messageId, String uid, Message msg) {
+    void upVoteButtonListener(String channelId_messageId, String uid, Message msg, Database mDatabase) {
         binding.upVoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -333,7 +329,7 @@ class ReplyViewHolder extends CustomViewHolder {
     }
 
     @Override
-    void deleteButtonListener(String channelId_messageId, Message msg) {
+    void deleteButtonListener(String channelId_messageId, Message msg, Database mDatabase, ChatClient client) {
         binding.delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -364,7 +360,7 @@ class ReplyViewHolder extends CustomViewHolder {
             }
         });
     }
-    void setMessageListener(String uid, Message msg){
+    void setMessageListener(String uid, Message msg, Database mDatabase){
         binding.message.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -402,7 +398,7 @@ class ReplyViewHolder extends CustomViewHolder {
             }
         });
     }
-    void setUpInnerLayoutListener(String uid, Message msg){
+    void setUpInnerLayoutListener(String uid, Message msg, Database mDatabase){
         binding.innerLayout.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
