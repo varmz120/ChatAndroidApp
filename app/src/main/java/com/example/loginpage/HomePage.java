@@ -93,9 +93,7 @@ public class HomePage extends AppCompatActivity {
       createRoomButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
-            if (!loadingDialogFragment.isAdded()) {
-               loadingDialogFragment.show(getSupportFragmentManager(), "loader");
-            }
+
             registerUser(uid,userToken);
 
          }
@@ -104,9 +102,7 @@ public class HomePage extends AppCompatActivity {
       submit.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
-            if (!loadingDialogFragment.isAdded()) {
-               loadingDialogFragment.show(getSupportFragmentManager(), "loader");
-            }
+
             registerUser_another(uid,userToken);
          }
       });
@@ -218,6 +214,9 @@ public class HomePage extends AppCompatActivity {
 
    private void startChannel(String createRoomCode){
       try{
+         if (!loadingDialogFragment.isAdded()) {
+            loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+         }
          String channelId = "messageRoom"+createRoomCode;
          ChannelClient channelClient = client.channel(LIVESTREAM, channelId);
          channelClient.watch().execute();
