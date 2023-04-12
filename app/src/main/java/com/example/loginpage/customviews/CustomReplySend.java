@@ -5,11 +5,11 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.example.loginpage.R;
+import com.example.loginpage.constants.ExtraData;
 import com.example.loginpage.utility.Database;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.SuccessContinuation;
@@ -132,15 +132,14 @@ public class CustomReplySend extends ConstraintLayout implements MessageInputVie
       message.setCid(classChannel.getCid());
       message.setUser(Objects.requireNonNull(client.getCurrentUser()));
       HashMap<String,Object> extraData = new HashMap<>();
-      extraData.put("vote_count",0);
-      extraData.put("channel_id",classChannel.getChannelId());
-      extraData.put("profApproved","false");
-      extraData.put("taApproved","false");
-      extraData.put("studentApproved","false");
+      extraData.put(ExtraData.VOTE_COUNT,0);
+      extraData.put(ExtraData.CHANNEL_ID,classChannel.getChannelId());
+      extraData.put(ExtraData.PROF_APPROVED,"false");
+      extraData.put(ExtraData.TA_APPROVED,"false");
+      extraData.put(ExtraData.OWNER_APPROVED,"false");
       message.setExtraData(extraData);
       return message;
    }
-   // TODO: Hash message properly
    private String random_id(){
       String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
               + "0123456789"

@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.loginpage.constants.Environment;
 import com.example.loginpage.utility.BundleDeliveryMan;
 import com.example.loginpage.utility.Database;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
             boolean userPresence = true;
             Config config = new Config(backGroundSyncEnable, userPresence);
             StreamOfflinePluginFactory offlinePlugin = new StreamOfflinePluginFactory(config, getApplicationContext());
-            new ChatClient.Builder(mBundleDeliveryMan.deliverAPI(), getApplicationContext()).withPlugin(offlinePlugin).build();
+            new ChatClient.Builder(Environment.API_KEY, getApplicationContext()).withPlugin(offlinePlugin).build();
             Log.i("MainActivity","Successfully connected to client");
         }
         catch (Exception e){

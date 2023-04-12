@@ -20,7 +20,6 @@ import io.getstream.chat.android.ui.message.list.adapter.MessageListItemViewHold
 
 public class CustomMessageViewHolderFactory extends MessageListItemViewHolderFactory {
    private final int BUTTON_VIEW_HOLDER_TYPE = 1;
-   private final Database mDatabase;
    
    public int getItemViewType(@NonNull MessageListItem item){
       if(item instanceof MessageListItem.MessageItem){
@@ -35,8 +34,6 @@ public class CustomMessageViewHolderFactory extends MessageListItemViewHolderFac
       }
       return super.createViewHolder(parentView, viewType);
    }
-   public CustomMessageViewHolderFactory(Database database){
-      this.mDatabase = database;
-   }
+
 
 }

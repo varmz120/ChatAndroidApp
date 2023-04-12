@@ -24,12 +24,7 @@ import io.getstream.chat.android.ui.message.list.adapter.MessageListListenerCont
  */
 public class CustomReplyViewHolderFactory extends MessageListItemViewHolderFactory{
     private int BUTTON_VIEW_HOLDER_TYPE = 0;
-    private List<Message>msgList;
-    private Database database;
 
-    public CustomReplyViewHolderFactory(Database database){
-        this.database = database;
-    }
     @Override
     public int getItemViewType(@NonNull MessageListItem item){
         if(item instanceof MessageListItem.MessageItem){

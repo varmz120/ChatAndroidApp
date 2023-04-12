@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.loginpage.constants.Environment;
 import com.example.loginpage.databinding.ActivityMessageBinding;
 
 import com.example.loginpage.utility.BundleDeliveryMan;
@@ -56,7 +57,6 @@ import io.getstream.chat.android.ui.message.list.viewmodel.factory.MessageListVi
 
 public class QuestionActivity extends AppCompatActivity {
 
-    private final static String CID_KEY = "shk4bq5vqttmrfush2e98d9d83n7bz5cwj8ws4dtxe9xby3nw8hgsr5vjmr4qcms";
     private static ChannelClient classChannel;
     private static final Database mDatabase = Database.getInstance();
     private final BundleDeliveryMan mBundleDeliveryMan = BundleDeliveryMan.getInstance();
@@ -67,7 +67,7 @@ public class QuestionActivity extends AppCompatActivity {
     public static Intent newIntent(Context context, ChannelClient channelClient) {
         classChannel = channelClient;
         final Intent intent = new Intent(context, QuestionActivity.class);
-        intent.putExtra(CID_KEY, channelClient.getCid());
+        intent.putExtra(Environment.CID_KEY, channelClient.getCid());
         return intent;
     }
 
@@ -137,7 +137,7 @@ public class QuestionActivity extends AppCompatActivity {
             }
         });
 
-        String cid = getIntent().getStringExtra(CID_KEY);
+        String cid = getIntent().getStringExtra(Environment.CID_KEY);
         if (cid == null) {
             throw new IllegalStateException("Specifying a channel id is required when starting ChannelActivity");
         }
@@ -171,7 +171,7 @@ public class QuestionActivity extends AppCompatActivity {
         CustomMessageSend.classChannel = classChannel;
         CustomMessageSend customisedHandler = new CustomMessageSend(this);
 
-        binding.messageListView.setMessageViewHolderFactory(new CustomMessageViewHolderFactory(mDatabase));
+        binding.messageListView.setMessageViewHolderFactory(new CustomMessageViewHolderFactory());
 
         // Step 5 - Handle navigate up state
         messageListViewModel.getState().observe(this, state -> {

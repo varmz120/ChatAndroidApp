@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.loginpage.constants.Environment;
 import com.example.loginpage.databinding.ActivityReplyBinding;
 import com.example.loginpage.utility.BundleDeliveryMan;
 import com.example.loginpage.customviews.CustomReplySend;
@@ -44,7 +45,6 @@ import io.getstream.chat.android.ui.message.list.viewmodel.factory.MessageListVi
 
 public class ReplyActivity extends AppCompatActivity {
 
-    private final static String CID_KEY = "wg8ebbdfv74pkrfaqstha627gs3s96s7smr7ehwseaep5v5sn2z56gn5e9auuwhn";
     private static ChannelClient classChannel;
     private static final Database mDatabase = Database.getInstance();
     private final BundleDeliveryMan mBundleDeliveryMan = BundleDeliveryMan.getInstance();
@@ -52,7 +52,7 @@ public class ReplyActivity extends AppCompatActivity {
     public static Intent newIntent(Context context, ChannelClient channel) {
         classChannel = channel;
         final Intent intent = new Intent(context, ReplyActivity.class);
-        intent.putExtra(CID_KEY, channel.getCid());
+        intent.putExtra(Environment.CID_KEY, channel.getCid());
         return intent;
     }
     @Override
@@ -76,7 +76,7 @@ public class ReplyActivity extends AppCompatActivity {
                 startActivity(QuestionActivity.newIntent(ReplyActivity.this,channelClient));
             }
         });
-        String cid = getIntent().getStringExtra(CID_KEY);
+        String cid = getIntent().getStringExtra(Environment.CID_KEY);
         if (cid == null) {
             throw new IllegalStateException("Specifying a channel id is required when starting ThreadActivity");
         }
@@ -107,7 +107,7 @@ public class ReplyActivity extends AppCompatActivity {
             }
         });
         // Customised View Model for Messages
-        binding.messageListView.setMessageViewHolderFactory(new CustomReplyViewHolderFactory(mDatabase));
+        binding.messageListView.setMessageViewHolderFactory(new CustomReplyViewHolderFactory());
         CustomReplySend.classChannel = classChannel;
         CustomReplySend customisedHandler  = new CustomReplySend(this);
         //binding.messageInputView.setSendMessageHandler(new CustomReplySend(classChannel,mDatabase));
