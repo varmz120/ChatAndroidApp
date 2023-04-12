@@ -8,6 +8,7 @@ import android.widget.Button;
 import com.example.loginpage.utility.BundleDeliveryMan;
 import com.example.loginpage.utility.Database;
 import com.example.loginpage.utility.HistoryAdapter;
+import com.example.loginpage.utility.LoadingDialogFragment;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseReference;
 
@@ -31,6 +32,8 @@ public class HistoryActivity extends AppCompatActivity {
     private final BundleDeliveryMan mDeliveryMan = BundleDeliveryMan.getInstance();
     private final Database mDatabase = Database.getInstance();
 
+    public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
+
     public HistoryActivity() throws MalformedURLException {
     }
 
@@ -45,6 +48,9 @@ public class HistoryActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!loadingDialogFragment.isAdded()) {
+                    loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+                }
                 Bundle homePageBundle = mDeliveryMan.SettingsPageBundle(uid);
                 Intent goToHomePage = new Intent(HistoryActivity.this,SettingActivity.class);
                 goToHomePage.putExtras(homePageBundle);

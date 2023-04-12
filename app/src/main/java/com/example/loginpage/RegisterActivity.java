@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.loginpage.utility.Database;
+import com.example.loginpage.utility.LoadingDialogFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -36,6 +37,8 @@ public class RegisterActivity extends AppCompatActivity {
     private String selectedRole = "";
     private ArrayAdapter<CharSequence> adapter;
     private Database mDatabase;
+
+    public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
 
 
     private static Integer userid = 0;
@@ -108,6 +111,9 @@ public class RegisterActivity extends AppCompatActivity {
         Back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!loadingDialogFragment.isAdded()) {
+                    loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+                }
                 Intent intent = new Intent(RegisterActivity.this,MainActivity.class);
                 startActivity(intent);
             }

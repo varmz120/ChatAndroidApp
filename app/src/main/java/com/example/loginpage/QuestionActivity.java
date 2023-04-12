@@ -30,6 +30,7 @@ import com.example.loginpage.customviews.CustomMessageSend;
 import com.example.loginpage.customviews.CustomMessageViewHolderFactory;
 
 import com.example.loginpage.utility.Database;
+import com.example.loginpage.utility.LoadingDialogFragment;
 import com.getstream.sdk.chat.viewmodel.MessageInputViewModel;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel;
 import com.getstream.sdk.chat.viewmodel.messages.MessageListViewModel.Mode.Normal;
@@ -61,6 +62,8 @@ public class QuestionActivity extends AppCompatActivity {
     private static final Database mDatabase = Database.getInstance();
     private final BundleDeliveryMan mBundleDeliveryMan = BundleDeliveryMan.getInstance();
 
+    public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
+
     public QuestionActivity() throws MalformedURLException {
         super(R.layout.activity_message);
     }
@@ -91,6 +94,9 @@ public class QuestionActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!loadingDialogFragment.isAdded()) {
+                    loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+                }
                 Intent intent = new Intent(QuestionActivity.this,HomePage.class);
                 Bundle b = mBundleDeliveryMan.HomePageBundle(ChatClient.instance().getCurrentUser().getId());
                 intent.putExtras(b);
@@ -98,10 +104,15 @@ public class QuestionActivity extends AppCompatActivity {
             }
         });
 
+
+
         ImageButton deleteChannel = toolbar.findViewById(R.id.deleteChannel);
         deleteChannel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!loadingDialogFragment.isAdded()) {
+                    loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+                }
 
                 ChatClient client = ChatClient.instance();
 
@@ -112,6 +123,7 @@ public class QuestionActivity extends AppCompatActivity {
                         if (client.getCurrentUser().getId().equals(channel1.getCreatedBy().getId())){
                             classChannel.delete().enqueue(result1 -> {
                                 if (result1.isSuccess()){
+
                                     Log.i("ChannelActivity","Channel has been deleted");
                                     Toast.makeText(getApplicationContext(), "The channel has been deleted.", Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(QuestionActivity.this,HomePage.class);
@@ -172,6 +184,10 @@ public class QuestionActivity extends AppCompatActivity {
         CustomMessageSend customisedHandler = new CustomMessageSend(this);
 
         binding.messageListView.setMessageViewHolderFactory(new CustomMessageViewHolderFactory(mDatabase));
+        //binding.messageInputView.setSuggestionListViewHolderFactory(new CustomSuggestionListViewHolderFactory());
+        //binding.messageInputView.setSendMessageHandler(customisedHandler);
+        //binding.messageInputView.setCommandsButtonClickListener(customisedHandler);
+        //binding.messageInputView.setAttachmentButtonClickListener(customisedHandler);
 
         // Step 5 - Handle navigate up state
         messageListViewModel.getState().observe(this, state -> {
