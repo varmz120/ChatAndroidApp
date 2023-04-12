@@ -20,7 +20,7 @@ import io.getstream.chat.android.ui.message.list.adapter.MessageListItemViewHold
 
 public class CustomMessageViewHolderFactory extends MessageListItemViewHolderFactory {
    private final int BUTTON_VIEW_HOLDER_TYPE = 1;
-   
+
    public int getItemViewType(@NonNull MessageListItem item){
       if(item instanceof MessageListItem.MessageItem){
          return BUTTON_VIEW_HOLDER_TYPE;

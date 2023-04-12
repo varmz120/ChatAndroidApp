@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.example.loginpage.utility.BundleDeliveryMan;
 import com.example.loginpage.utility.Database;
+import com.example.loginpage.utility.LoadingDialogFragment;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,12 +43,29 @@ public class HomePage extends AppCompatActivity {
    private final BundleDeliveryMan mDeliveryMan = BundleDeliveryMan.getInstance();
    private String api_key;
 
+
+   public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
+
+
+
+
    public HomePage() throws MalformedURLException {
    }
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
-      // Setting up handler for uncaught exceptions
+
+
+
+
+
+
+
+
+
+
+
+              // Setting up handler for uncaught exceptions
       Thread.setDefaultUncaughtExceptionHandler (new Thread.UncaughtExceptionHandler()
       {
          @Override
@@ -60,6 +78,7 @@ public class HomePage extends AppCompatActivity {
       b = getIntent().getExtras();
       super.onCreate(savedInstanceState);
       setContentView(R.layout.homepage);
+
 
       Button createRoomButton = findViewById(R.id.createRoom);
       Button submit = findViewById(R.id.roomSubmit);
@@ -74,19 +93,29 @@ public class HomePage extends AppCompatActivity {
       createRoomButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
+            if (!loadingDialogFragment.isAdded()) {
+               loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+            }
             registerUser(uid,userToken);
+
          }
       });
 
       submit.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
+            if (!loadingDialogFragment.isAdded()) {
+               loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+            }
             registerUser_another(uid,userToken);
          }
       });
       settingsButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
+            if (!loadingDialogFragment.isAdded()) {
+               loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+            }
             Intent intentSettings = new Intent(HomePage.this,SettingActivity.class);
             Bundle settingsPageBundle = mDeliveryMan.SettingsPageBundle(uid);
             intentSettings.putExtras(settingsPageBundle);
@@ -97,12 +126,20 @@ public class HomePage extends AppCompatActivity {
       logOut.setOnClickListener(new View.OnClickListener(){
          @Override
          public void onClick(View view) {
+            if (!loadingDialogFragment.isAdded()) {
+               loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+            }
             Intent intentLogOut = new Intent(HomePage.this,MainActivity.class);
             startActivity(intentLogOut);
 
          }
       });
    }
+
+
+
+
+
    //we handle exceptions here
    public void handleUncaughtException (Thread thread, Throwable e)
    {
@@ -202,6 +239,7 @@ public class HomePage extends AppCompatActivity {
       return randomNumber;
 
    }
+
 
 
 }

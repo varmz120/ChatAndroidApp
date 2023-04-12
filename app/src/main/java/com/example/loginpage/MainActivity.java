@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.example.loginpage.constants.Environment;
 import com.example.loginpage.utility.BundleDeliveryMan;
 import com.example.loginpage.utility.Database;
+import com.example.loginpage.utility.LoadingDialogFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private Button Register;
     private ImageView Profile;
 
+    public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
     private final BundleDeliveryMan mBundleDeliveryMan = BundleDeliveryMan.getInstance();
     private FirebaseAuth mAuth;
 
@@ -73,6 +75,9 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
+                                        if (!loadingDialogFragment.isAdded()) {
+                                            loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+                                        }
                                         // Sign in success, update UI with the signed-in user's information
                                         Log.d("TAG", "signInWithEmail:success");
                                         // Creating Firebase User
@@ -81,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
                                         String uid = user.getUid();
                                         // creating intent to pass information for creating user on to HomePage.java
                                         start_client();
+
                                         Intent intent = new Intent(MainActivity.this, HomePage.class);
                                         Bundle bundle = mBundleDeliveryMan.HomePageBundle(uid);
                                         intent.putExtras(bundle);
@@ -103,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
         Register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!loadingDialogFragment.isAdded()) {
+                    loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+                }
                 Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
 
                 startActivity(intent);

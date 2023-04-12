@@ -69,10 +69,6 @@
                 android:value="" />
         </activity>
 
-        <activity
-            android:name=".SettingActivity"
-            android:exported="true">
-        </activity>
 
     </application>
 

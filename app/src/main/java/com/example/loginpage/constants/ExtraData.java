@@ -14,4 +14,6 @@ public class ExtraData {
     public static String PROF_APPROVED = "prof_approved";
     public static String TA_APPROVED = "taApproved";
     public static String OWNER_APPROVED = "studentApproved";
+
 }
+
