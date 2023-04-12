@@ -7,8 +7,8 @@
     tools:context=".utility.LoadingDialogFragment">
 
     <com.airbnb.lottie.LottieAnimationView
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
         app:lottie_repeatMode="reverse"
