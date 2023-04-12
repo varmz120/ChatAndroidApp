@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.ToggleButton;
 
 import com.example.loginpage.R;
+import com.example.loginpage.constants.ExtraData;
 import com.example.loginpage.utility.Database;
 import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
@@ -120,14 +121,14 @@ public class CustomMessageSend extends ConstraintLayout implements MessageInputV
       message.setCid(classChannel.getCid());
       message.setUser(Objects.requireNonNull(client.getCurrentUser()));
       HashMap<String,Object> extraData = new HashMap<>();
-      extraData.put("vote_count",0);
-      extraData.put("RC",0);
-      extraData.put("channel_id",classChannel.getChannelId());
-      extraData.put("allow_ta",allowTaPermission? "true" : "false");
-      extraData.put("allow_student",allowStudentPermission? "true" : "false");
-      extraData.put("profApproved","false");
-      extraData.put("taApproved","false");
-      extraData.put("studentApproved","false");
+      extraData.put(ExtraData.VOTE_COUNT,0);
+      extraData.put(ExtraData.REPLY_COUNT,0);
+      extraData.put(ExtraData.CHANNEL_ID,classChannel.getChannelId());
+      extraData.put(ExtraData.ALLOW_TA,allowTaPermission? "true" : "false");
+      extraData.put(ExtraData.ALLOW_STUDENT,allowStudentPermission? "true" : "false");
+      extraData.put(ExtraData.PROF_APPROVED,"false");
+      extraData.put(ExtraData.TA_APPROVED,"false");
+      extraData.put(ExtraData.OWNER_APPROVED,"false");
 
       message.setExtraData(extraData);
       return message;

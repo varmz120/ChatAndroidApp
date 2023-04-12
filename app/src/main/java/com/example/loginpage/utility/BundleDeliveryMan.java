@@ -2,6 +2,8 @@ package com.example.loginpage.utility;
 
 import android.os.Bundle;
 
+import com.example.loginpage.constants.Environment;
+
 import java.net.MalformedURLException;
 
 import io.getstream.chat.android.client.ChatClient;
@@ -16,9 +18,7 @@ import io.getstream.chat.android.client.channel.ChannelClient;
 public class BundleDeliveryMan {
    private static BundleDeliveryMan sBundleDeliveryMan;
    private Client mClient;
-   private final String api_key = "c6ys6m7794gr";
 
-   private final String secret_key = "4mx3y6jmz23j3y347me4kpar2kwrttf9br3d86tu4sf4e84ya6j3vpqpqm7u5968";
    private BundleDeliveryMan() throws MalformedURLException {connect();}
 
    public static BundleDeliveryMan getInstance() throws MalformedURLException {
@@ -30,7 +30,7 @@ public class BundleDeliveryMan {
    public Bundle HomePageBundle(String uid){
       Bundle bundle = new Bundle();
       String userToken = mClient.frontendToken(uid).toString();
-      bundle.putString("api_key",api_key);
+      bundle.putString("api_key", Environment.API_KEY);
       bundle.putString("userToken",userToken);
       bundle.putString("uid",uid);
       return bundle;
@@ -48,10 +48,7 @@ public class BundleDeliveryMan {
       b.putString("uid",uid);
       return b;
    }
-   public String deliverAPI(){
-      return api_key;
-   }
    private void connect() throws MalformedURLException {
-      mClient = Client.builder(api_key,secret_key).build();
+      mClient = Client.builder(Environment.API_KEY,Environment.CID_KEY).build();
    }
 }

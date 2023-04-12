@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.loginpage.constants.Environment;
 import com.example.loginpage.utility.BundleDeliveryMan;
 import com.example.loginpage.utility.Database;
 import com.example.loginpage.utility.LoadingDialogFragment;
@@ -24,8 +26,11 @@ import com.google.firebase.auth.FirebaseUser;
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.offline.plugin.configuration.Config;
 import io.getstream.chat.android.offline.plugin.factory.StreamOfflinePluginFactory;
+import io.getstream.client.Client;
+import io.getstream.core.http.Token;
 
 import java.net.MalformedURLException;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private final Database mDatabase = Database.getInstance();
@@ -37,10 +42,9 @@ public class MainActivity extends AppCompatActivity {
     private Button Register;
     private ImageView Profile;
 
+    public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
     private final BundleDeliveryMan mBundleDeliveryMan = BundleDeliveryMan.getInstance();
     private FirebaseAuth mAuth;
-
-    public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
 
 
 
@@ -51,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         init();
     }
 
@@ -63,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
         Login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 String email = Name.getText().toString();
                 String password = Password.getText().toString();
                 mAuth = FirebaseAuth.getInstance();
@@ -84,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
                                         String uid = user.getUid();
                                         // creating intent to pass information for creating user on to HomePage.java
                                         start_client();
+
                                         Intent intent = new Intent(MainActivity.this, HomePage.class);
                                         Bundle bundle = mBundleDeliveryMan.HomePageBundle(uid);
                                         intent.putExtras(bundle);
@@ -121,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
             boolean userPresence = true;
             Config config = new Config(backGroundSyncEnable, userPresence);
             StreamOfflinePluginFactory offlinePlugin = new StreamOfflinePluginFactory(config, getApplicationContext());
-            new ChatClient.Builder(mBundleDeliveryMan.deliverAPI(), getApplicationContext()).withPlugin(offlinePlugin).build();
+            new ChatClient.Builder(Environment.API_KEY, getApplicationContext()).withPlugin(offlinePlugin).build();
             Log.i("MainActivity","Successfully connected to client");
         }
         catch (Exception e){

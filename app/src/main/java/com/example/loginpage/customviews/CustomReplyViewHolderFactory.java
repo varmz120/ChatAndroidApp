@@ -7,14 +7,13 @@ import android.widget.Button;
 
 import com.example.loginpage.databinding.AttachedButtonBinding;
 import com.example.loginpage.utility.Database;
-
 import com.getstream.sdk.chat.adapter.MessageListItem;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import io.getstream.chat.android.client.models.Message;
-import io.getstream.chat.android.ui.message.list.MessageListView;
+import com.example.loginpage.customviews.ReplyViewHolder;
 import io.getstream.chat.android.ui.message.list.adapter.BaseMessageItemViewHolder;
 import io.getstream.chat.android.ui.message.list.adapter.MessageListItemViewHolderFactory;
 import io.getstream.chat.android.ui.message.list.adapter.MessageListListenerContainer;
@@ -25,12 +24,7 @@ import io.getstream.chat.android.ui.message.list.adapter.MessageListListenerCont
  */
 public class CustomReplyViewHolderFactory extends MessageListItemViewHolderFactory{
     private int BUTTON_VIEW_HOLDER_TYPE = 0;
-    private List<Message>msgList;
-    private Database database;
 
-    public CustomReplyViewHolderFactory(Database database){
-        this.database = database;
-    }
     @Override
     public int getItemViewType(@NonNull MessageListItem item){
         if(item instanceof MessageListItem.MessageItem){

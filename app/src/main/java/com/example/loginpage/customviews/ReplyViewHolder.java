@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.loginpage.R;
+import com.example.loginpage.constants.ExtraData;
 import com.example.loginpage.databinding.AttachedButtonBinding;
 import com.example.loginpage.utility.Database;
 import com.getstream.sdk.chat.adapter.MessageListItem;
@@ -89,11 +90,8 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
         ChatClient client = ChatClient.instance();
         Message msg = messageItem.getMessage();
         binding.message.setText(msg.getText());
-        String channelId_messageId = (String) msg.getExtraData().get("channel_id");
-        String channelId = (String) msg.getExtraData().get("channel_id");
+        String channelId_messageId = (String) msg.getExtraData().get(ExtraData.CHANNEL_ID);
         String uid = client.getCurrentUser().getId();
-        String allowStudent = (String) msg.getExtraData().get("allow_student");
-        String allowTA = (String) msg.getExtraData().get("allow_ta");
         String[] roles = getContext().getResources().getStringArray(R.array.role);
         String Student = roles[0];
         String TA = roles[1];
@@ -109,29 +107,29 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
                 if (snapshot.exists()) {
                     try {
                         JSONObject jsonObject = new JSONObject(snapshot.getValue().toString());
-                        String taApproved = jsonObject.getString("taApproved");
-                        String studentApproved = jsonObject.getString("studentApproved");
-                        String profApproved = jsonObject.getString("profApproved");
-                        if(taApproved.equals("true") || studentApproved.equals("true") || profApproved.equals("true")){
+                        boolean taApproved = jsonObject.getString(ExtraData.TA_APPROVED).equals("true");
+                        boolean studentApproved = jsonObject.getString(ExtraData.OWNER_APPROVED).equals("true");
+                        boolean profApproved = jsonObject.getString(ExtraData.PROF_APPROVED).equals("true");
+                        if(taApproved || studentApproved || profApproved){
                             emptyTick.setVisibility(View.GONE);
                         }
                         else {emptyTick.setVisibility(View.VISIBLE);}
-                        if(profApproved.equals("true")){
+                        if(profApproved){
                             redCircle.setVisibility(View.VISIBLE);
                         }
                         else{redCircle.setVisibility(View.GONE);}
-                        if(taApproved.equals("true")){
+                        if(taApproved){
                             maroonCircle.setVisibility(View.VISIBLE);
                         }
                         else{maroonCircle.setVisibility(View.GONE);}
-                        if(studentApproved.equals("true")){
+                        if(studentApproved){
                             pinkTick.setVisibility(View.VISIBLE);
                         }
                         else{pinkTick.setVisibility(View.GONE);}
 
 
 
-                        String vote_count = jsonObject.getString("vote_count");
+                        String vote_count = jsonObject.getString(ExtraData.VOTE_COUNT);
                         binding.upVoteButton.setText(vote_count);
 
                     } catch (JSONException e) {
@@ -149,7 +147,7 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
             }
         });
 
-        mDatabase.getReplyTickPressed(channelId_messageId,msg.getId(),"profApproved").onSuccessTask(dataSnapshot -> {
+        mDatabase.getReplyTickPressed(channelId_messageId,msg.getId(),ExtraData.PROF_APPROVED).onSuccessTask(dataSnapshot -> {
             if (dataSnapshot.exists()) {
                 Object profPressed=dataSnapshot.getValue();
                 if(profPressed.toString().equals("true")){
@@ -163,7 +161,7 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
             return null;
 
         });
-        mDatabase.getReplyTickPressed(channelId_messageId, msg.getId(),"taApproved").onSuccessTask(dataSnapshot -> {
+        mDatabase.getReplyTickPressed(channelId_messageId, msg.getId(),ExtraData.TA_APPROVED).onSuccessTask(dataSnapshot -> {
             if (dataSnapshot.exists()) {
                 Object taPressed=dataSnapshot.getValue();
                 if(taPressed.toString().equals("true")){
@@ -175,7 +173,7 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
             return null;
 
         });
-        mDatabase.getReplyTickPressed(channelId_messageId, msg.getId(),"studentApproved").onSuccessTask(dataSnapshot -> {
+        mDatabase.getReplyTickPressed(channelId_messageId, msg.getId(),ExtraData.OWNER_APPROVED).onSuccessTask(dataSnapshot -> {
             if (dataSnapshot.exists()) {
                 Object studentPressed=dataSnapshot.getValue();
                 if(studentPressed.toString().equals("true")){
@@ -202,23 +200,23 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
                         boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
                         mDatabase.getExtraDataForReplies_diff(channelId_messageId, msg.getId()).onSuccessTask(dataSnap -> {
                             JSONObject jsonObject = new JSONObject(dataSnap.getValue().toString());
-                            String taApproved = jsonObject.getString("taApproved");
-                            String studentApproved = jsonObject.getString("studentApproved");
-                            String profApproved = jsonObject.getString("profApproved");
+                            String taApproved = jsonObject.getString(ExtraData.TA_APPROVED);
+                            String studentApproved = jsonObject.getString(ExtraData.OWNER_APPROVED);
+                            String profApproved = jsonObject.getString(ExtraData.PROF_APPROVED);
                             System.out.println(profApproved);
                             if (permissionQuestionOwner) {
                                 // send a channel event that ticks this message using the UI components below
-                                ownerTick(channelId,msg,studentApproved);
+                                ownerTick(channelId_messageId,msg,studentApproved);
                                 //eventSender(LIVESTREAM,channelId,CustomEvents.OWNER_TICK);
                             }
 
                             else if (permissionGrantedProf) {
-                                profTick(channelId,msg,profApproved);
+                                profTick(channelId_messageId,msg,profApproved);
                                 //eventSender(LIVESTREAM,channelId, CustomEvents.PROF_TICK);
                             }
 
                             else if (permissionGrantedTA) {
-                                TATick(channelId,msg,taApproved);
+                                TATick(channelId_messageId,msg,taApproved);
                                 //eventSender(LIVESTREAM,channelId,CustomEvents.TA_TICK);
                             }
                             return null;
@@ -316,7 +314,7 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
         binding.delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mDatabase.deleteMessage(channelId, msg.getId()).onSuccessTask(new SuccessContinuation<Void, Object>() {
+                mDatabase.deleteMessage(channelId_messageId, msg.getId()).onSuccessTask(new SuccessContinuation<Void, Object>() {
                     @NonNull
                     @Override
                     public Task<Object> then(Void unused) throws Exception {
@@ -387,30 +385,17 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
 
 
     }
-    private void ownerTick(String channelId, Message msg){
-        if (!emptyTickClicked) {
-            emptyTick.setVisibility(View.GONE);
-            pinkTick.setVisibility(View.VISIBLE);
-            mDatabase.ReplyTickPressed(channelId, msg.getId(), "studentApproved");
-        }
-        else {
-            emptyTick.setVisibility(View.VISIBLE);
-            pinkTick.setVisibility(View.GONE);
-            mDatabase.ReplyTickRemoved(channelId, msg.getId(), "studentApproved");
-        }
 
-        emptyTickClicked = !emptyTickClicked;
-    }
     private void ownerTick(String channelId, Message msg,String studentApproved){
         if (studentApproved.equals("false")) {
             emptyTick.setVisibility(View.GONE);
             pinkTick.setVisibility(View.VISIBLE);
-            mDatabase.ReplyTickPressed(channelId, msg.getId(), "studentApproved");
+            mDatabase.ReplyTickPressed(channelId, msg.getId(), ExtraData.OWNER_APPROVED);
         }
         else {
             emptyTick.setVisibility(View.VISIBLE);
             pinkTick.setVisibility(View.GONE);
-            mDatabase.ReplyTickRemoved(channelId, msg.getId(), "studentApproved");
+            mDatabase.ReplyTickRemoved(channelId, msg.getId(), ExtraData.OWNER_APPROVED);
         }
 
         emptyTickClicked = !emptyTickClicked;
@@ -419,12 +404,12 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
         if (profApproved.equals("false")) {
             emptyTick.setVisibility(View.GONE);
             redCircle.setVisibility(View.VISIBLE);
-            mDatabase.ReplyTickPressed(channelId, msg.getId(), "profApproved");
+            mDatabase.ReplyTickPressed(channelId, msg.getId(), ExtraData.PROF_APPROVED);
         }
         else {
             emptyTick.setVisibility(View.VISIBLE);
             redCircle.setVisibility(View.GONE);
-            mDatabase.ReplyTickRemoved(channelId, msg.getId(), "profApproved");
+            mDatabase.ReplyTickRemoved(channelId, msg.getId(),ExtraData.PROF_APPROVED);
         }
         emptyTickClicked = !emptyTickClicked;
 
@@ -433,12 +418,12 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
         if (taApproved.equals("false")) {
             emptyTick.setVisibility(View.GONE);
             maroonCircle.setVisibility(View.VISIBLE);
-            mDatabase.ReplyTickPressed(channelId, msg.getId(), "taApproved");
+            mDatabase.ReplyTickPressed(channelId, msg.getId(), ExtraData.TA_APPROVED);
         }
         else {
             emptyTick.setVisibility(View.VISIBLE);
             maroonCircle.setVisibility(View.GONE);
-            mDatabase.ReplyTickRemoved(channelId, msg.getId(), "taApproved");
+            mDatabase.ReplyTickRemoved(channelId, msg.getId(), ExtraData.TA_APPROVED);
         }
         emptyTickClicked = !emptyTickClicked;
 

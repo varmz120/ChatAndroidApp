@@ -10,7 +10,6 @@ import com.example.loginpage.utility.Database;
 import com.getstream.sdk.chat.adapter.MessageListItem;
 
 import androidx.annotation.NonNull;
-
 import io.getstream.chat.android.ui.message.list.adapter.BaseMessageItemViewHolder;
 import io.getstream.chat.android.ui.message.list.adapter.MessageListItemViewHolderFactory;
 
@@ -21,8 +20,7 @@ import io.getstream.chat.android.ui.message.list.adapter.MessageListItemViewHold
 
 public class CustomMessageViewHolderFactory extends MessageListItemViewHolderFactory {
    private final int BUTTON_VIEW_HOLDER_TYPE = 1;
-   private final Database mDatabase;
-   
+
    public int getItemViewType(@NonNull MessageListItem item){
       if(item instanceof MessageListItem.MessageItem){
          return BUTTON_VIEW_HOLDER_TYPE;
@@ -36,8 +34,6 @@ public class CustomMessageViewHolderFactory extends MessageListItemViewHolderFac
       }
       return super.createViewHolder(parentView, viewType);
    }
-   public CustomMessageViewHolderFactory(Database database){
-      this.mDatabase = database;
-   }
+
 
 }
