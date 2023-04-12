@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.loginpage.R;
 import com.example.loginpage.constants.ExtraData;
+import com.example.loginpage.constants.Roles;
 import com.example.loginpage.databinding.AttachedButtonBinding;
 import com.example.loginpage.utility.Database;
 import com.getstream.sdk.chat.adapter.MessageListItem;
@@ -26,7 +27,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
@@ -37,7 +37,6 @@ import org.json.JSONObject;
 
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.models.Message;
-import io.getstream.chat.android.ui.message.list.adapter.BaseMessageItemViewHolder;
 import io.getstream.chat.android.ui.message.list.adapter.MessageListItemPayloadDiff;
 
 /**
@@ -45,10 +44,11 @@ import io.getstream.chat.android.ui.message.list.adapter.MessageListItemPayloadD
  * @date 25/2/2023
  */
 
-class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageItem> {
+class ReplyViewHolder extends CustomViewHolder {
     AttachedButtonBinding binding;
     public Button upVoteButton;
     private final Database mDatabase = Database.getInstance();
+    private final ChatClient client = ChatClient.instance();
 
     public TextView message;
     public ImageButton delete;
@@ -59,19 +59,6 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
     private static final String PREF_NAME = "upvote_pref";
     private static final String KEY_UPVOTED_IDS = "upvoted_ids";
     private boolean emptyTickClicked = false;
-    private Set<String> getUpvotedIds() {
-        SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        return preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
-    }
-
-    // method to add an ID to the set of upvoted IDs in shared preference
-    private void addUpvotedId(String userId, String messageId) {
-        SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        Set<String> upvotedIds = preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
-        String upvotedId = userId + ":" + messageId;
-        upvotedIds.add(upvotedId);
-        preferences.edit().putStringSet(KEY_UPVOTED_IDS, upvotedIds).apply();
-    }
 
     public ReplyViewHolder(@NonNull ViewGroup parentView, @NonNull AttachedButtonBinding binding){
         super(binding.getRoot());
@@ -87,65 +74,18 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
 
     @Override
     public void bindData(@NonNull MessageListItem.MessageItem messageItem, @Nullable MessageListItemPayloadDiff messageListItemPayloadDiff) {
-        ChatClient client = ChatClient.instance();
         Message msg = messageItem.getMessage();
         binding.message.setText(msg.getText());
         String channelId_messageId = (String) msg.getExtraData().get(ExtraData.CHANNEL_ID);
         String uid = client.getCurrentUser().getId();
-        String[] roles = getContext().getResources().getStringArray(R.array.role);
-        String Student = roles[0];
-        String TA = roles[1];
-        String Professor = roles[2];
+        super.setUpOverallState(channelId_messageId,uid,msg);
+    }
+    void setUpInitialState(String channelId_messageId, Message msg){
         delete.setVisibility(View.GONE);
         pinkTick.setVisibility(View.GONE);
         maroonCircle.setVisibility(View.GONE);
         redCircle.setVisibility(View.GONE);
         emptyTick.setVisibility(View.VISIBLE);
-        mDatabase.getExtraDataForReply(channelId_messageId, msg.getId()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    try {
-                        JSONObject jsonObject = new JSONObject(snapshot.getValue().toString());
-                        boolean taApproved = jsonObject.getString(ExtraData.TA_APPROVED).equals("true");
-                        boolean studentApproved = jsonObject.getString(ExtraData.OWNER_APPROVED).equals("true");
-                        boolean profApproved = jsonObject.getString(ExtraData.PROF_APPROVED).equals("true");
-                        if(taApproved || studentApproved || profApproved){
-                            emptyTick.setVisibility(View.GONE);
-                        }
-                        else {emptyTick.setVisibility(View.VISIBLE);}
-                        if(profApproved){
-                            redCircle.setVisibility(View.VISIBLE);
-                        }
-                        else{redCircle.setVisibility(View.GONE);}
-                        if(taApproved){
-                            maroonCircle.setVisibility(View.VISIBLE);
-                        }
-                        else{maroonCircle.setVisibility(View.GONE);}
-                        if(studentApproved){
-                            pinkTick.setVisibility(View.VISIBLE);
-                        }
-                        else{pinkTick.setVisibility(View.GONE);}
-
-
-
-                        String vote_count = jsonObject.getString(ExtraData.VOTE_COUNT);
-                        binding.upVoteButton.setText(vote_count);
-
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                } else {
-                    System.out.println("SNAPSHOT DOES NOT EXIST: " + snapshot);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
 
         mDatabase.getReplyTickPressed(channelId_messageId,msg.getId(),ExtraData.PROF_APPROVED).onSuccessTask(dataSnapshot -> {
             if (dataSnapshot.exists()) {
@@ -189,14 +129,28 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
             return null;
 
         });
+
+        mDatabase.getReplyUpVoteCount(channelId_messageId,msg.getId()).onSuccessTask(dataSnapshot -> {
+            if(dataSnapshot.exists()){
+                Object count = dataSnapshot.getValue();
+                binding.upVoteButton.setText(count.toString());
+            } else {
+                binding.upVoteButton.setText("0");
+            }
+            return null;
+        });
+    }
+
+
+    void setUpTickListeners(String channelId_messageId, String uid, Message msg){
         View.OnClickListener ticklistener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
                     if (dataSnapshot.exists()) {
                         String userRole = dataSnapshot.getValue().toString();
-                        boolean permissionGrantedProf = userRole.equals(Professor);
-                        boolean permissionGrantedTA = userRole.equals(TA);
+                        boolean permissionGrantedProf = userRole.equals(Roles.PROFESSOR);
+                        boolean permissionGrantedTA = userRole.equals(Roles.TA);
                         boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
                         mDatabase.getExtraDataForReplies_diff(channelId_messageId, msg.getId()).onSuccessTask(dataSnap -> {
                             JSONObject jsonObject = new JSONObject(dataSnap.getValue().toString());
@@ -234,156 +188,19 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
         pinkTick.setOnClickListener(ticklistener);
         maroonCircle.setOnClickListener(ticklistener);
         redCircle.setOnClickListener(ticklistener);
+    }
+    private Set<String> getUpvotedIds() {
+        SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        return preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
+    }
 
-        binding.innerLayout.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
-                    if (dataSnapshot.exists()) {
-                        String userRole = dataSnapshot.getValue().toString(); // Give userRole
-                        Log.i("ReplyViewHolder","User role from database: " + userRole);
-                        boolean permissionGrantedProf = userRole.equals(Professor);
-                        boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
-                        if (permissionGrantedProf || permissionQuestionOwner) {
-
-                            // Delete Button is visible after LONGCLICK
-                            delete.setVisibility(View.VISIBLE);
-                            // After 5s, the delete button fades away.
-                            Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
-                            // Problem: Animation does not activate after a second time.
-                            animation.setAnimationListener(new Animation.AnimationListener() {
-                                @Override
-                                public void onAnimationStart(Animation animation) {
-                                }
-                                @Override
-                                public void onAnimationEnd(Animation animation) {
-                                    // Set the visibility of the delete button to GONE once the animation ends
-                                    delete.setVisibility(View.GONE);
-                                }
-                                @Override
-                                public void onAnimationRepeat(Animation animation) {
-                                }
-                            });
-                            delete.startAnimation(animation);
-                        }
-                    }
-                    return null;
-                });
-                return true;
-            }
-        });
-
-
-        binding.message.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
-                    if (dataSnapshot.exists()) {
-                        String userRole = dataSnapshot.getValue().toString();
-                        Log.i("ReplyViewHolder","User role from database: " + userRole);
-                        boolean permissionGrantedProf = userRole.equals(Professor);
-                        boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
-                        if (permissionGrantedProf || permissionQuestionOwner) {
-                            // Delete Button is visible after LONGCLICK
-                            delete.setVisibility(View.VISIBLE);
-                            // After 5s, the delete button fades away.
-                            Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
-                            // Problem: Animation does not activate after a second time.
-                            animation.setAnimationListener(new Animation.AnimationListener() {
-                                @Override
-                                public void onAnimationStart(Animation animation) {
-                                }
-                                @Override
-                                public void onAnimationEnd(Animation animation) {
-                                    // Set the visibility of the delete button to GONE once the animation ends
-                                    delete.setVisibility(View.GONE);
-                                }
-                                @Override
-                                public void onAnimationRepeat(Animation animation) {
-                                }
-                            });
-                            delete.startAnimation(animation);
-                        }
-                    }
-                    return null;
-                });
-                return true;
-            }
-        });
-
-        binding.delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mDatabase.deleteMessage(channelId_messageId, msg.getId()).onSuccessTask(new SuccessContinuation<Void, Object>() {
-                    @NonNull
-                    @Override
-                    public Task<Object> then(Void unused) throws Exception {
-
-                        client.channel(msg.getCid()).deleteMessage(msg.getId(), true).enqueue(result -> {
-                            if (result.isSuccess()) {
-                                Message deletedMessage = result.data();
-                                Toast.makeText(getContext(), "Your message has been deleted.", Toast.LENGTH_SHORT).show();
-                                Log.i("ReplyViewHolder","The deleted message is: " + deletedMessage);
-                            } else {
-                                Toast.makeText(getContext(), "You cannot delete this message.", Toast.LENGTH_SHORT).show();
-                                Log.e("ReplyViewHolder","Message is not deleted for messageID: " + msg.getId());
-                                Log.e("ReplyViewHolder",String.valueOf(result));
-                            }
-                        });
-                        return null;
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("ReplyViewHolder","Error deleting message from database: " + e);
-                    }
-                });
-            }
-        });
-
-        mDatabase.getReplyUpVoteCount(channelId_messageId,msg.getId()).onSuccessTask(dataSnapshot -> {
-            if(dataSnapshot.exists()){
-                Object count = dataSnapshot.getValue();
-                binding.upVoteButton.setText(count.toString());
-            } else {
-                binding.upVoteButton.setText("0");
-            }
-            return null;
-        });
-        binding.upVoteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String messageId = msg.getId();
-                String userId = uid;
-                Set<String> upvotedIds = getUpvotedIds();
-                String upvotedId = userId + ":" + messageId;
-                if (!upvotedIds.contains(upvotedId)){
-                    int current_votes = Integer.parseInt(upVoteButton.getText().toString());
-                    //int current_votes = (int) double_type_votes;
-                    int added_votes = current_votes + 1;
-
-                    mDatabase.upVoteReply(channelId_messageId,msg.getId(),added_votes).onSuccessTask(new SuccessContinuation<Void, Object>() {
-                        @NonNull
-                        @Override
-                        public Task<Object> then(Void unused) throws Exception {
-                            Log.i("ReplyViewHolder","Reply upvote is successful");
-                            return null;
-                        }
-                    });
-
-                    String new_votes = Integer.toString(added_votes);
-                    upVoteButton.setText(new_votes);
-                    upVoteButton.setEnabled(false); // disable the button
-                    addUpvotedId(userId,messageId); // add the ID to the set of upvoted IDs
-                }
-                else{
-                    upVoteButton.setEnabled(false); // disable the button
-                }
-
-            }
-        });
-
-
+    // method to add an ID to the set of upvoted IDs in shared preference
+    private void addUpvotedId(String userId, String messageId) {
+        SharedPreferences preferences = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        Set<String> upvotedIds = preferences.getStringSet(KEY_UPVOTED_IDS, new HashSet<>());
+        String upvotedId = userId + ":" + messageId;
+        upvotedIds.add(upvotedId);
+        preferences.edit().putStringSet(KEY_UPVOTED_IDS, upvotedIds).apply();
     }
 
     private void ownerTick(String channelId, Message msg,String studentApproved){
@@ -429,4 +246,199 @@ class ReplyViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageI
 
     }
 
+    @Override
+    void setUpDatabaseStateListener(String channelId_messageId, Message msg) {
+        mDatabase.getExtraDataForReply(channelId_messageId, msg.getId()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(snapshot.getValue().toString());
+                        boolean taApproved = jsonObject.getString(ExtraData.TA_APPROVED).equals("true");
+                        boolean studentApproved = jsonObject.getString(ExtraData.OWNER_APPROVED).equals("true");
+                        boolean profApproved = jsonObject.getString(ExtraData.PROF_APPROVED).equals("true");
+                        if(taApproved || studentApproved || profApproved){
+                            emptyTick.setVisibility(View.GONE);
+                        }
+                        else {emptyTick.setVisibility(View.VISIBLE);}
+                        if(profApproved){
+                            redCircle.setVisibility(View.VISIBLE);
+                        }
+                        else{redCircle.setVisibility(View.GONE);}
+                        if(taApproved){
+                            maroonCircle.setVisibility(View.VISIBLE);
+                        }
+                        else{maroonCircle.setVisibility(View.GONE);}
+                        if(studentApproved){
+                            pinkTick.setVisibility(View.VISIBLE);
+                        }
+                        else{pinkTick.setVisibility(View.GONE);}
+
+
+
+                        String vote_count = jsonObject.getString(ExtraData.VOTE_COUNT);
+                        binding.upVoteButton.setText(vote_count);
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                } else {
+                    System.out.println("SNAPSHOT DOES NOT EXIST: " + snapshot);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    @Override
+    void upVoteButtonListener(String channelId_messageId, String uid, Message msg) {
+        binding.upVoteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String messageId = msg.getId();
+                Set<String> upvotedIds = getUpvotedIds();
+                String upvotedId = uid + ":" + messageId;
+                if (!upvotedIds.contains(upvotedId)){
+                    int current_votes = Integer.parseInt(upVoteButton.getText().toString());
+                    //int current_votes = (int) double_type_votes;
+                    int added_votes = current_votes + 1;
+
+                    mDatabase.upVoteReply(channelId_messageId,msg.getId(),added_votes).onSuccessTask(new SuccessContinuation<Void, Object>() {
+                        @NonNull
+                        @Override
+                        public Task<Object> then(Void unused) throws Exception {
+                            Log.i("ReplyViewHolder","Reply upvote is successful");
+                            return null;
+                        }
+                    });
+
+                    String new_votes = Integer.toString(added_votes);
+                    upVoteButton.setText(new_votes);
+                    upVoteButton.setEnabled(false); // disable the button
+                    addUpvotedId(uid,messageId); // add the ID to the set of upvoted IDs
+                }
+                else{
+                    upVoteButton.setEnabled(false); // disable the button
+                }
+
+            }
+        });
+
+
+    }
+
+    @Override
+    void deleteButtonListener(String channelId_messageId, Message msg) {
+        binding.delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDatabase.deleteMessage(channelId_messageId, msg.getId()).onSuccessTask(new SuccessContinuation<Void, Object>() {
+                    @NonNull
+                    @Override
+                    public Task<Object> then(Void unused) throws Exception {
+
+                        client.channel(msg.getCid()).deleteMessage(msg.getId(), true).enqueue(result -> {
+                            if (result.isSuccess()) {
+                                Message deletedMessage = result.data();
+                                Toast.makeText(getContext(), "Your message has been deleted.", Toast.LENGTH_SHORT).show();
+                                Log.i("ReplyViewHolder","The deleted message is: " + deletedMessage);
+                            } else {
+                                Toast.makeText(getContext(), "You cannot delete this message.", Toast.LENGTH_SHORT).show();
+                                Log.e("ReplyViewHolder","Message is not deleted for messageID: " + msg.getId());
+                                Log.e("ReplyViewHolder",String.valueOf(result));
+                            }
+                        });
+                        return null;
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("ReplyViewHolder","Error deleting message from database: " + e);
+                    }
+                });
+            }
+        });
+    }
+    void setMessageListener(String uid, Message msg){
+        binding.message.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
+                    if (dataSnapshot.exists()) {
+                        String userRole = dataSnapshot.getValue().toString();
+                        Log.i("ReplyViewHolder","User role from database: " + userRole);
+                        boolean permissionGrantedProf = userRole.equals(Roles.PROFESSOR);
+                        boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
+                        if (permissionGrantedProf || permissionQuestionOwner) {
+                            // Delete Button is visible after LONGCLICK
+                            delete.setVisibility(View.VISIBLE);
+                            // After 5s, the delete button fades away.
+                            Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
+                            // Problem: Animation does not activate after a second time.
+                            animation.setAnimationListener(new Animation.AnimationListener() {
+                                @Override
+                                public void onAnimationStart(Animation animation) {
+                                }
+                                @Override
+                                public void onAnimationEnd(Animation animation) {
+                                    // Set the visibility of the delete button to GONE once the animation ends
+                                    delete.setVisibility(View.GONE);
+                                }
+                                @Override
+                                public void onAnimationRepeat(Animation animation) {
+                                }
+                            });
+                            delete.startAnimation(animation);
+                        }
+                    }
+                    return null;
+                });
+                return true;
+            }
+        });
+    }
+    void setUpInnerLayoutListener(String uid, Message msg){
+        binding.innerLayout.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                mDatabase.getRole(uid).onSuccessTask(dataSnapshot -> {
+                    if (dataSnapshot.exists()) {
+                        String userRole = dataSnapshot.getValue().toString(); // Give userRole
+                        Log.i("ReplyViewHolder","User role from database: " + userRole);
+                        boolean permissionGrantedProf = userRole.equals(Roles.PROFESSOR);
+                        boolean permissionQuestionOwner = msg.getUser().getId().equals(uid);
+                        if (permissionGrantedProf || permissionQuestionOwner) {
+
+                            // Delete Button is visible after LONGCLICK
+                            delete.setVisibility(View.VISIBLE);
+                            // After 5s, the delete button fades away.
+                            Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
+                            // Problem: Animation does not activate after a second time.
+                            animation.setAnimationListener(new Animation.AnimationListener() {
+                                @Override
+                                public void onAnimationStart(Animation animation) {
+                                }
+                                @Override
+                                public void onAnimationEnd(Animation animation) {
+                                    // Set the visibility of the delete button to GONE once the animation ends
+                                    delete.setVisibility(View.GONE);
+                                }
+                                @Override
+                                public void onAnimationRepeat(Animation animation) {
+                                }
+                            });
+                            delete.startAnimation(animation);
+                        }
+                    }
+                    return null;
+                });
+                return true;
+            }
+        });
+    }
 }

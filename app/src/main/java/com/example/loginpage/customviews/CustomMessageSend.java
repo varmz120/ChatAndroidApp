@@ -37,28 +37,13 @@ import kotlin.Pair;
 public class CustomMessageSend extends ConstraintLayout implements ChannelSender{
    private Database mDatabase;
    public static ChannelClient classChannel;
-   private boolean allowTaPermission = false;
-   private boolean allowStudentPermission = false;
 
    public CustomMessageSend(@NonNull Context context) {
       super(context);
       init(context);
    }
 
-   public CustomMessageSend(@NonNull Context context, @Nullable AttributeSet attrs) {
-      super(context, attrs);
-      init(context);
-   }
 
-   public CustomMessageSend(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-      super(context, attrs, defStyleAttr);
-      init(context);
-   }
-
-   public CustomMessageSend(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-      super(context, attrs, defStyleAttr, defStyleRes);
-      init(context);
-   }
    public void setUpListeners(Context context){
       LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
       View view = inflater.inflate(R.layout.custom_question_input, this, true);
@@ -162,5 +147,20 @@ public class CustomMessageSend extends ConstraintLayout implements ChannelSender
       studentButton.setChecked(false);
       TAButton.setChecked(false);
    }
+   private boolean allowTaPermission = false;
+   private boolean allowStudentPermission = false;
+   public CustomMessageSend(@NonNull Context context, @Nullable AttributeSet attrs) {
+      super(context, attrs);
+      init(context);
+   }
 
+   public CustomMessageSend(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+      super(context, attrs, defStyleAttr);
+      init(context);
+   }
+
+   public CustomMessageSend(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+      super(context, attrs, defStyleAttr, defStyleRes);
+      init(context);
+   }
 }
