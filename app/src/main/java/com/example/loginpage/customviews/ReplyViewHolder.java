@@ -153,21 +153,24 @@ class ReplyViewHolder extends CustomViewHolder {
                             String taApproved = jsonObject.getString(ExtraData.TA_APPROVED);
                             String studentApproved = jsonObject.getString(ExtraData.OWNER_APPROVED);
                             String profApproved = jsonObject.getString(ExtraData.PROF_APPROVED);
+                            String[] channel_question = channelId_messageId.split("_");
+                            String parent_channelId = channel_question[0];
+                            String parent_questionId = channel_question[1];
                             System.out.println(profApproved);
                             if (permissionQuestionOwner) {
                                 // send a channel event that ticks this message using the UI components below
                                 ownerTick(channelId_messageId,msg,studentApproved,mDatabase);
-                                //eventSender(LIVESTREAM,channelId,CustomEvents.OWNER_TICK);
+                                mDatabase.updateParentQuestionTick(parent_channelId,parent_questionId,ExtraData.OWNER_APPROVED);
                             }
 
                             else if (permissionGrantedProf) {
                                 profTick(channelId_messageId,msg,profApproved,mDatabase);
-                                //eventSender(LIVESTREAM,channelId, CustomEvents.PROF_TICK);
+                                mDatabase.updateParentQuestionTick(parent_channelId,parent_questionId,ExtraData.PROF_APPROVED);
                             }
 
                             else if (permissionGrantedTA) {
                                 TATick(channelId_messageId,msg,taApproved,mDatabase);
-                                //eventSender(LIVESTREAM,channelId,CustomEvents.TA_TICK);
+                                mDatabase.updateParentQuestionTick(parent_channelId,parent_questionId,ExtraData.TA_APPROVED);
                             }
                             return null;
 

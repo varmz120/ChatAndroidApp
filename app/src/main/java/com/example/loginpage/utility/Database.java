@@ -147,6 +147,10 @@ public class Database {
       return channelReference.child(channelId).child(DatabaseConstants.MESSAGES);
    }
 
+   public Task<Void> updateParentQuestionTick(String channelId,String messageId,String approval_from){
+      return getExtraDataForMessage(channelId,messageId).child(approval_from).setValue("true");
+   }
+
    public void connect() {
       try {
          String referenceId = "https://" + DatabaseConstants.DATABASE_NAME + "." + DatabaseConstants.DATABASE_REGION + ".firebasedatabase.app/";
