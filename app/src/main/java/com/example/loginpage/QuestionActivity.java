@@ -159,52 +159,17 @@ public class QuestionActivity extends AppCompatActivity {
 
         MessageListHeaderViewModel messageListHeaderViewModel = provider.get(MessageListHeaderViewModel.class);
         MessageListViewModel messageListViewModel = provider.get(MessageListViewModel.class);
-        MessageInputViewModel messageInputViewModel = provider.get(MessageInputViewModel.class);
-        // Step 2 - Bind the view and ViewModels, they are loosely coupled so it's easy to customize
+
+        // Bind the view and ViewModels, they are loosely coupled so it's easy to customize
         MessageListHeaderViewModelBinding.bind(messageListHeaderViewModel, binding.messagesHeaderView, this);
         MessageListViewModelBinding.bind(messageListViewModel, binding.messageListView, this, true);
-        //MessageInputViewModelBinding.bind(messageInputViewModel, binding.messageInputView, this);
 
-        // Step 3 - Let both MessageListHeaderView and MessageInputView know when we open a thread
-        messageListViewModel.getMode().observe(this, mode -> {
-            if (mode instanceof Thread) {
-                Message parentMessage = ((Thread) mode).getParentMessage();
-                messageListHeaderViewModel.setActiveThread(parentMessage);
-                messageInputViewModel.setActiveThread(parentMessage);
-            } else if (mode instanceof Normal) {
-                messageListHeaderViewModel.resetThread();
-                messageInputViewModel.resetThread();
-            }
-        });
         // Customised View Model for Messages
         CustomMessageSend.classChannel = classChannel;
         new CustomMessageSend(this);
 
         binding.messageListView.setMessageViewHolderFactory(new CustomMessageViewHolderFactory());
 
-        // Step 5 - Handle navigate up state
-        messageListViewModel.getState().observe(this, state -> {
-            if (state instanceof NavigateUp) {
-                finish();
-            }
-        });
-
-        // Step 6 - Handle back button behaviour correctly when you're in a thread
-        MessageListHeaderView.OnClickListener backHandler = () -> {
-            Intent intent = new Intent(QuestionActivity.this,HomePage.class);
-            Bundle b = mBundleDeliveryMan.HomePageBundle(ChatClient.instance().getCurrentUser().getId());
-            intent.putExtras(b);
-            startActivity(intent);
-            messageListViewModel.onEvent(MessageListViewModel.Event.BackButtonPressed.INSTANCE);
-        };
-        binding.messagesHeaderView.setBackButtonClickListener(backHandler);
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                backHandler.onClick();
-
-            }
-        });
     }
 
 }

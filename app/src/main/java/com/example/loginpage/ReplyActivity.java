@@ -95,51 +95,14 @@ public class ReplyActivity extends AppCompatActivity {
 
         MessageListHeaderViewModel messageListHeaderViewModel = provider.get(MessageListHeaderViewModel.class);
         MessageListViewModel messageListViewModel = provider.get(MessageListViewModel.class);
-        MessageInputViewModel messageInputViewModel = provider.get(MessageInputViewModel.class);
 
         // Step 2 - Bind the view and ViewModels, they are loosely coupled so it's easy to customize
         MessageListHeaderViewModelBinding.bind(messageListHeaderViewModel, binding.messagesHeaderView, this);
         MessageListViewModelBinding.bind(messageListViewModel, binding.messageListView, this, true);
-        //MessageInputViewModelBinding.bind(messageInputViewModel, binding.messageInputView, this);
-
-        messageListViewModel.getMode().observe(this, mode -> {
-            if (mode instanceof Thread) {
-                Message parentMessage = ((Thread) mode).getParentMessage();
-                messageListHeaderViewModel.setActiveThread(parentMessage);
-                messageInputViewModel.setActiveThread(parentMessage);
-            } else if (mode instanceof Normal) {
-                messageListHeaderViewModel.resetThread();
-                messageInputViewModel.resetThread();
-            }
-        });
         // Customised View Model for Messages
         binding.messageListView.setMessageViewHolderFactory(new CustomReplyViewHolderFactory());
         CustomReplySend.classChannel = classChannel;
-        CustomReplySend customisedHandler  = new CustomReplySend(this);
-        //binding.messageInputView.setSendMessageHandler(new CustomReplySend(classChannel,mDatabase));
+        new CustomReplySend(this);
 
-        messageListViewModel.getState().observe(this, state -> {
-            if (state instanceof NavigateUp) {
-                finish();
-            }
-        });
-
-        // Step 6 - Handle back button behaviour correctly when you're in a thread
-        MessageListHeaderView.OnClickListener backHandler = () -> {
-            String[] channelId_messageId = classChannel.getChannelId().split("_");
-            String parentChannelId = channelId_messageId[0];
-            String channelType = getString(R.string.livestreamChannelType);
-            ChannelClient channelClient = mBundleDeliveryMan.QuestionsPageBundle(channelType,parentChannelId);
-            startActivity(QuestionActivity.newIntent(this,channelClient));
-            messageListViewModel.onEvent(MessageListViewModel.Event.BackButtonPressed.INSTANCE);
-        };
-        binding.messagesHeaderView.setBackButtonClickListener(backHandler);
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                backHandler.onClick();
-
-            }
-        });
     }
 }
