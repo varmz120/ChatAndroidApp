@@ -4,44 +4,55 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/blue_gradient"
+    android:background="@drawable/pink_blue_gradient"
     tools:context=".MainActivity">
 
     <EditText
         android:id="@+id/ETUsername"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="250dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
         android:height="48dp"
+        android:background="@drawable/curved_white_rectangle"
         android:ems="10"
         android:hint="Username"
         android:inputType="textPersonName"
+        android:paddingStart="10dp"
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/stream_ui_grey"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2"
+        app:layout_constraintTop_toBottomOf="@id/weMissedYou"
         tools:ignore="MissingConstraints" />
 
     <EditText
         android:id="@+id/ETPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="250dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
         android:height="48dp"
+        android:background="@drawable/curved_white_rectangle"
         android:ems="10"
         android:hint="Password"
+        android:textColor="@color/black"
+        android:textColorHint="@color/stream_ui_grey"
         android:inputType="textPassword"
+        android:paddingStart="10dp"
+        android:textSize="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ETUsername"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/ETUsername" />
 
     <Button
         android:id="@+id/LoginButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="100dp"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:background="?attr/colorSecondary"
         android:text="Login"
-        android:backgroundTint="@color/white"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ETPassword" />
@@ -50,22 +61,51 @@
         android:id="@+id/Register"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="100dp"
+        android:layout_marginEnd="80dp"
+        android:background="?attr/colorSecondaryVariant"
         android:text="Register"
-        android:backgroundTint="@color/white"
-        android:textColor="@color/black"
+        android:textColor="@color/grey"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ETPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/LoginButton" />
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
+        android:layout_width="224dp"
+        android:layout_height="137dp"
+        android:layout_marginTop="130dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/cereal_logo" />
+
+    <TextView
+        android:id="@+id/hello"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:fontFamily="sans-serif-black"
+        android:inputType="textPersonName"
+        android:text="Hello!"
+        android:textAlignment="center"
+        android:textSize="34sp"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView2" />
+
+    <TextView
+        android:id="@+id/weMissedYou"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:fontFamily="sans-serif-light"
+        android:inputType="textPersonName"
+        android:text="What came first? Cereal or Milk?"
+        android:textSize="20sp"
+        android:textColor="@color/dark_grey"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/hello" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

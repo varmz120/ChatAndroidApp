@@ -1,0 +1,16 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="rectangle">
+            <corners android:radius="20dp" />
+            <gradient
+                android:gradientRadius="250dp"
+                android:endColor="#FFFFFF"
+                android:startColor="#AC998B"
+                android:type="radial" />
+<!--            <corners-->
+<!--                android:topLeftRadius="60dp"-->
+<!--                android:topRightRadius="60dp" />-->
+        </shape>
+    </item>
+</selector>
