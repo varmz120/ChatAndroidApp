@@ -46,7 +46,7 @@ public class SettingActivity extends AppCompatActivity {
         Bundle userData = getIntent().getExtras();
         String uid = userData.getString("uid");
         setContentView(R.layout.activity_settings);
-        changeUsernameButton = findViewById(R.id.changeUsernameButton);
+        changeUsernameButton = findViewById(R.id.changeUserButton);
         changePasswordButton  = findViewById(R.id.changePasswordButton);
         historyButton = findViewById(R.id.historyButton);
         backButton = findViewById(R.id.backButtonSettings);
