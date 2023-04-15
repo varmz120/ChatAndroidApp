@@ -26,13 +26,22 @@
                 android:background="@android:color/transparent"
 
                 android:layout_gravity="start" />
-
+            <ImageButton
+                android:layout_width="50sp"
+                android:layout_height="50sp"
+                android:id="@+id/filteredQuestionsButton"
+                android:src="@drawable/baseline_filter_alt_24"
+                android:background="@drawable/transparent_background"
+                android:layout_gravity="end"
+                />
             <ImageButton
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:id="@+id/deleteChannel"
                 android:layout_gravity="end"
+                android:layout_marginRight="10sp"
                 app:srcCompat = "@drawable/deletebutton_original4" />
+
 
             <TextView
                 android:id = "@+id/toolbar_title"
@@ -44,6 +53,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/stream_ui_avatar_text_size_large"
                 android:contentInsetStart="?attr/actionBarSize" />
+
 
         </android.widget.Toolbar>
 

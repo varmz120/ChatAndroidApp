@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.loginpage.constants.Environment;
+import com.example.loginpage.constants.Roles;
 import com.example.loginpage.databinding.ActivityMessageBinding;
 
 import com.example.loginpage.utility.BundleDeliveryMan;
@@ -59,6 +60,8 @@ import io.getstream.chat.android.ui.message.list.viewmodel.factory.MessageListVi
 public class QuestionActivity extends AppCompatActivity {
 
     private static ChannelClient classChannel;
+    ChatClient client = ChatClient.instance();
+
     private static final Database mDatabase = Database.getInstance();
     private final BundleDeliveryMan mBundleDeliveryMan = BundleDeliveryMan.getInstance();
 
@@ -77,20 +80,26 @@ public class QuestionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Step 0 - inflate binding
+        //Inflate binding
         ActivityMessageBinding binding = ActivityMessageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-
         Toolbar toolbar = findViewById(R.id.toolbar);
-
-
         TextView channelTitle = findViewById(R.id.toolbar_title);
-        String channelid = classChannel.getChannelId();
-        String channelCode = channelid.substring(11);
-
-        channelTitle.setText("Room : "+channelCode);
         ImageButton backButton = toolbar.findViewById(R.id.back_button);
+        ImageButton deleteChannel = toolbar.findViewById(R.id.deleteChannel);
+        ImageButton filterButton = toolbar.findViewById(R.id.filteredQuestionsButton);
+
+        // determines whether the user should be allowed to delete the channel
+        deleteButtonFunctionality(deleteChannel);
+        // determines whether the user should be allowed to filter the channel to view questions
+        filterButtonFunctionality(filterButton);
+
+        String channelid = classChannel.getChannelId();
+        String channelCode = "Room : " + channelid.substring(11);
+
+        channelTitle.setText(channelCode);
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -101,48 +110,6 @@ public class QuestionActivity extends AppCompatActivity {
                 Bundle b = mBundleDeliveryMan.HomePageBundle(ChatClient.instance().getCurrentUser().getId());
                 intent.putExtras(b);
                 startActivity(intent);
-            }
-        });
-
-        ImageButton deleteChannel = toolbar.findViewById(R.id.deleteChannel);
-        deleteChannel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                ChatClient client = ChatClient.instance();
-
-                classChannel.watch().enqueue(result -> {
-                    if (result.isSuccess()){
-                        Channel channel1 = result.data();
-
-                        if (client.getCurrentUser().getId().equals(channel1.getCreatedBy().getId())){
-                            classChannel.delete().enqueue(result1 -> {
-                                if (result1.isSuccess()){
-                                    if (!loadingDialogFragment.isAdded()) {
-                                        loadingDialogFragment.show(getSupportFragmentManager(), "loader");
-                                    }
-                                    Log.i("ChannelActivity","Channel has been deleted");
-                                    Toast.makeText(getApplicationContext(), "The channel has been deleted.", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(QuestionActivity.this,HomePage.class);
-                                    Bundle b = mBundleDeliveryMan.HomePageBundle(ChatClient.instance().getCurrentUser().getId());
-                                    intent.putExtras(b);
-                                    startActivity(intent);
-                                }
-                                else{
-                                    Log.i("ChannelActivity","Result of channel.delete()"+result1);
-                                }
-                            });
-                        }
-                        else{
-                            Toast.makeText(getApplicationContext(), "The user does not have permission to delete.", Toast.LENGTH_SHORT).show();
-                            Log.e("ChannelActivity","User does not have permission to delete");
-                        }
-                    }
-                    else{
-                        Log.i("ChannelActivity","Result of channel.watch()"+result);
-                    }
-                });
-
             }
         });
 
@@ -164,12 +131,72 @@ public class QuestionActivity extends AppCompatActivity {
         MessageListHeaderViewModelBinding.bind(messageListHeaderViewModel, binding.messagesHeaderView, this);
         MessageListViewModelBinding.bind(messageListViewModel, binding.messageListView, this, true);
 
-        // Customised View Model for Messages
+        // Customised View model and logic handling for sending messages
         CustomMessageSend.classChannel = classChannel;
         new CustomMessageSend(this);
-
+        // Customised View Model for Messages
         binding.messageListView.setMessageViewHolderFactory(new CustomMessageViewHolderFactory());
 
+    }
+    private void deleteButtonFunctionality(ImageButton deleteChannel){
+        classChannel.watch().enqueue(result -> {
+            if (result.isSuccess()){
+                Channel channel1 = result.data();
+                if (client.getCurrentUser().getId().equals(channel1.getCreatedBy().getId())){
+                    deleteChannel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            classChannel.delete().enqueue(result1 -> {
+                                if (result1.isSuccess()){
+                                    if (!loadingDialogFragment.isAdded()) {
+                                        loadingDialogFragment.show(getSupportFragmentManager(), "loader");
+                                    }
+                                    Log.i("ChannelActivity","Channel has been deleted");
+                                    Toast.makeText(getApplicationContext(), "The channel has been deleted.", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(QuestionActivity.this,HomePage.class);
+                                    Bundle b = mBundleDeliveryMan.HomePageBundle(ChatClient.instance().getCurrentUser().getId());
+                                    intent.putExtras(b);
+                                    startActivity(intent);
+                                }
+                                else{
+                                    Log.i("ChannelActivity","Result of channel.delete()"+result1);
+                                }
+                            });
+                        }
+                    });
+
+                } else {
+                    deleteChannel.setVisibility(View.GONE);
+                }
+
+
+            }
+            else{
+                Log.i("ChannelActivity","Result of channel.watch() fdr delete channel button "+result);
+            }
+        });
+    }
+    private void filterButtonFunctionality(ImageButton filterButton){
+        String currentUserId = client.getCurrentUser().getId();
+        mDatabase.getRole(currentUserId).onSuccessTask(result->{
+            if(result.exists()){
+                String userRole = (String) result.getValue();
+                if(userRole.equals(Roles.PROFESSOR)){
+                    filterButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(QuestionActivity.this,FilteredActivity.class);
+                            Bundle bundle = mBundleDeliveryMan.FilteredPageBundle(classChannel.getChannelId());
+                            intent.putExtras(bundle);
+                            view.getContext().startActivity(intent);
+                        }
+                    });
+                } else {
+                    filterButton.setVisibility(View.GONE);
+                }
+            }
+            return null;
+        });
     }
 
 }

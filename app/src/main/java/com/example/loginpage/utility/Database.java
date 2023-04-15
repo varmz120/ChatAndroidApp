@@ -11,6 +11,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
@@ -20,7 +21,6 @@ import io.getstream.chat.android.client.models.Message;
  * @author saran
  * @date 13/3/2023
  */
-
 public class Database {
    private FirebaseDatabase database;
    private DatabaseReference baseReference;
@@ -149,6 +149,11 @@ public class Database {
 
    public Task<Void> updateParentQuestionTick(String channelId,String messageId,String approval_from){
       return getExtraDataForMessage(channelId,messageId).child(approval_from).setValue("true");
+   }
+   public Query filteredQuestions(String channelId){
+      // accesses all the questions in a certain channel which have not been approved
+      DatabaseReference databaseReference = channelReference.child(channelId).child(DatabaseConstants.MESSAGES);
+      return databaseReference.orderByChild(DatabaseConstants.EXTRA_DATA+"/"+ExtraData.OWNER_APPROVED).equalTo("false");
    }
 
    public void connect() {

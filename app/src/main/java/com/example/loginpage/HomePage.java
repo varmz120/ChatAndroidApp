@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.example.loginpage.utility.BundleDeliveryMan;
 import com.example.loginpage.utility.Database;
 import com.example.loginpage.utility.LoadingDialogFragment;
+import com.google.firebase.database.Query;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,10 +44,7 @@ public class HomePage extends AppCompatActivity {
    private final BundleDeliveryMan mDeliveryMan = BundleDeliveryMan.getInstance();
    private String api_key;
 
-
    public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
-
-
 
 
    public HomePage() throws MalformedURLException {
@@ -55,17 +53,6 @@ public class HomePage extends AppCompatActivity {
    @Override
    protected void onCreate(Bundle savedInstanceState) {
 
-
-
-
-
-
-
-
-
-
-
-              // Setting up handler for uncaught exceptions
       Thread.setDefaultUncaughtExceptionHandler (new Thread.UncaughtExceptionHandler()
       {
          @Override
@@ -93,7 +80,6 @@ public class HomePage extends AppCompatActivity {
       createRoomButton.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
-
             registerUser(uid,userToken);
 
          }

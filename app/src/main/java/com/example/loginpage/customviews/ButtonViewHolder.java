@@ -81,7 +81,7 @@ class ButtonViewHolder extends CustomViewHolder {
       Message msg = messageItem.getMessage();
       binding.message.setText(msg.getText());
       String channelId = (String) msg.getExtraData().get(ExtraData.CHANNEL_ID);
-
+      // utilises the inherited method to set up all custom listeners
       super.setUpOverallState(channelId,msg);
 
    }
@@ -166,8 +166,6 @@ class ButtonViewHolder extends CustomViewHolder {
                      pinkTick.setVisibility(View.VISIBLE);
                   }
                   else{pinkTick.setVisibility(View.GONE);}
-
-
 
                   String vote_count = jsonObject.getString(ExtraData.VOTE_COUNT);
                   binding.upVoteButton.setText(vote_count);
