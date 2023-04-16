@@ -28,6 +28,7 @@ public class HistoryAdapter extends FirebaseRecyclerAdapter<Message,HistoryAdapt
     @Override
     protected void onBindViewHolder(@NonNull replyViewHolder holder, int position, @NonNull Message model) {
         holder.Reply.setText(model.getText());
+        // utilising the channelType: channelId_questionId structure of the CID string to get parent question Id
         String[] channelId_messageId = model.getCid().split(":")[1].split("_");
         String channelId = channelId_messageId[0];
         String questionId = channelId_messageId[1];
@@ -47,9 +48,10 @@ public class HistoryAdapter extends FirebaseRecyclerAdapter<Message,HistoryAdapt
     @Override
     public replyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.reply, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.reply_history_view, parent, false);
         return new replyViewHolder(view);
     }
+    // Binds replyViewHolder class to the reply_history_view.xml
     static class replyViewHolder extends RecyclerView.ViewHolder {
         TextView parentQuestion, Reply;
         public replyViewHolder(@NonNull View itemView)

@@ -48,6 +48,11 @@ public class BundleDeliveryMan {
       b.putString("uid",uid);
       return b;
    }
+   public Bundle FilteredPageBundle(String channelId){
+      Bundle b = new Bundle();
+      b.putString("channel_id",channelId);
+      return b;
+   }
    private void connect() throws MalformedURLException {
       mClient = Client.builder(Environment.API_KEY,Environment.CID_KEY).build();
    }
