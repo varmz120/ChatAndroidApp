@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,7 +30,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button TA;
     private Button Professor;
     private Button Register;
-    private Button Back;
+    private ImageButton Back;
     private String Username;
     private String Password;
     private String confirmPassword;
@@ -49,7 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
         Role = (Spinner) findViewById(R.id.spinnerRole);
         Register = (Button) findViewById(R.id.register);
-        Back = (Button) findViewById(R.id.back);
+        Back = (ImageButton) findViewById(R.id.back);
         mDatabase = Database.getInstance();
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();

@@ -5,83 +5,58 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/orange_blue_gradient">
-
-    <EditText
-        android:id = "@+id/newemail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="194dp"
-        android:layout_marginTop="229dp"
-        android:layout_marginEnd="197dp"
-        app:layout_constraintBottom_toTopOf="@+id/changeUserButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    android:background="@drawable/login_brown_background">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/changePasswordButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="88dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/curved_white_rectangle"
         android:text="CHANGE PASSWORD"
+        app:layout_constraintEnd_toEndOf="@+id/whiteSetting"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/changeUserButton" />
+        app:layout_constraintStart_toStartOf="@+id/whiteSetting"
+        app:layout_constraintTop_toBottomOf="@+id/newpassword" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/changeUserButton"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/curved_white_rectangle"
-        android:text="CHANGE USERNAME"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="Confirm"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.4" />
+        app:layout_constraintTop_toBottomOf="@id/newemail" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/historyButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/stream_ui_accent_red"
-        android:text="HISTORY"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.482"
+        android:layout_marginBottom="100dp"
+        android:outlineProvider="none"
+        app:backgroundTint="@android:color/transparent"
+        app:icon="@drawable/history"
+        app:iconTint="@color/light_brown"
+        app:layout_constraintBottom_toBottomOf="@+id/whiteSetting"
+        app:layout_constraintEnd_toEndOf="@+id/whiteSetting"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/changePasswordButton"
-        app:layout_constraintVertical_bias="0.361" />
+        app:layout_constraintStart_toStartOf="@+id/whiteSetting" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/backButtonSettings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/stream_ui_accent_red"
-        android:text="BACK"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        android:outlineProvider="none"
+        app:backgroundTint="@android:color/transparent"
+        app:icon="@drawable/backbutton"
+        app:iconTint="@color/light_brown"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/historyButton"
-        app:layout_constraintVertical_bias="0.552" />
-
-    <EditText
-        android:id="@+id/newpassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="194dp"
-        android:layout_marginTop="229dp"
-        android:layout_marginEnd="197dp"
-        android:background="@drawable/curved_white_rectangle"
-        app:layout_constraintBottom_toTopOf="@+id/changePasswordButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/setting"
@@ -99,6 +74,7 @@
         android:layout_height="600dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/curved_white_rectangle_setting" />
 
@@ -108,19 +84,67 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="130dp"
         android:layout_marginBottom="20dp"
+        android:fontFamily="sans-serif-black"
         android:text="Setting"
-        android:textColor="@color/black"
+        android:textColor="@color/brown"
         android:textSize="28sp"
         app:layout_constraintBottom_toTopOf="@+id/whiteSetting"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toRightOf="@id/setting" />
 
-    <ImageView
-        android:id="@+id/blueSetting"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/curved_blue_rectangle"
-        tools:layout_editor_absoluteX="0dp" />
+    <EditText
+        android:id="@+id/newemail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="@+id/whiteSetting"
+        app:layout_constraintStart_toStartOf="@+id/whiteSetting"
+        app:layout_constraintTop_toBottomOf="@+id/changinguserText" />
+
+    <EditText
+        android:id="@+id/newpassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/curved_white_rectangle"
+        app:layout_constraintEnd_toEndOf="@+id/whiteSetting"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="@+id/whiteSetting"
+        app:layout_constraintTop_toBottomOf="@+id/changingpassText" />
+
+    <TextView
+        android:id="@+id/changinguserText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:text="What is your new username:"
+        android:textSize="18dp"
+        app:layout_constraintEnd_toEndOf="@+id/whiteSetting"
+        app:layout_constraintHorizontal_bias="0.523"
+        app:layout_constraintStart_toStartOf="@+id/whiteSetting"
+        app:layout_constraintTop_toTopOf="@+id/whiteSetting" />
+
+    <TextView
+        android:id="@+id/changingpassText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="What is your new password?"
+        android:textSize="18dp"
+        app:layout_constraintEnd_toEndOf="@+id/whiteSetting"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="@+id/whiteSetting"
+        app:layout_constraintTop_toBottomOf="@+id/changeUserButton" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:text="History Page"
+        android:textSize="15dp"
+        app:layout_constraintEnd_toEndOf="@+id/whiteSetting"
+        app:layout_constraintStart_toStartOf="@+id/whiteSetting"
+        app:layout_constraintTop_toBottomOf="@+id/historyButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
