@@ -12,7 +12,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginStart="10sp"
         android:layout_marginBottom="8sp"
-        app:cardBackgroundColor="@color/white"
+        app:cardBackgroundColor="@color/stream_ui_grey_whisper"
         app:cardCornerRadius="10dp"
         app:cardElevation="2dp"
         app:layout_constraintHorizontal_bias="0.01"
@@ -30,6 +30,7 @@
                 android:id="@+id/upVoteButton"
                 android:layout_width="100dp"
                 android:layout_height="68dp"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/transparent_background"
                 android:drawableLeft="@drawable/baseline_arrow_drop_up_24"
                 android:scaleType="fitCenter"
@@ -41,7 +42,7 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.372" />
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@id/message"
@@ -49,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="100dp"
                 android:layout_marginTop="16dp"
-                android:background="@color/white"
+                android:background="@color/stream_ui_grey_whisper"
                 android:gravity="center|center_vertical"
                 android:paddingStart="0dp"
                 android:paddingEnd="0dp"
@@ -70,12 +71,12 @@
                 app:layout_constraintRight_toRightOf="@+id/innerLayout"
                 app:layout_constraintTop_toTopOf="@id/innerLayout"
                 app:srcCompat="@drawable/emptytick" />
-
             <ImageButton
                 android:id="@+id/delete"
-                android:layout_width="55dp"
-                android:layout_height="39dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:layout_marginRight="13dp"
                 android:background="@null"
                 app:layout_constraintBottom_toBottomOf="@id/innerLayout"
                 app:layout_constraintRight_toRightOf="@+id/innerLayout"

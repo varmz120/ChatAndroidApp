@@ -12,7 +12,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +26,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class RegisterActivity extends AppCompatActivity {
     private Spinner Role;
     private Button Register;
-    private ImageButton Back;
+    private Button Back;
     private String Username;
     private String Password;
     private String confirmPassword;
@@ -43,7 +42,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
         Role = (Spinner) findViewById(R.id.spinnerRole);
         Register = (Button) findViewById(R.id.register);
-        Back = (ImageButton) findViewById(R.id.back);
+        Back = (Button) findViewById(R.id.back);
         mDatabase = Database.getInstance();
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
