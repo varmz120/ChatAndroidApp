@@ -25,23 +25,16 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class RegisterActivity extends AppCompatActivity {
     private Spinner Role;
-    private Button Student;
-    private Button TA;
-    private Button Professor;
     private Button Register;
     private Button Back;
     private String Username;
     private String Password;
     private String confirmPassword;
-    private TextView roleView;
     private String selectedRole = "";
     private ArrayAdapter<CharSequence> adapter;
     private Database mDatabase;
 
     public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
-
-
-    private static Integer userid = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
