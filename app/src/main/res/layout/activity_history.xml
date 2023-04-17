@@ -6,18 +6,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-    <Button
-        android:id="@+id/historyBackButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:text="BACK"
-        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycleViewForReply"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#65E4A6"/>
+        android:background="@color/white"
+        android:paddingTop="70dp"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="2dp" />
+
+    <ImageButton
+        android:id="@+id/historyBackButton"
+        android:layout_width="60dp"
+        android:layout_height="53dp"
+        android:layout_marginTop="10dp"
+        android:background="@null"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/backbutton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

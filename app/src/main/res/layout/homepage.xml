@@ -5,7 +5,7 @@
     android:id="@+id/CreateRoom"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/lighter_pinkblue_gradient">
+    android:background="@color/white">
 
     <TextView
         android:id="@+id/usernameField"
@@ -19,57 +19,57 @@
 
     <Button
         android:id="@+id/createRoom"
-        android:layout_width="300dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="100dp"
-        android:fontFamily="sans-serif-light"
-        android:background="@drawable/homepage_circle"
-        android:text="Create Room"
+        android:layout_width="340dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="70dp"
+        android:backgroundTint="?attr/colorOnPrimary"
+        android:fontFamily="sans-serif-black"
+        android:text="+"
+        android:textColor="@color/black"
         android:textSize="30dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@id/brown_block"
+        app:layout_constraintEnd_toEndOf="@id/brown_block"
+        app:layout_constraintStart_toStartOf="@id/brown_block"
+        app:layout_constraintTop_toTopOf="@id/brown_block" />
 
     <Button
         android:id="@+id/settingsButton"
         android:layout_width="150dp"
         android:layout_height="70dp"
-        android:text="SETTINGS"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="50dp"
         android:background="@drawable/curved_white_setting_button"
-        android:textColor="@color/stream_ui_grey"
-        app:layout_constraintBottom_toBottomOf="@+id/settinglayout"
-        app:layout_constraintEnd_toEndOf="@+id/settinglayout"
-        app:layout_constraintStart_toStartOf="@+id/settinglayout"
-        app:layout_constraintTop_toTopOf="@+id/settinglayout" />
+        android:text="SETTINGS"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/roomSubmit" />
 
     <EditText
         android:id="@+id/roomCode"
         android:layout_width="200dp"
         android:layout_height="50dp"
-        android:layout_marginTop="90dp"
         android:autofillHints="CODE"
         android:background="@drawable/edit_text_background"
         android:hint="Enter Room Code"
-        android:textColorHint="@color/grey"
-        android:textAlignment="center"
         android:labelFor="@+id/roomCode"
         android:padding="10dp"
-        android:textSize="18dp"
+        android:textAlignment="center"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColorHint="@color/grey"
+        android:textSize="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.551" />
+        app:layout_constraintTop_toBottomOf="@+id/enterRoomCode" />
 
     <Button
         android:id="@+id/roomSubmit"
         android:layout_width="200dp"
         android:layout_height="40dp"
-        android:layout_marginTop="24dp"
-        android:text="Enter"
+        android:layout_marginTop="10dp"
         android:background="@drawable/curved_brown_rectangle"
+        android:text="Enter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -77,57 +77,83 @@
 
     <Button
         android:id="@+id/logOut"
-        android:layout_width="85dp"
-        android:layout_height="60dp"
-        android:text="Log Out"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:backgroundTint="?attr/colorSecondary"
         android:paddingBottom="10dp"
+        android:text="Log Out"
         android:textAlignment="center"
-        android:textColor="@color/stream_ui_grey"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        android:background="@drawable/log_out_shape"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/settingsButton" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/brown_block"
         android:layout_width="match_parent"
         android:layout_height="200dp"
+        android:layout_marginTop="50dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"
+        android:paddingRight="20dp"
+        android:src="@drawable/setting_brown_layout"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="86dp"
-        tools:layout_editor_absoluteY="28dp"
-        android:src="@drawable/homepage_rectangle"
-        />
+        tools:layout_editor_absoluteX="0dp" />
 
     <TextView
         android:id="@+id/enterRoomCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginTop="40dp"
         android:fontFamily="sans-serif-light"
         android:text="Room Code:"
         android:textAlignment="center"
-        android:textColor="@color/stream_ui_grey"
+        android:textColor="@color/brown"
         android:textSize="28sp"
-        app:layout_constraintBottom_toTopOf="@+id/roomCode"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/brown_block" />
+
+    <TextView
+        android:id="@+id/clickhere"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:fontFamily="sans-serif-light"
+        android:text="Click here to create your room:"
+        android:textColor="@color/white"
+        android:textSize="25dp"
+        app:layout_constraintBottom_toTopOf="@+id/createRoom"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintLeft_toLeftOf="@id/brown_block"
+        app:layout_constraintRight_toRightOf="@id/brown_block"
+        app:layout_constraintTop_toTopOf="@id/brown_block"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/createRoomText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-black"
+        android:text="Create Room"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toTopOf="@id/createRoom"
+        app:layout_constraintLeft_toLeftOf="@id/brown_block"
+        app:layout_constraintRight_toRightOf="@id/brown_block" />
 
     <ImageView
-        android:id="@+id/settinglayout"
-        android:layout_width="200dp"
-        android:layout_height="100dp"
-        android:layout_marginBottom="24dp"
+        android:id="@+id/setting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="190dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        android:src="@drawable/setting_brown_layout"
-        />
-
+        app:layout_constraintEnd_toStartOf="@+id/settingsButton"
+        app:layout_constraintTop_toBottomOf="@+id/roomSubmit"
+        app:srcCompat="@drawable/setting" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
