@@ -106,7 +106,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:background="@drawable/curved_white_rectangle"
         app:layout_constraintEnd_toEndOf="@+id/whiteSetting"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="@+id/whiteSetting"
