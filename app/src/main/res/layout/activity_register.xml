@@ -5,7 +5,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     tools:context=".MainActivity">
 
 
@@ -13,39 +12,37 @@
         android:id="@+id/newusername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:hint="                                       "
-        android:textColor="@color/light_brown"
-        android:textColorHint="@color/black"
+        android:layout_marginTop="200dp"
+        android:hint="Choose New Username"
+        app:layout_constraintBottom_toTopOf="@+id/newpassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.476"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/newUsernameText" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/newpassword"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:hint="                                       "
-        android:textColorHint="@color/black"
-        android:textColor="@color/light_brown"
+        android:layout_marginStart="103dp"
+        android:layout_marginEnd="108dp"
+        android:hint="Choose New Password"
+        app:layout_constraintBottom_toTopOf="@+id/confirmpassword"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/newPassText" />
+        app:layout_constraintTop_toBottomOf="@+id/newusername" />
 
     <EditText
         android:id="@+id/confirmpassword"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:textColor="@color/light_brown"
-        android:textColorHint="@color/black"
+        android:layout_marginBottom="50dp"
+        android:hint="Confirm Password"
+        app:layout_constraintBottom_toTopOf="@+id/register"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.488"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/confirmNewPassText" />
+        app:layout_constraintTop_toBottomOf="@+id/newpassword" />
 
     <Button
         android:id="@+id/register"
@@ -53,6 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Register"
+
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,68 +68,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/roleText" />
 
-    <ImageButton
-        android:id="@+id/back"
-        android:layout_width="53dp"
-        android:layout_height="51dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:background="@null"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/backbutton" />
 
-    <TextView
-        android:id="@+id/roleText"
+    <Button
+        android:id="@+id/back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
-        android:fontFamily="sans-serif-medium"
-        android:text="Choose your role:"
-        android:textColor="@color/light_brown"
-        android:textSize="20dp"
+        android:layout_marginEnd="323dp"
+        android:text="back"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/newUsernameText"
-        android:layout_width="wrap_content"
+    <Spinner
+        android:id="@+id/spinnerRole"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:fontFamily="sans-serif-medium"
-        android:text="Enter username:"
-        android:textSize="20dp"
-        android:textColor="@color/light_brown"
+        android:layout_marginStart="98dp"
+        android:layout_marginTop="152dp"
+        android:layout_marginEnd="113dp"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="#000000"
+        android:spinnerMode="dropdown"
+        app:layout_constraintBottom_toTopOf="@+id/newusername"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerRole" />
-
-    <TextView
-        android:id="@+id/newPassText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:fontFamily="sans-serif-medium"
-        android:text="Enter password:"
-        android:textSize="20dp"
-        android:textColor="@color/light_brown"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/newusername" />
-
-    <TextView
-        android:id="@+id/confirmNewPassText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:fontFamily="sans-serif-medium"
-        android:text="Confirm password:"
-        android:textSize="20dp"
-        android:textColor="@color/light_brown"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/newpassword" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

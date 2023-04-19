@@ -48,7 +48,6 @@
             android:scaleType="fitXY"
             android:layout_gravity="right"
             android:text="Send"
-            android:background="@null"
             />
     </LinearLayout>
 
