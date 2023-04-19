@@ -115,12 +115,59 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toRightOf="@id/setting" />
 
-    <ImageView
-        android:id="@+id/blueSetting"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/curved_blue_rectangle"
-        tools:layout_editor_absoluteX="0dp" />
+    <EditText
+        android:id="@+id/newemail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="@+id/whiteSetting"
+        app:layout_constraintStart_toStartOf="@+id/whiteSetting"
+        app:layout_constraintTop_toBottomOf="@+id/changinguserText" />
+
+    <EditText
+        android:id="@+id/newpassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="@+id/whiteSetting"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="@+id/whiteSetting"
+        app:layout_constraintTop_toBottomOf="@+id/changingpassText" />
+
+    <TextView
+        android:id="@+id/changinguserText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:text="What is your new username:"
+        android:textSize="18dp"
+        app:layout_constraintEnd_toEndOf="@+id/whiteSetting"
+        app:layout_constraintHorizontal_bias="0.523"
+        app:layout_constraintStart_toStartOf="@+id/whiteSetting"
+        app:layout_constraintTop_toTopOf="@+id/whiteSetting" />
+
+    <TextView
+        android:id="@+id/changingpassText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="What is your new password?"
+        android:textSize="18dp"
+        app:layout_constraintEnd_toEndOf="@+id/whiteSetting"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="@+id/whiteSetting"
+        app:layout_constraintTop_toBottomOf="@+id/changeUserButton" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:text="History Page"
+        android:textSize="15dp"
+        app:layout_constraintEnd_toEndOf="@+id/whiteSetting"
+        app:layout_constraintStart_toStartOf="@+id/whiteSetting"
+        app:layout_constraintTop_toBottomOf="@+id/historyButton" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
