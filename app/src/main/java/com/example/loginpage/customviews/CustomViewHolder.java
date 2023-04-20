@@ -14,7 +14,7 @@ import io.getstream.chat.android.ui.message.list.adapter.BaseMessageItemViewHold
  * @author saran
  * @date 13/4/2023
  */
-
+/** Template Method Design Pattern*/
 public abstract class CustomViewHolder extends BaseMessageItemViewHolder<MessageListItem.MessageItem> {
     private final Database mDatabase = Database.getInstance();
     private final ChatClient client = ChatClient.instance();
