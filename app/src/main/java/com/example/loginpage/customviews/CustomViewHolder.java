@@ -32,7 +32,9 @@ public abstract class CustomViewHolder extends BaseMessageItemViewHolder<Message
     abstract void setUpInnerLayoutListener(String uid, Message message,Database database);
     abstract void setUpTickListeners(String channelId_messageId, String uid, Message msg,Database database);
     abstract void setUpInitialState(String channelId, Message message,Database database);
-    void setUpOverallState(String channelId, Message message){
+
+    // setUpOverallState declared final to prevent subclasses from altering the method
+    final void setUpOverallState(String channelId, Message message){
         String uid = client.getCurrentUser().getId();
         setUpInitialState(channelId,message,mDatabase);
         setUpDatabaseStateListener(channelId,message,mDatabase);

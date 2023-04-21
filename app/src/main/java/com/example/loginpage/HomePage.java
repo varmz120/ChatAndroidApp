@@ -1,17 +1,20 @@
 package com.example.loginpage;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.loginpage.constants.Environment;
 import com.example.loginpage.utility.BundleDeliveryMan;
-import com.example.loginpage.utility.Database;
 import com.example.loginpage.utility.LoadingDialogFragment;
-import com.google.firebase.database.Query;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +23,8 @@ import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import io.getstream.chat.android.client.ChatClient;
 import io.getstream.chat.android.client.api.models.FilterObject;
@@ -36,13 +41,18 @@ import io.getstream.chat.android.client.models.User;
  */
 
 public class HomePage extends AppCompatActivity {
-   private final Database mDatabase = Database.getInstance();
    private final ChatClient client = ChatClient.instance();
    private EditText RoomCode;
-   private Bundle b;
    private String LIVESTREAM;
    private final BundleDeliveryMan mDeliveryMan = BundleDeliveryMan.getInstance();
    private String api_key;
+   private String userToken;
+   private String uid;
+   SharedPreferences mSharedPreferences;
+   public static final String USER_TOKEN = "userToken";
+   public static final String API_KEY = "api_key";
+   public static final String UID = "uid";
+   private final String sharedPrefFile = "com.example.loginpage.homepage";
 
    public LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();
 
@@ -62,19 +72,27 @@ public class HomePage extends AppCompatActivity {
          }
       });
 
-      b = getIntent().getExtras();
+
       super.onCreate(savedInstanceState);
       setContentView(R.layout.homepage);
 
-
+      Bundle dataBundle = getIntent().getExtras();
       Button createRoomButton = findViewById(R.id.createRoom);
       Button submit = findViewById(R.id.roomSubmit);
       Button settingsButton = findViewById(R.id.settingsButton);
       Button logOut=findViewById(R.id.logOut);
+      // getting saved instance data in case of abrupt finishing of activity
+      if(savedInstanceState != null){
+         mSharedPreferences = getSharedPreferences(sharedPrefFile,MODE_PRIVATE);
+         userToken = mSharedPreferences.getString(USER_TOKEN,"");
+         uid = mSharedPreferences.getString(UID,"");
+         api_key = mSharedPreferences.getString(API_KEY,Environment.API_KEY);
+      } else {
+         userToken = dataBundle.getString(USER_TOKEN);
+         uid = dataBundle.getString(UID);
+         api_key = dataBundle.getString(API_KEY);
+      }
 
-      String userToken = b.getString("userToken");
-      String uid = b.getString("uid");
-      api_key = b.getString("api_key");
       LIVESTREAM = getString(R.string.livestreamChannelType);
 
       createRoomButton.setOnClickListener(new View.OnClickListener() {
@@ -195,10 +213,24 @@ public class HomePage extends AppCompatActivity {
             loadingDialogFragment.show(getSupportFragmentManager(), "loader");
          }
          String channelId = "messageRoom"+createRoomCode;
-         ChannelClient channelClient = client.channel(LIVESTREAM, channelId);
-         channelClient.watch().execute();
-         //enableRefreshFromDatabase(channelClient);
-         startActivity(QuestionActivity.newIntent(HomePage.this,channelClient));
+         ExecutorService executorService = Executors.newSingleThreadExecutor();
+         final Handler handler = new Handler(Looper.getMainLooper());
+         // task to run on a separate thread as internet connection might fluctuate
+         executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+               ChannelClient channelClient = client.channel(LIVESTREAM, channelId);
+               channelClient.watch().execute();
+               handler.post(new Runnable() {
+                  @Override
+                  public void run() {
+                     startActivity(QuestionActivity.newIntent(HomePage.this,channelClient));
+                  }
+               });
+               executorService.shutdown();
+            }
+         });
+
          Log.i("HomePage","Channel started successfully");
 
       } catch (Exception e){
@@ -216,6 +248,20 @@ public class HomePage extends AppCompatActivity {
 
    }
 
+   @Override
+   protected void onPause() {
+      super.onPause();
+      try{
+         SharedPreferences.Editor preferencesEditor = mSharedPreferences.edit();
+         Bundle data = mDeliveryMan.HomePageBundle(uid);
+         preferencesEditor.putString(API_KEY, data.getString(API_KEY));
+         preferencesEditor.putString(USER_TOKEN,data.getString(USER_TOKEN));
+         preferencesEditor.putString(UID,data.getString(UID));
+         preferencesEditor.apply();
+      }catch (Exception e){
+         Log.e("HomePage: ","Error saving preferences in homepage onPause" + e);
+      }
 
+   }
 
 }
