@@ -66,7 +66,9 @@
 
         <activity
             android:name=".HomePage"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
