@@ -6,7 +6,7 @@ package com.example.loginpage.constants;
  */
 
 public class Environment {
-   public static String CID_KEY = "4mx3y6jmz23j3y347me4kpar2kwrttf9br3d86tu4sf4e84ya6j3vpqpqm7u5968";
-   public static String API_KEY =  "c6ys6m7794gr";
+   public static String CID_KEY = "t5k3kzjgjghv24th2kssf67mtcveuayteh3nc8wkmy79vmtubsvsmmjeq7jz59ws";
+   public static String API_KEY =  "uyavndw25f2u";
 }
 

@@ -66,7 +66,7 @@
         android:textColor="@color/light_brown"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/roleText" />
+        app:layout_constraintTop_toBottomOf="@id/back" />
 
 
     <Button
@@ -79,20 +79,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Spinner
-        android:id="@+id/spinnerRole"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="98dp"
-        android:layout_marginTop="152dp"
-        android:layout_marginEnd="113dp"
-        android:layout_marginBottom="24dp"
-        android:backgroundTint="#000000"
-        android:spinnerMode="dropdown"
-        app:layout_constraintBottom_toTopOf="@+id/newusername"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -116,7 +116,7 @@
         app:layout_constraintLeft_toRightOf="@id/setting" />
 
     <EditText
-        android:id="@+id/newemail"
+        android:id="@+id/newemail2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -125,7 +125,7 @@
         app:layout_constraintTop_toBottomOf="@+id/changinguserText" />
 
     <EditText
-        android:id="@+id/newpassword"
+        android:id="@+id/newpassword2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
